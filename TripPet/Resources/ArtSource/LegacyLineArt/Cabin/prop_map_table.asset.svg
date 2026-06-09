@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420" role="img" aria-label="prop_map_table" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <ellipse cx="320" cy="303" rx="240" ry="38" fill="#74766F" opacity="0.12"/>
+    <path d="M140 234 C198 201 421 199 498 232 C472 276 181 284 140 234 Z" fill="#D8B36A" opacity="0.34" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M181 236 L146 352 M458 238 L500 352" stroke="#74766F" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+    <rect x="132" y="80" width="370" height="190" rx="18" fill="#FFF9EF" stroke="#74766F" stroke-width="3" opacity="0.96" filter="url(#softBleed)"/>
+    <path d="M252 84 L238 268 M374 84 L389 267" stroke="#DED6C7" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+    <path d="M167 187 C216 145 259 151 297 179 C340 213 389 196 456 139" fill="none" stroke="#A9C9D8" stroke-width="12" stroke-linecap="round" opacity="0.58" filter="url(#softBleed)"/>
+    <path d="M174 220 C228 211 266 224 304 240 C347 258 396 247 462 220" fill="none" stroke="#8FAF95" stroke-width="9" stroke-linecap="round" opacity="0.38"/>
+    <path d="M207 132 C225 115 243 113 262 130 C283 148 305 147 330 128" fill="none" stroke="#D8B36A" stroke-width="6" stroke-linecap="round" opacity="0.62"/>
+    <circle cx="408" cy="172" r="12" fill="#E9B9A4" opacity="0.76" filter="url(#softBleed)"/>
+    <path d="M408 184 L408 208" stroke="#3D4338" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
+  
+</svg>

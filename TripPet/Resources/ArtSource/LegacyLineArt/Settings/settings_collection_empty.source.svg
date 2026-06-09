@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="360" viewBox="0 0 560 360" role="img" aria-label="settings_collection_empty" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="560" height="360" fill="none"/>
+    <ellipse cx="281" cy="284" rx="200" ry="34" fill="#DED6C7" opacity="0.13" filter="url(#softBleed)"/>
+    <path d="M 132 93 L 417 77 L 432 274 L 145 290 Z" fill="#F7EEDC" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M 176 122 L 385 111 L 394 242 L 186 253 Z" fill="#FFF9EF" stroke="#DED6C7" stroke-width="4" filter="url(#pencilRough)"/>
+    <path d="M210 206 C249 181 305 183 342 207" fill="none" stroke="#8FAF95" stroke-width="9" stroke-linecap="round" opacity="0.36"/>
+    <path d="M222 166 C245 147 274 150 293 171 C314 151 346 151 367 174" fill="none" stroke="#A9C9D8" stroke-width="7" stroke-linecap="round" opacity="0.56"/>
+    <rect x="325" y="127" width="44" height="38" rx="8" fill="#E9B9A4" opacity="0.38" stroke="#74766F" stroke-width="3"/>
+    <path d="M157 286 C246 306 343 306 431 284" fill="none" stroke="#DED6C7" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  
+</svg>

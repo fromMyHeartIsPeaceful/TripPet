@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="postcard_template_classic" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="900" height="620" fill="none"/>
+    <path d="M 60 48 L 842 60 L 820 561 L 75 548 Z" fill="#F7EEDC" stroke="#74766F" stroke-width="6" filter="url(#softBleed)"/>
+    <rect x="103" y="103" width="428" height="310" rx="18" fill="#FFF9EF" opacity="0.8" stroke="#DED6C7" stroke-width="4"/>
+    <path d="M588 118 L584 495" stroke="#DED6C7" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+    <path d="M641 166 L767 166 M641 219 L782 219 M641 272 L760 272 M641 391 L780 391 M641 444 L754 444" stroke="#74766F" stroke-width="5" stroke-linecap="round" opacity="0.42"/>
+    <rect x="711" y="92" width="80" height="67" rx="10" fill="#E9B9A4" opacity="0.35" stroke="#74766F" stroke-width="4"/>
+    <path d="M120 482 C225 458 397 456 512 482" stroke="#8FAF95" stroke-width="10" stroke-linecap="round" opacity="0.25"/>
+  
+</svg>

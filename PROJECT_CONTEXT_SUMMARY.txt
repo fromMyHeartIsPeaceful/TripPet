@@ -1,0 +1,909 @@
+TripPet / 步旅小屋项目上下文摘要
+生成时间：2026-06-07 18:05
+工作目录：/Users/qianyu/Documents/Trip
+
+============================================================
+一、项目整体规划
+============================================================
+
+项目目标：
+做一个原生 iOS SwiftUI App，把 Apple Health 每日步数转化为“小动物旅行机票”。用户把今天的脚步送给小动物，小动物去远方旅行，之后寄回明信片。整体气质必须是温柔、治愈、手帐、水彩旅行小屋，而不是健身打卡工具、效率工具或硬核数据面板。
+
+当前 MVP 范围：
+1. 启动流：
+   - 首次进入显示欢迎页。
+   - 欢迎页完成后显示 Health 连接引导页。
+   - Health 可连接，也可“稍后再说”进入主界面。
+2. 一级页只保留两个 Tab：
+   - 小屋
+   - 邮箱
+3. 小屋页负责：
+   - 显示 Health 状态。
+   - 显示小动物和小屋场景。
+   - 读取今日步数。
+   - 判断是否可赠送机票。
+   - 显示赠送确认弹层。
+   - 赠送成功后创建旅行。
+   - 旅途中显示状态卡。
+   - 进入页面时扫描是否有可投递明信片。
+4. 邮箱页负责：
+   - 展示信封列表。
+   - 展示未读/已读/旧明信片。
+   - 邮箱为空时显示温柔空状态。
+   - 打开全屏明信片详情。
+   - 进入页面时扫描是否有可投递明信片。
+5. 明信片详情页负责：
+   - 用 postcard_template_classic 作为底图。
+   - 用 Postcard 模型上的 destination/stamp/animal/template/envelope 资源字段渲染。
+   - 所有文字由 SwiftUI 渲染，不烘焙进图片。
+6. 设置页作为小屋页入口打开：
+   - Apple 健康状态和重新请求权限入口。
+   - 通知设置二级页。
+   - 明信片收藏二级页。
+   - 关于步旅小屋二级页。
+7. 内容系统由 ContentManifest.json 驱动：
+   - animals
+   - destinations
+   - postcards
+   - rules
+8. 用户状态由 SwiftData 持久化：
+   - tickets
+   - trips
+   - postcards/read state
+   - travel wish 状态
+   - onboarding 状态
+   - Health 引导状态
+
+核心技术路径：
+- SwiftUI + lightweight MVVM + AppEnvironment。
+- AppRepository 是唯一业务 mutation 入口。
+- AppUserStateStore 是 repository 后面的用户状态存储协议。
+- SwiftDataUserStateStore 是 live 持久化实现。
+- InMemoryUserStateStore 是 Preview/Test 实现。
+- HealthKitStepCountProvider 通过 StepCountProvider 协议接入。
+- FakeStepCountProvider 用于 Preview/Test。
+- TicketRuleEngine 处理步数到机票规则。
+- PostcardScheduler 处理明信片生成和时间规则。
+- ContentManifestLoader 读取 bundled JSON，失败时 fallback 到 SeedData.preview。
+- AppCopy 收口 MVP 高频中文文案，当前不引入本地化。
+- manifest-owned catalog 不持久化；SwiftData 只保存用户状态和 manifest id。
+
+当前构建和测试状态：
+- pbxproj 语法校验通过。
+- ContentManifest.json 语法校验通过。
+- manifest 中 16 个 asset name 全部存在于 Assets.xcassets。
+- iphoneos 无签名构建通过。
+- iPhone 17 Pro Simulator 单元测试通过。
+- 当前测试共 17 个：
+  - TicketRuleEngineTests 5 个。
+  - AppRepositoryTripTests 10 个。
+  - CabinViewModelTests 2 个。
+- Xcode 构建/测试时仍会出现已连接真机锁屏导致的 notification_proxy warning；这是外部设备状态噪声，模拟器测试和 iphoneos 构建最终成功。
+
+============================================================
+二、已完成任务清单
+============================================================
+
+任务1：P0 美术资源生成
+状态：已完成。
+完成内容：
+- 已生成 P0 核心水彩/SVG 资源。
+- 资源进入 TripPet/Resources/ArtSource 和 Assets.xcassets。
+- 包括 cabin、cat、visitor、mailbox、envelope、postcard、destination、stamp、paper texture 等。
+
+任务2：UI 图标资源生成
+状态：已完成。
+完成内容：
+- 已生成 icon_home、icon_mail、icon_settings、icon_back、icon_health、icon_ticket、icon_steps、icon_notification、icon_collection、icon_about。
+- 已放入 Assets.xcassets/UI。
+
+任务3：Assets.xcassets 接入
+状态：已完成。
+完成内容：
+- Assets.xcassets 已加入 target Resources build phase。
+- 已建立 Animals、Cabin、Destinations、Postcards、Stamps、Envelopes、UI、Textures、Onboarding、Settings 等分组。
+- iphoneos 构建可编译 Assets.car。
+
+任务4：ArtImage 通用图片组件
+状态：已完成。
+完成内容：
+- 已有 ArtImage。
+- 支持 asset name、图标模板渲染、缺失资源 fallback。
+- 页面资源读取统一走 ArtImage。
+- ArtImage 默认把装饰图片 accessibilityHidden。
+
+任务5：视觉基础样式系统
+状态：已完成。
+完成内容：
+- 已有 AppTheme、PaperBackground、纸张卡片、主按钮、次按钮样式。
+- 当前主要页面已使用统一视觉样式。
+
+任务6：小屋页真实视觉替换
+状态：已完成。
+完成内容：
+- CabinView/CabinSceneView 已使用水彩小屋资源。
+- 小猫、来访伙伴、地图、机票等资源已接入。
+- 保留 Health 状态、标题、设置按钮、赠送流程。
+
+任务7：邮箱页真实视觉替换
+状态：已完成。
+完成内容：
+- MailboxView 已使用 mailbox_tray_base 和 envelope_* 资源。
+- 信封文案由 SwiftUI 渲染，不画进图片。
+- 点击打开 fullScreenCover 明信片详情。
+
+任务8：明信片详情真实视觉替换
+状态：已完成。
+完成内容：
+- PostcardDetailView 使用 postcard_template_classic、destinationAssetName、animalAssetName、stampAssetName。
+- 巴黎和冰岛明信片已资源驱动。
+- 详情页 fullScreenCover 覆盖底部 Tab。
+
+任务9：设置页视觉升级
+状态：已完成。
+完成内容：
+- 设置页改为纸条/手帐风格。
+- Health、notification、collection、about 等图标已接入。
+
+任务10：欢迎页与首次进入流程
+美术状态：已完成。
+代码状态：已完成第一版。
+完成内容：
+- 已生成/接入 onboarding_cabin_path。
+- 已生成/接入 onboarding_cat_suitcase。
+- 新增 AppRootView 启动门控。
+- 新增 OnboardingView。
+- onboardingCompleted 通过 AppRepository/AppUserStateStore 持久化。
+- 首次启动显示欢迎页，完成后进入 Health 连接页。
+
+任务11：Health 连接页
+美术状态：已完成。
+代码状态：已完成第一版。
+完成内容：
+- 已生成/接入 health_steps_ticket。
+- 新增 HealthConnectView。
+- 接入 StepCountProvider.requestAuthorization。
+- 支持“连接 Apple 健康”。
+- 支持“稍后再说”进入主界面。
+- healthGuideDismissed 通过 AppRepository/AppUserStateStore 持久化。
+- 设置页仍可再次请求 Health 权限。
+
+任务12：Health 未连接状态
+状态：已完成。
+完成内容：
+- CabinViewModel 已支持 unavailable、notDetermined、sharingDenied、sharingAuthorized。
+- 未连接时显示连接 Apple 健康和先看看小屋。
+- 设置页仍可请求 Health 权限。
+
+任务13：赠送确认弹层
+美术状态：已完成。
+代码状态：已完成。
+完成内容：
+- 点击赠送前显示 TicketGiftConfirmation。
+- 已生成/接入 ticket_confirm_card 专用票卡资源。
+- 展示小动物、目的地、票数、步数。
+- 确认后才调用 repository.giftTicket。
+
+任务14：旅途中状态页面/状态卡
+状态：已完成。
+完成内容：
+- 小屋页根据 AppRepository.activeTrip 显示旅途中状态卡。
+- 使用路线图、trip_marker_cat、prop_paper_plane。
+- 当前路线图从 manifest destination 的 routeMapAssetName 读取。
+- 冰岛旅途中不再 fallback 到巴黎路线图。
+
+任务15：ContentManifest 扩展
+状态：已完成。
+完成内容：
+- ContentManifest.json 已包含 animals、destinations、postcards、rules。
+- 明信片、目的地、动物资源名已集中配置。
+- manifest 中已有巴黎、冰岛、cat、visitor_unknown、dog、rabbit。
+
+任务16：Manifest 解析服务
+状态：已完成。
+完成内容：
+- 新增 ContentManifest.swift。
+- 新增 ContentManifestLoader.swift。
+- AppEnvironment.live() 通过 manifest 加载 SeedData、TicketRuleEngine、destinations。
+- JSON 失败时 fallback。
+
+任务17：AnimalVisitService 接资源配置
+状态：已完成。
+完成内容：
+- Animal 新增 visitorAssetName。
+- manifest 和 SeedData fallback 均补齐 visitorAssetName。
+- CabinSceneView 使用 visitor.visitorAssetName。
+
+任务18：PostcardScheduler 接资源配置
+状态：已完成第一版。
+完成内容：
+- PostcardScheduler.makePostcard(for:animal:destination:on:) 可生成带资源字段的 Postcard。
+- 运行时明信片 title/subtitle/body 已优先使用 ManifestDestination 的 postcardTitleTemplate、postcardSubtitle、postcardBodyTemplate。
+- 邮箱和详情页已基于 Postcard 的资源字段展示。
+- PostcardScheduler.shouldRevealPostcard 第一版规则为 departedAt + 1 天后可揭示。
+- 运行时投递扫描已接入 AppRepository.revealEligiblePostcards。
+
+任务19：TicketRuleEngine 单元测试
+状态：已完成。
+完成内容：
+- 覆盖低于 3000、等于 3000、高于 3000、当天重复赠送、跨天恢复。
+- 相关温柔文案已更新。
+
+任务20：Trip 状态单元测试
+状态：已完成并扩展。
+完成内容：
+- AppRepositoryTripTests 覆盖赠送创建 Trip、activeTrip 可读、completeTrip 后生成 postcard、重复赠送不创建重复 trip。
+- 新增 SwiftData round-trip 测试。
+- 新增 eligible trip 只投递一次明信片测试。
+- 新增 persisted destinationId 按最新 manifest catalog rehydrate 测试。
+
+任务21：Repository 持久化方案设计
+状态：已完成。
+完成内容：
+- 新增 PERSISTENCE_PLAN.md。
+- 明确 manifest-owned catalog data 与 user-owned state 的边界。
+- 明确 SwiftData 初版建议模型。
+
+任务22：SwiftData 初版实现
+状态：已完成第一版。
+完成内容：
+- 新增 TripPet/Data/Persistence/UserStatePersistence.swift。
+- 新增 AppUserState、AppUserFlags。
+- 新增 AppUserStateStore。
+- 新增 InMemoryUserStateStore。
+- 新增 SwiftDataUserStateStore。
+- 新增 PersistedTicket、PersistedTrip、PersistedPostcard、PersistedTravelWishState、PersistedAppFlag。
+- 持久化 tickets、trips、postcards/read state、travel wish 状态、onboarding 状态、Health 引导状态。
+- 不持久化完整 Animal/Destination catalog。
+- SeedData 运行时携带 destinations，用于从最新 manifest rehydrate 目的地名称和资源。
+
+任务23：AppEnvironment 整理
+状态：已完成第一版。
+完成内容：
+- AppEnvironment.live() 负责装配 SwiftData store、repository、HealthKit provider、规则引擎、manifest destinations。
+- 新增 AppEnvironment.preview(...)。
+- 新增 FakeStepCountProvider。
+- Preview/Test 不依赖真实 HealthKit。
+- View 不直接写 SwiftData。
+
+任务24：SwiftUI Preview 样例数据
+状态：已完成第一版。
+完成内容：
+- CabinView preview：Health 已连接、Health 拒绝、冰岛旅途中。
+- MailboxView preview：空邮箱、有信。
+- PostcardDetailView preview：巴黎、冰岛。
+- OnboardingView preview。
+- HealthConnectView preview。
+
+任务25：小屋页动效
+美术状态：已完成第一版准备。
+代码状态：已完成第一版。
+完成内容：
+- 当前 animal_cat_home 足够支持 SwiftUI 呼吸/轻微浮动。
+- 小猫轻微呼吸已完成。
+- 机票图标轻微浮动已完成。
+- 主按钮已有按压下沉。
+- Reduce Motion 下关闭或降低动效。
+- 暂不补 cat_eye_open/cat_eye_closed。
+
+任务26：信封与明信片转场动效
+美术状态：已完成第一版准备。
+代码状态：阶段完成。
+完成内容：
+- 当前 envelope_* 与 postcard_template_classic 足够支持 SwiftUI 转场。
+- 信封按压浮起已完成。
+- 继续使用 fullScreenCover 打开明信片详情，不破坏覆盖 Tab 的现有行为。
+后续可选：
+- matchedGeometryEffect 从信封位置展开和返回收起。
+- 不补额外转场帧，不引入 Lottie。
+
+任务27：赠送成功动效
+美术状态：已完成第一版准备。
+代码状态：已完成第一版。
+完成内容：
+- 已补 ticket_flight_trail。
+- 继续复用 prop_paper_plane。
+- 确认赠送后显示 prop_paper_plane + ticket_flight_trail 的 SwiftUI 原生飞行动效。
+- 动效结束后稳定进入旅途中状态。
+- Reduce Motion 下不播放飞行反馈。
+- 暂不补 cat_wave 或 Lottie/序列帧。
+
+任务28：空状态与异常状态
+状态：阶段完成。
+完成内容：
+- 邮箱为空状态已完成。
+- 今日步数不足文案已温柔化。
+- 今日已赠送文案已温柔化。
+- Health 拒绝/不可用/读取失败文案已有。
+- ArtImage 仍提供资源缺失 fallback。
+后续：
+- 需要最终文案系统整理时统一抽取和审校。
+
+任务30：可访问性检查
+状态：阶段完成。
+完成内容：
+- 新增/补齐部分关键按钮 accessibility label。
+- ArtImage 默认装饰图 accessibilityHidden。
+- 明信片图面增加整体 accessibility label。
+后续：
+- 仍建议做真机 Dynamic Type、VoiceOver、颜色对比度人工检查。
+
+任务31：包体积与资源压缩
+美术状态：已完成阶段性统计。
+代码/最终状态：阶段完成。
+完成内容：
+- Assets.car：1,629,000 bytes，约 1.55 MiB。
+- TripPet.app Debug iphoneos 产物：3,760 KiB。
+- ArtSource SVG 源文件目录：168 KiB。
+- Assets.xcassets 源目录：388 KiB。
+- 首屏核心 SVG 源资源合计约 14.9 KiB。
+- 巴黎单目的地 SVG 源资源合计约 7.9 KiB。
+- 冰岛单目的地 SVG 源资源合计约 8.0 KiB。
+后续：
+- 上架前可再查未使用资源和 release 包体积。
+
+任务33：更新 TECHNICAL_CONTEXT.md
+状态：已完成本轮更新。
+完成内容：
+- 已记录 SwiftData、AppRootView、OnboardingView、HealthConnectView、旅行投递规则、设置二级页、测试数量和验证结果。
+
+任务38：旅行与明信片时间规则设计
+美术状态：已完成 MVP 资源矩阵。
+代码状态：已完成第一版。
+完成内容：
+- 第一版规则：赠送后立即进入 traveling。
+- 旅行至少 1 天后可生成 1 张未读明信片。
+- 生成明信片后 trip completed，wish completed。
+- 同一 trip 不重复投递。
+- CabinView/MailboxView 进入时会触发 revealEligiblePostcards 扫描。
+- TripStatusCard 从 manifest destination 查 routeMapAssetName。
+暂缓：
+- 多天旅行专属帧。
+- 每日投递状态图。
+- 多张明信片不同模板。
+- 真正本地通知。
+
+任务39：设置二级页实现
+美术状态：已完成。
+代码状态：已完成第一版。
+完成内容：
+- 已补 settings_notification_note、settings_collection_empty、settings_about_cabin。
+- 通知设置页使用 settings_notification_note。
+- 明信片收藏页使用 settings_collection_empty。
+- 关于页使用 settings_about_cabin。
+- 入口从 SettingsView 接出。
+注意：
+- 通知页当前只记录本地 toggle UI；尚未接系统通知调度。
+
+任务40：最终集成验收
+状态：本轮已完成阶段性验收。
+完成内容：
+- pbxproj 语法校验通过。
+- ContentManifest.json 语法校验通过。
+- manifest 中 16 个 asset name 全部存在于 Assets.xcassets。
+- iphoneos 无签名构建通过。
+- iPhone 17 Pro Simulator 单元测试通过：12/12。
+- TECHNICAL_CONTEXT.md 和本摘要已更新。
+注意：
+- 真机 HealthKit 授权/读取仍需解锁设备后人工验证。
+
+============================================================
+三、未完成任务清单：美术方向
+============================================================
+
+当前结论：
+MVP 必需美术资源已经基本完成。狗、兔、旅途猫标记、纸飞机、纸张纹理也已从旧线框 SVG 替换为水彩 PNG。后续美术方向主要是“规则确定后的增强资源”和“上架前视觉打磨”，不是当前阻塞项。
+
+任务25：小屋页动效增强资源
+状态：暂缓/可选。
+要做：
+- 只有当后续明确需要眨眼分层时，再补 cat_eye_open / cat_eye_closed。
+- 当前不建议提前补，避免增加分层维护成本。
+
+任务26：信封与明信片高级转场资源
+状态：暂缓/可选。
+要做：
+- 如果 matchedGeometryEffect 不够自然，再考虑补转场帧。
+- 当前不引入 Lottie，不补序列帧。
+
+任务27：赠送成功高级动效资源
+状态：暂缓/可选。
+要做：
+- 如果后续需要更强反馈，可补 cat_wave 或更细的纸飞机轨迹。
+- 当前水彩 PNG `prop_paper_plane` + `ticket_flight_trail` 已满足 MVP。
+
+任务31：上架前包体积与资源压缩
+状态：未完成最终版。
+要做：
+- 上架前重新统计 release 包体积。
+- 检查是否存在未使用资源。
+- 优先评估 Assets.car 编译策略，不要随意删除 MVP 资源。
+
+任务36：目的地内容第一批扩展美术
+状态：MVP 已满足，扩展暂缓。
+要做：
+- 如果巴黎/冰岛内容扩展到多张明信片，再评估是否需要更多邮戳、地标、路线变体。
+- 当前巴黎/冰岛已有地标、邮戳、路线图、明信片模板。
+
+任务37：新伙伴明信片资源
+状态：未完成，依赖代码规则。
+要做：
+- 若新伙伴未来可解锁、可寄明信片，则补 dog/rabbit selfie 或明信片专属姿势。
+- 当前 dog/rabbit 只保证小屋/来访视觉可用。
+
+任务38：多天旅行/每日投递状态图
+状态：暂缓。
+要做：
+- 如果未来支持多天旅行多张明信片，再补每日投递状态图。
+- 当前第一版规则为每趟旅行 1 张明信片，不需要额外资源。
+
+任务40：最终资源集成验收
+状态：阶段完成，最终版未完成。
+要做：
+- 所有代码规则和页面最终定稿后，再做一次全量资源引用检查。
+- 重点检查新增目的地、新伙伴、新动效是否有 ArtImage fallback。
+
+============================================================
+四、未完成任务清单：代码方向
+============================================================
+
+任务26：信封与明信片高级转场
+状态：阶段完成，增强未完成。
+建议优先级：P3。
+要做：
+- 可选实现 matchedGeometryEffect 从信封位置展开明信片。
+- 返回时自然收起。
+- 必须继续保证详情页覆盖 Tab。
+- Reduce Motion 下关闭复杂转场。
+
+任务28：空状态与异常状态最终文案收口
+状态：阶段完成，最终版未完成。
+建议优先级：P1。
+要做：
+- 统一审校邮箱空状态、Health 拒绝、Health 读取失败、步数不足、今日已赠送、有 activeTrip 等文案。
+- 与任务35 文案系统整理合并推进最合适。
+- 不显示技术错误，不要健身工具感。
+
+任务29：真机 HealthKit 验证
+状态：工程准备完成，真机人工验证未完成。
+建议优先级：P0。
+已完成：
+- 已检查 entitlements：TripPet.entitlements 启用 com.apple.developer.healthkit。
+- 已确认 pbxproj 配置 NSHealthShareUsageDescription。
+- 已新增 MVP_PAGE_CHECKLIST.md 记录 HealthKit 真机验证矩阵。
+- HealthConnectView / SettingsView 请求失败文案已更清晰，不显示技术错误。
+- 已修正 HealthKit 只读权限判断：授权请求成功后进入 readPermissionRequested 状态，并直接尝试读取今日步数。
+- 已把步数不足提示改为显示 Apple 健康实际读取到的今日步数，便于真机排障。
+- 已修正点击“赠送今日脚步，让它出发”看似无反应的问题：readPermissionRequested 状态刷新不再覆盖刚读到的步数/错误/旅途中提示。
+- 已吸收 BuBuGarden Health 逻辑：授权成功后立即读取今日步数；App 启动、回前台、小屋出现、设置页打开会刷新；HealthKit observer 会在步数样本变化后触发刷新；Health 错误类型更明确。
+- 2026-06-07 22:38 最新 `com.qianyu.TripPet` 真机构建、安装、启动均成功；设备为 `qianyu` / iPhone 15 Pro Max，设备 ID `BC67627A-9384-5020-AD2D-51F02D4E8C2C`。
+- 真机构建使用 Team ID `ZNY52MWKJN` + `-allowProvisioningUpdates`，自动使用 `iOS Team Provisioning Profile: com.qianyu.TripPet`，UUID `34a5e200-dc04-4f42-ab6a-c93ba77ec6af`。
+- 签名 entitlements 包含 `application-identifier = ZNY52MWKJN.com.qianyu.TripPet` 和 `com.apple.developer.healthkit = true`。
+仍要做：
+- 在真机上的 TripPet 里点击“赠送今日脚步，让它出发”，验证是否显示实际读取步数或确认赠送弹层。
+- 验证授权成功后的今日步数读取。
+- 验证 notDetermined、sharingDenied、sharingAuthorized、unavailable 的 UI 状态。
+- 验证首次启动 HealthConnectView 的授权体验。
+- 验证设置页重新请求权限入口。
+注意：
+- 模拟器不能完全代表 HealthKit 行为。
+- 当前测试时仍可能出现已连接真机锁屏导致 notification_proxy warning；这属于外部设备状态。22:38 最新安装和远程启动已成功。
+
+任务30：可访问性最终检查
+状态：阶段完成，最终人工检查未完成。
+建议优先级：P1。
+要做：
+- VoiceOver 跑通欢迎页、Health 连接页、小屋、赠送确认、邮箱、明信片详情、设置二级页。
+- Dynamic Type 检查主要按钮、卡片、明信片正文是否溢出。
+- 检查颜色对比度。
+- 检查装饰图是否被隐藏，关键图是否有合适 label。
+
+任务31：包体积与资源压缩最终检查
+状态：阶段完成，最终版未完成。
+建议优先级：P2。
+要做：
+- release 构建后重新记录 Assets.car 和 app 体积。
+- 检查未使用资源。
+- 不要删除当前 MVP 必需资源。
+
+任务32：从网页原型到 SwiftUI 对照清理
+状态：阶段完成。
+建议优先级：P1。
+完成内容：
+- 新增 MVP_PAGE_CHECKLIST.md。
+- 已对照 index.html 和 SwiftUI 当前实现。
+- 已标记欢迎、Health、小屋、邮箱、明信片详情、设置入口、设置二级页覆盖情况。
+- 已标出“原型有但 MVP 不做”的内容，避免后续误补。
+
+任务34：整理最终 MVP 页面清单
+状态：阶段完成。
+建议优先级：P1。
+完成内容：
+- MVP_PAGE_CHECKLIST.md 已输出页面清单。
+- 已覆盖欢迎页、Health 连接页、小屋页、赠送确认弹层、旅途中状态卡、邮箱页、明信片详情页、设置页、通知设置页、明信片收藏页、关于页。
+- 已标注每页入口、数据来源、资源依赖、空状态、异常状态。
+
+任务35：文案系统整理
+状态：阶段完成。
+建议优先级：P1。
+完成内容：
+- 新增 AppCopy 静态中文文案入口。
+- 已收口 Tab、欢迎页、Health 连接页、小屋页、赠送确认、邮箱空状态、设置页、TicketRuleEngine 高频文案。
+- 暂不引入 String Catalog、本地化或多语言。
+后续：
+- 人工审校所有文案语气和 Dynamic Type 展示。
+注意：
+- 不要健身工具感。
+- 新增高频文案不要继续散落在 ViewModel/View 中扩大。
+
+任务36：目的地内容第一批
+状态：阶段完成，内容最终人工审校未完成。
+建议优先级：P1。
+已完成：
+- 巴黎/冰岛资源已有。
+- manifest 中已有巴黎/冰岛目的地。
+- seed postcards 已有巴黎未读和冰岛旧明信片。
+- ManifestDestination 已新增 postcardTitleTemplate、postcardSubtitle、postcardBodyTemplate。
+- PostcardScheduler 运行时生成明信片已使用 manifest 目的地文案模板。
+- 巴黎/冰岛已补第一版运行时明信片标题、正文、邮戳、地标配置。
+后续：
+- 人工审校巴黎/冰岛最终内容文字。
+
+任务37：新伙伴出现规则设计
+状态：MVP 视觉规则已完成，扩展规则暂缓。
+建议优先级：P2。
+已完成：
+- dog/rabbit 资源和 manifest animal 条目已具备。
+- AnimalVisitService 已改为稳定日期轮换：约三天出现一天，优先 dog/rabbit，跳过 visitor_unknown 占位。
+- MVP 新伙伴只是视觉出现，不可点击、不解锁、不寄明信片、不持久化发现状态。
+- 已补单元测试覆盖视觉轮换。
+后续：
+- 如未来要做点击、解锁、提高概率、目的地关联、寄明信片，再扩展规则和 SwiftData user state。
+注意：
+- 如果新伙伴可寄明信片，可能需要先补新伙伴 selfie/明信片姿势资源。
+
+任务39：通知设置真实能力
+状态：未完成，当前只有 UI。
+建议优先级：P2/P3。
+要做：
+- 如果 MVP 要发系统通知，需要接 UserNotifications。
+- 设计旅行完成/明信片投递时的通知触发时机。
+- 请求通知权限。
+- 持久化通知偏好。
+注意：
+- 当前任务39 的设置二级页 UI 已完成；这里只是“真实通知能力”未完成。
+
+任务40：最终集成验收收尾
+状态：阶段完成，最终版未完成。
+建议优先级：最后做。
+要做：
+- 跑 iphoneos 无签名构建。
+- 跑 iPhone 17 Pro Simulator 单元测试。
+- 跑 manifest 资源引用检查。
+- 真机验证 HealthKit。
+- 人工检查启动流、小屋、赠送、旅途中、投递、邮箱、明信片、设置主流程。
+- 更新 TECHNICAL_CONTEXT.md、PROJECT_CONTEXT_SUMMARY.txt。
+
+============================================================
+五、建议接下来的推进顺序
+============================================================
+
+推荐代码主线：
+1. 任务29：解锁真机后做 HealthKit 授权/今日步数人工验证。
+2. 任务30：可访问性人工检查收尾。
+3. 任务31：release 包体积和未使用资源检查。
+4. 任务40：最终集成验收收尾。
+5. 可选：人工审校任务35/36 文案和目的地内容。
+6. 可选：未来再扩展任务37 新伙伴点击/解锁/寄明信片规则。
+
+推荐美术主线：
+1. 暂无必须继续并行的 MVP 美术任务。
+2. dog/rabbit 首页与来访姿势已补齐；等任务37 新伙伴规则确定后，再决定是否补 dog/rabbit selfie 或明信片姿势。
+3. 等任务36 目的地内容扩展后，再决定是否补更多目的地变体。
+4. 等任务26/27 动效增强被明确要求后，再考虑补转场帧或更细动效资源。
+
+最适合并行开的任务：
+- 代码窗口 A：任务29 真机 HealthKit 验证。
+- QA 窗口 A：任务30 VoiceOver / Dynamic Type / Reduce Motion 人工检查。
+- Release 窗口 A：任务31 release 包体积和未使用资源检查。
+- 文案窗口 A：人工审校 AppCopy 和 ContentManifest 中巴黎/冰岛文案。
+- 美术窗口 A：暂不需要；如果未来任务37/36 提出新资源缺口再开。
+
+============================================================
+六、不要重复做的事情
+============================================================
+
+1. 不要重新生成任务1/2的全部 P0 资源。
+   现有资源已经进入 Assets.xcassets，并且构建通过。
+
+2. 不要重新创建 ArtImage。
+   已经存在，并且当前页面已经在用。
+
+3. 不要重新创建 AppTheme / PaperBackground。
+   视觉基础系统已经存在。
+
+4. 不要把 Assets.xcassets 再重复添加到 target。
+   已经在 Resources build phase 中。
+
+5. 不要重新写 ContentManifestLoader。
+   已经能读取 bundled ContentManifest.json，并有 fallback。
+
+6. 不要重新搭建 SwiftData 持久化层。
+   AppUserStateStore、SwiftDataUserStateStore、InMemoryUserStateStore 已经存在。
+
+7. 不要把 View 改成直接写 SwiftData。
+   所有业务 mutation 仍应通过 AppRepository。
+
+8. 不要重新搭建 AppEnvironment preview/test 架构。
+   AppEnvironment.preview(...) 和 FakeStepCountProvider 已经存在。
+
+9. 不要重新做欢迎页和 Health 连接页的基础流程。
+   AppRootView、OnboardingView、HealthConnectView 已完成第一版。
+
+10. 不要在 View 中重新硬编码巴黎/冰岛/猫的资源名。
+    应优先走 manifest、Postcard、Animal、TravelWish、Trip.destinationId。
+
+11. 不要重做 TicketRuleEngine 核心测试。
+    已经有 5 个规则测试。
+
+12. 不要重做 Trip 状态和 SwiftData round-trip 测试。
+    AppRepositoryTripTests 已覆盖核心闭环和持久化。
+
+13. 不要把完整 Animal/Destination catalog 持久化到 SwiftData。
+    这部分属于 manifest-owned content。
+
+14. 不要把明信片文字画进图片。
+    明信片文字必须由 SwiftUI 渲染，便于本地化、可访问性、动态内容。
+
+15. 不要为了第一版动效引入 Lottie 或第三方动画库。
+    当前任务25/26/27 都以 SwiftUI 原生动画为准。
+
+============================================================
+七、绝不要犯的错误
+============================================================
+
+1. 绝不要覆盖用户或其他任务窗口的未提交改动。
+   每次改文件前先读当前文件。尤其是：
+   - TripPet.xcodeproj/project.pbxproj
+   - AppEnvironment.swift
+   - AppRepository.swift
+   - UserStatePersistence.swift
+   - ContentManifest.json
+   - TECHNICAL_CONTEXT.md
+   - PROJECT_CONTEXT_SUMMARY.txt
+
+2. 绝不要把 manifest 内容和用户状态混在一起持久化。
+   manifest 是静态内容源，SwiftData 保存用户状态。
+
+3. 绝不要让 View 直接写 SwiftData 或直接做业务状态流。
+   状态 mutation 应通过 AppRepository。
+
+4. 绝不要让 HealthKit 真权限影响 Preview 或单元测试。
+   Preview/Test 必须用 FakeStepCountProvider 或 mock environment。
+
+5. 绝不要在资源缺失时让页面变成空白。
+   使用 ArtImage fallback，并在最终验收检查缺失资源。
+
+6. 绝不要把业务文字烘焙进图片。
+   所有标题、正文、按钮、明信片内容都应由 SwiftUI 文本渲染。
+
+7. 绝不要把 App 做成健身打卡工具气质。
+   文案和视觉都应围绕“小动物旅行、温柔手帐、脚步变机票”。
+
+8. 绝不要忽略 Reduce Motion。
+   任务25/26/27 动效必须考虑 accessibilityReduceMotion。
+
+9. 绝不要只跑测试不跑构建。
+   每轮代码开发至少跑 iphoneos 无签名构建；涉及规则/状态再跑测试。
+
+10. 绝不要把 starter/sample postcards 误当成完整用户历史。
+    manifest seed postcard 是静态内容；用户生成和 read state 由 SwiftData 保存。
+
+11. 绝不要新增目标页后忘记接入 Xcode project。
+    当前工程不是文件夹同步模式，新增 Swift 文件需要手动加入 project.pbxproj Sources。
+
+============================================================
+八、关键事项
+============================================================
+
+当前关键业务规则：
+- 今日步数 >= 3000，可赠送 1 张机票。
+- 每天最多赠送 1 次。
+- 有 activeTrip 时不能再次赠送。
+- giftTicket 成功后：
+  - 创建 Ticket。
+  - 将 active wish 改为 traveling。
+  - 创建 traveling Trip。
+- 第一版旅行规则：
+  - 赠送后立即进入 traveling。
+  - departedAt + 1 天后可投递 1 张未读明信片。
+  - 投递后 trip completed，wish completed。
+  - 同一 trip 不重复投递。
+- 运行时明信片文案：
+  - 从 ManifestDestination 的 postcardTitleTemplate、postcardSubtitle、postcardBodyTemplate 生成。
+  - 支持 {animal} 和 {destination} 占位替换。
+- 新伙伴 MVP 规则：
+  - 只做视觉来访，不可点击、不解锁、不寄明信片、不持久化发现状态。
+  - AnimalVisitService 按日期稳定轮换 dog/rabbit，约三天出现一天。
+- AppRootView 启动规则：
+  - onboardingCompleted == false：显示 OnboardingView。
+  - onboardingCompleted == true 且 healthGuideDismissed == false：显示 HealthConnectView。
+  - 两者都 true：显示 RootTabView。
+
+当前持久化边界：
+- 持久化：
+  - tickets
+  - trips
+  - postcards/read state
+  - travel wish state
+  - onboardingCompleted
+  - healthGuideDismissed
+- 不持久化：
+  - 完整 Animal catalog
+  - 完整 Destination catalog
+  - 静态 manifest 内容
+- persisted destinationId 会从最新 SeedData.destinations rehydrate 显示名称和资源。
+
+当前资源命名重点：
+- texture_paper_grain
+- cabin_room_base
+- animal_cat_home
+- animal_cat_selfie
+- animal_visitor_unknown
+- animal_dog_home
+- animal_dog_visitor
+- animal_rabbit_home
+- animal_rabbit_visitor
+- prop_map_table
+- prop_ticket_single
+- prop_paper_plane
+- ticket_flight_trail
+- ticket_confirm_card
+- mailbox_tray_base
+- envelope_unread
+- envelope_read
+- envelope_old
+- postcard_template_classic
+- destination_paris_line
+- destination_iceland_line
+- stamp_paris
+- stamp_iceland
+- trip_route_map_paris
+- trip_route_map_iceland
+- trip_marker_cat
+- onboarding_cabin_path
+- onboarding_cat_suitcase
+- health_steps_ticket
+- settings_notification_note
+- settings_collection_empty
+- settings_about_cabin
+
+当前 UI icons：
+- icon_home
+- icon_mail
+- icon_settings
+- icon_back
+- icon_health
+- icon_ticket
+- icon_steps
+- icon_notification
+- icon_collection
+- icon_about
+
+暂缓资源：
+- cat_eye_open/cat_eye_closed：等任务25增强动效确定需要眨眼分层后再补。
+- 新伙伴 selfie/明信片专属姿势：等任务37规则确定是否解锁、是否可点击、是否寄明信片后再补。
+- 多天旅行/每日投递状态图：等未来旅行规则扩展后再补。
+- 转场帧/Lottie：当前不需要。
+
+============================================================
+九、关键文件和职责
+============================================================
+
+工程：
+- /Users/qianyu/Documents/Trip/TripPet.xcodeproj/project.pbxproj
+  Xcode project 配置。新增 Swift 文件要加入 Sources。手工编辑后必须 plutil -lint。
+
+App 入口：
+- /Users/qianyu/Documents/Trip/TripPet/App/TripPetApp.swift
+  SwiftUI @main，注入 AppEnvironment，当前 root 是 AppRootView。
+- /Users/qianyu/Documents/Trip/TripPet/App/AppEnvironment.swift
+  装配 repository、Health provider、规则、manifest destinations、preview/test environment。
+- /Users/qianyu/Documents/Trip/TripPet/App/RootTabView.swift
+  两个一级 Tab：小屋、邮箱。
+
+启动/引导：
+- /Users/qianyu/Documents/Trip/TripPet/Features/Onboarding/OnboardingViews.swift
+  AppRootView、OnboardingView、HealthConnectView。
+
+状态和数据：
+- /Users/qianyu/Documents/Trip/TripPet/Data/Repositories/AppRepository.swift
+  唯一业务 mutation 入口。giftTicket、completeTrip、markPostcardRead、revealEligiblePostcards、completeOnboarding、dismissHealthGuide 在这里。
+- /Users/qianyu/Documents/Trip/TripPet/Data/Persistence/UserStatePersistence.swift
+  AppUserStateStore、SwiftDataUserStateStore、InMemoryUserStateStore、SwiftData persisted models。
+- /Users/qianyu/Documents/Trip/TripPet/Data/SeedData/SeedData.swift
+  fallback seed data，同时携带 destinations 用于 rehydrate。
+- /Users/qianyu/Documents/Trip/TripPet/Data/Manifest/ContentManifest.swift
+  manifest model 和 SeedData(manifest:) 转换。
+- /Users/qianyu/Documents/Trip/TripPet/Data/Manifest/ContentManifestLoader.swift
+  manifest 读取和 fallback。
+- /Users/qianyu/Documents/Trip/TripPet/Resources/ContentManifest.json
+  静态内容配置。
+
+领域模型：
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Models/Animal.swift
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Models/TravelWish.swift
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Models/Ticket.swift
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Models/Trip.swift
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Models/Postcard.swift
+
+服务：
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Services/StepCountProvider.swift
+  StepCountProvider 协议、FakeStepCountProvider、StepCountProviderError。
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Services/HealthKitStepCountProvider.swift
+  HealthKit 步数授权和读取。
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Services/TicketRuleEngine.swift
+  步数到机票规则。
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Services/AnimalVisitService.swift
+  MVP 视觉来访规则：按日期稳定轮换 dog/rabbit，不持久化发现状态。
+- /Users/qianyu/Documents/Trip/TripPet/Domain/Services/PostcardScheduler.swift
+  明信片时间揭示和生成，运行时文案来自 manifest destination 模板。
+
+页面：
+- /Users/qianyu/Documents/Trip/TripPet/Features/Cabin/CabinView.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Cabin/CabinViewModel.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Cabin/CabinSceneView.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Mailbox/MailboxView.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Mailbox/MailboxViewModel.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Mailbox/PostcardDetailView.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Settings/SettingsView.swift
+- /Users/qianyu/Documents/Trip/TripPet/Features/Travel/TravelService.swift
+
+视觉：
+- /Users/qianyu/Documents/Trip/TripPet/DesignSystem/AppTheme.swift
+  颜色、字体、纸张卡片、按钮样式。
+- /Users/qianyu/Documents/Trip/TripPet/DesignSystem/AppCopy.swift
+  高频中文 UI 文案入口。当前不引入本地化。
+- /Users/qianyu/Documents/Trip/TripPet/DesignSystem/LineArtComponents.swift
+- /Users/qianyu/Documents/Trip/TripPet/Resources/Assets.xcassets
+- /Users/qianyu/Documents/Trip/TripPet/Resources/ArtSource
+- /Users/qianyu/Documents/Trip/Tools/generate_art_assets.js
+
+测试：
+- /Users/qianyu/Documents/Trip/TripPetTests/TicketRuleEngineTests.swift
+- /Users/qianyu/Documents/Trip/TripPetTests/AppRepositoryTripTests.swift
+
+文档：
+- /Users/qianyu/Documents/Trip/PROJECT_CONTEXT_SUMMARY.txt
+- /Users/qianyu/Documents/Trip/TECHNICAL_CONTEXT.md
+- /Users/qianyu/Documents/Trip/MVP_PAGE_CHECKLIST.md
+- /Users/qianyu/Documents/Trip/PERSISTENCE_PLAN.md
+- /Users/qianyu/Documents/Trip/ART_RESOURCE_IMPLEMENTATION_LOG.md
+- /Users/qianyu/Documents/Trip/ART_RESOURCE_TASKS.md
+- /Users/qianyu/Documents/Trip/VISUAL_ART_SPEC.md
+- /Users/qianyu/Documents/Trip/PARALLEL_TASKS.md
+
+============================================================
+十、验证命令
+============================================================
+
+pbxproj 语法：
+plutil -lint TripPet.xcodeproj/project.pbxproj
+
+JSON 语法：
+python3 -m json.tool TripPet/Resources/ContentManifest.json
+
+manifest 资源引用检查：
+node -e "const fs=require('fs'); const manifest=JSON.parse(fs.readFileSync('TripPet/Resources/ContentManifest.json','utf8')); const assets=new Set(fs.readdirSync('TripPet/Resources/Assets.xcassets',{recursive:true}).filter(p=>p.endsWith('.imageset')).map(p=>p.split('/').pop().replace(/\\.imageset$/,''))); const names=[]; for(const a of manifest.animals) names.push(a.homeAssetName,a.selfieAssetName,a.visitorAssetName); for(const d of manifest.destinations) names.push(d.landmarkAssetName,d.stampAssetName,d.routeMapAssetName); for(const p of manifest.postcards) names.push(p.templateAssetName,p.destinationAssetName,p.stampAssetName,p.animalAssetName,p.envelopeAssetName); const missing=[...new Set(names)].filter(n=>!assets.has(n)); if(missing.length){ console.error('Missing assets:', missing.join(', ')); process.exit(1); } console.log([...new Set(names)].length+' manifest asset names all exist');"
+
+iPhoneOS 无签名构建：
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project TripPet.xcodeproj -scheme TripPet -configuration Debug -sdk iphoneos -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build
+
+单元测试：
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild test -project TripPet.xcodeproj -scheme TripPet -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO
+
+============================================================
+十一、下一步一句话建议
+============================================================
+
+下一步优先手动打开真机 TripPet，连续几天观察启动/回前台/点击赠送时的 HealthKit 实际读数，并按 MVP_PAGE_CHECKLIST.md 记录任务29 表现；代码侧页面清单、文案入口、目的地运行时明信片文案、新伙伴视觉规则、构建和模拟器测试都已完成阶段收口。

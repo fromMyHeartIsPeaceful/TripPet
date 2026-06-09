@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420" role="img" aria-label="animal_cat_home" fill="none">
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <ellipse cx="178" cy="260" rx="118" ry="112" fill="#E9B9A4" opacity="0.18" filter="url(#softBleed)"/>
+    <path d="M122 148 L151 82 L189 145 Z" fill="#F7EEDC" stroke="#3D4338" stroke-width="5" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <path d="M233 145 L270 82 L298 150 Z" fill="#F7EEDC" stroke="#3D4338" stroke-width="5" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <ellipse cx="210" cy="182" rx="105" ry="92" fill="#F7EEDC" stroke="#3D4338" stroke-width="5" filter="url(#softBleed)"/>
+    <ellipse cx="210" cy="285" rx="93" ry="105" fill="#F7EEDC" stroke="#3D4338" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M140 270 C90 300 79 351 118 376 C150 396 181 365 165 338" fill="none" stroke="#3D4338" stroke-width="12" stroke-linecap="round" opacity="0.82" filter="url(#pencilRough)"/>
+    <circle cx="174" cy="172" r="6" fill="#3D4338"/>
+    <circle cx="241" cy="172" r="6" fill="#3D4338"/>
+    <path d="M205 190 C207 198 214 198 217 190" fill="none" stroke="#3D4338" stroke-width="4" stroke-linecap="round"/>
+    <path d="M184 211 C198 224 223 224 237 211" fill="none" stroke="#3D4338" stroke-width="4" stroke-linecap="round"/>
+    <path d="M149 196 C112 188 93 187 62 190 M151 213 C114 219 96 226 70 239 M267 196 C302 188 326 187 354 190 M265 213 C301 220 325 229 348 242" stroke="#74766F" stroke-width="3" stroke-linecap="round"/>
+    <path d="M169 362 C182 376 200 380 214 367 M225 367 C242 380 260 375 272 360" fill="none" stroke="#3D4338" stroke-width="5" stroke-linecap="round"/>
+    <path d="M156 136 C179 127 238 127 263 137" fill="none" stroke="#8FAF95" stroke-width="10" stroke-linecap="round" opacity="0.26"/>
+  
+</svg>

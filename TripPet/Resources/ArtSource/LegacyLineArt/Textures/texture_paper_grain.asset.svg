@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="texture_paper_grain" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="512" height="512" fill="#FFF9EF"/>
+    <rect width="512" height="512" fill="#D8B36A" opacity="0.12" filter="url(#paperNoise)"/>
+    <g opacity="0.09" stroke="#74766F" stroke-width="1">
+      <path d="M0 16 C120 8 250 26 512 14" fill="none"/>
+<path d="M4 30 C120 22 250 40 503 28" fill="none"/>
+<path d="M8 44 C120 36 250 54 494 42" fill="none"/>
+<path d="M12 58 C120 50 250 68 485 56" fill="none"/>
+<path d="M16 72 C120 64 250 82 476 70" fill="none"/>
+<path d="M20 86 C120 78 250 96 512 84" fill="none"/>
+<path d="M24 100 C120 92 250 110 503 98" fill="none"/>
+<path d="M0 114 C120 106 250 124 494 112" fill="none"/>
+<path d="M4 128 C120 120 250 138 485 126" fill="none"/>
+<path d="M8 142 C120 134 250 152 476 140" fill="none"/>
+<path d="M12 156 C120 148 250 166 512 154" fill="none"/>
+<path d="M16 170 C120 162 250 180 503 168" fill="none"/>
+<path d="M20 184 C120 176 250 194 494 182" fill="none"/>
+<path d="M24 198 C120 190 250 208 485 196" fill="none"/>
+<path d="M0 212 C120 204 250 222 476 210" fill="none"/>
+<path d="M4 226 C120 218 250 236 512 224" fill="none"/>
+<path d="M8 240 C120 232 250 250 503 238" fill="none"/>
+<path d="M12 254 C120 246 250 264 494 252" fill="none"/>
+<path d="M16 268 C120 260 250 278 485 266" fill="none"/>
+<path d="M20 282 C120 274 250 292 476 280" fill="none"/>
+<path d="M24 296 C120 288 250 306 512 294" fill="none"/>
+<path d="M0 310 C120 302 250 320 503 308" fill="none"/>
+<path d="M4 324 C120 316 250 334 494 322" fill="none"/>
+<path d="M8 338 C120 330 250 348 485 336" fill="none"/>
+<path d="M12 352 C120 344 250 362 476 350" fill="none"/>
+<path d="M16 366 C120 358 250 376 512 364" fill="none"/>
+<path d="M20 380 C120 372 250 390 503 378" fill="none"/>
+<path d="M24 394 C120 386 250 404 494 392" fill="none"/>
+<path d="M0 408 C120 400 250 418 485 406" fill="none"/>
+<path d="M4 422 C120 414 250 432 476 420" fill="none"/>
+<path d="M8 436 C120 428 250 446 512 434" fill="none"/>
+<path d="M12 450 C120 442 250 460 503 448" fill="none"/>
+<path d="M16 464 C120 456 250 474 494 462" fill="none"/>
+<path d="M20 478 C120 470 250 488 485 476" fill="none"/>
+<path d="M24 492 C120 484 250 502 476 490" fill="none"/>
+<path d="M0 506 C120 498 250 516 512 504" fill="none"/>
+    </g>
+  
+</svg>

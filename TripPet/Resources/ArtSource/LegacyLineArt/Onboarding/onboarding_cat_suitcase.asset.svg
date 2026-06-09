@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="520" viewBox="0 0 520 520" role="img" aria-label="onboarding_cat_suitcase" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="520" height="520" fill="none"/>
+    <ellipse cx="257" cy="404" rx="156" ry="34" fill="#DED6C7" opacity="0.17" filter="url(#softBleed)"/>
+    <path d="M151 166 L179 96 L215 165 M273 165 L309 96 L335 168" fill="#F7EEDC" stroke="#3D4338" stroke-width="6" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <ellipse cx="244" cy="207" rx="110" ry="93" fill="#F7EEDC" stroke="#3D4338" stroke-width="6" filter="url(#softBleed)"/>
+    <ellipse cx="245" cy="327" rx="95" ry="104" fill="#F7EEDC" stroke="#3D4338" stroke-width="6" filter="url(#softBleed)"/>
+    <circle cx="206" cy="203" r="7" fill="#3D4338"/>
+    <circle cx="284" cy="203" r="7" fill="#3D4338"/>
+    <path d="M239 224 C243 231 251 231 255 224 M220 244 C237 259 266 259 282 244" fill="none" stroke="#3D4338" stroke-width="4" stroke-linecap="round"/>
+    <path d="M165 292 C113 303 98 347 130 372" fill="none" stroke="#3D4338" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
+    <path d="M327 289 C365 300 382 328 379 361" fill="none" stroke="#3D4338" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
+    <rect x="320" y="318" width="116" height="94" rx="18" fill="#D8B36A" opacity="0.45" stroke="#3D4338" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M354 318 C356 292 401 292 404 318" fill="none" stroke="#3D4338" stroke-width="5" stroke-linecap="round"/>
+    <path d="M345 352 L414 352 M347 382 L410 382" stroke="#74766F" stroke-width="4" stroke-linecap="round" opacity="0.58"/>
+    <path d="M175 407 C189 423 212 427 227 410 M255 410 C274 427 299 424 314 406" fill="none" stroke="#3D4338" stroke-width="5" stroke-linecap="round"/>
+    <path d="M166 151 C202 134 286 136 325 153" fill="none" stroke="#8FAF95" stroke-width="11" stroke-linecap="round" opacity="0.24"/>
+  
+</svg>

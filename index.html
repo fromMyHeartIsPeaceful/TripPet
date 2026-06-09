@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步步远方 MVP iPhone 17 Pro Max 线框</title>
+  <style>
+    :root {
+      --ink: #111;
+      --muted: #66645f;
+      --paper: #fff;
+      --surface: #f8f8f5;
+      --soft: #ededE7;
+      --phone-w: 440px;
+      --phone-h: 956px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      display: grid;
+      min-height: 100vh;
+      margin: 0;
+      place-items: center;
+      color: var(--ink);
+      background:
+        linear-gradient(var(--soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--soft) 1px, transparent 1px),
+        #f3f3ef;
+      background-size: 32px 32px;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .phone {
+      width: min(var(--phone-w), 100vw);
+      height: min(var(--phone-h), 100vh);
+      min-height: 760px;
+      border: 2px solid var(--ink);
+      border-radius: 42px;
+      background: var(--paper);
+      box-shadow: 10px 10px 0 var(--ink);
+      overflow: hidden;
+    }
+
+    .phone-screen {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      padding: 18px 28px 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .view {
+      display: none;
+      min-height: 0;
+      padding: 0 28px 16px;
+      overflow: hidden;
+    }
+
+    .view.active {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mail-view.active {
+      display: flex;
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 52px;
+    }
+
+    .screen-title {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1;
+      font-weight: 750;
+    }
+
+    .settings-button {
+      display: inline-flex;
+      min-width: 74px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--paper);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .settings-button::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+    }
+
+    .room {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 300px;
+      border: 2px solid var(--ink);
+      background:
+        linear-gradient(180deg, transparent 66%, #ededE8 66%),
+        var(--paper);
+      overflow: hidden;
+    }
+
+    .window {
+      position: absolute;
+      top: 30px;
+      left: 28px;
+      width: 112px;
+      height: 82px;
+      border: 2px solid var(--ink);
+    }
+
+    .window::before,
+    .window::after {
+      content: "";
+      position: absolute;
+      background: var(--ink);
+    }
+
+    .window::before {
+      left: 50%;
+      top: 0;
+      width: 2px;
+      height: 100%;
+    }
+
+    .window::after {
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 2px;
+    }
+
+    .map {
+      position: absolute;
+      top: 34px;
+      right: 30px;
+      width: 114px;
+      height: 78px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      transform: rotate(2deg);
+    }
+
+    .map::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 36px;
+      width: 76px;
+      border-top: 2px dashed var(--ink);
+      transform: rotate(-14deg);
+    }
+
+    .table {
+      position: absolute;
+      right: 36px;
+      bottom: 56px;
+      width: 116px;
+      height: 50px;
+      border: 2px solid var(--ink);
+      border-bottom: 0;
+    }
+
+    .table::before,
+    .table::after {
+      content: "";
+      position: absolute;
+      bottom: -46px;
+      width: 2px;
+      height: 46px;
+      background: var(--ink);
+    }
+
+    .table::before {
+      left: 18px;
+    }
+
+    .table::after {
+      right: 18px;
+    }
+
+    .pet {
+      position: absolute;
+      left: 62px;
+      bottom: 58px;
+      width: 112px;
+      height: 130px;
+    }
+
+    .pet::before {
+      content: "";
+      position: absolute;
+      left: 23px;
+      bottom: 22px;
+      width: 66px;
+      height: 62px;
+      border: 3px solid var(--ink);
+      border-radius: 50% 50% 44% 44%;
+      background: var(--paper);
+    }
+
+    .pet::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      bottom: 78px;
+      width: 88px;
+      height: 66px;
+      border: 3px solid var(--ink);
+      border-radius: 50% 50% 44% 44%;
+      background: var(--paper);
+    }
+
+    .ear {
+      position: absolute;
+      top: -1px;
+      width: 25px;
+      height: 32px;
+      border: 3px solid var(--ink);
+      background: var(--paper);
+      transform: rotate(32deg);
+    }
+
+    .ear.left {
+      left: 25px;
+    }
+
+    .ear.right {
+      right: 25px;
+      transform: rotate(-32deg);
+    }
+
+    .face {
+      position: absolute;
+      left: 38px;
+      top: 48px;
+      z-index: 1;
+      width: 36px;
+      height: 18px;
+      border-left: 3px solid var(--ink);
+      border-right: 3px solid var(--ink);
+    }
+
+    .face::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .visitor {
+      position: absolute;
+      right: 62px;
+      bottom: 138px;
+      display: grid;
+      width: 72px;
+      height: 72px;
+      place-items: center;
+      border: 2px dashed var(--ink);
+      border-radius: 50%;
+      background: var(--paper);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .visitor-note {
+      position: absolute;
+      right: 28px;
+      bottom: 220px;
+      width: 150px;
+      padding: 8px 10px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .state-chip {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 38px;
+      padding: 0 16px;
+      gap: 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--paper);
+      font-size: 16px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--ink);
+    }
+
+    .wish-card,
+    .envelope-card,
+    .detail-postcard {
+      border: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .label {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .wish-card {
+      align-self: stretch;
+      display: grid;
+      margin-top: auto;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .wish-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .ticket-rule {
+      display: grid;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 12px;
+      border: 2px dashed var(--ink);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .primary-action {
+      width: 100%;
+      min-height: 50px;
+      border: 2px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 17px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .mail-empty {
+      display: grid;
+      min-height: 112px;
+      padding: 18px;
+      border: 2px dashed var(--ink);
+      background: var(--paper);
+      align-content: center;
+      gap: 8px;
+    }
+
+    .mail-empty h3,
+    .envelope-card h3,
+    .detail-copy h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .mail-empty p,
+    .envelope-card p,
+    .detail-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .mail-list {
+      display: grid;
+      min-height: 0;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .envelope-card {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 16px;
+      min-height: 118px;
+      padding: 14px;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .envelope-art {
+      position: relative;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      overflow: hidden;
+    }
+
+    .envelope-art::before,
+    .envelope-art::after {
+      content: "";
+      position: absolute;
+    }
+
+    .envelope-art::before {
+      left: -8px;
+      right: -8px;
+      top: 16px;
+      height: 56px;
+      border-top: 2px solid var(--ink);
+      transform: skewY(-24deg);
+    }
+
+    .envelope-art::after {
+      left: -8px;
+      right: -8px;
+      bottom: 16px;
+      height: 48px;
+      border-top: 2px solid var(--ink);
+      transform: skewY(24deg);
+    }
+
+    .mail-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .open-hint {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .postcard-detail {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      grid-template-rows: auto 1fr;
+      padding: 18px 28px 28px;
+      background: var(--surface);
+    }
+
+    .postcard-detail.active {
+      display: grid;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .back-button {
+      min-width: 72px;
+      height: 38px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .detail-body {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .detail-postcard {
+      position: relative;
+      min-height: 438px;
+      overflow: hidden;
+    }
+
+    .detail-postcard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 66%, #ededE8 66%),
+        var(--paper);
+    }
+
+    .detail-landmark {
+      position: absolute;
+      left: 48px;
+      bottom: 58px;
+      width: 72px;
+      height: 168px;
+      border-left: 3px solid var(--ink);
+      border-right: 3px solid var(--ink);
+      transform: perspective(140px) rotateX(8deg);
+    }
+
+    .detail-landmark::before,
+    .detail-landmark::after {
+      content: "";
+      position: absolute;
+      left: -30px;
+      width: 130px;
+      border-top: 3px solid var(--ink);
+    }
+
+    .detail-landmark::before {
+      top: 48px;
+      transform: rotate(-12deg);
+    }
+
+    .detail-landmark::after {
+      bottom: 42px;
+      transform: rotate(12deg);
+    }
+
+    .detail-pet {
+      position: absolute;
+      right: 52px;
+      bottom: 54px;
+      width: 108px;
+      height: 108px;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--paper);
+    }
+
+    .detail-pet::before {
+      content: "";
+      position: absolute;
+      left: 28px;
+      top: 42px;
+      width: 48px;
+      height: 16px;
+      border-left: 3px solid var(--ink);
+      border-right: 3px solid var(--ink);
+    }
+
+    .detail-stamp {
+      position: absolute;
+      right: 26px;
+      top: 24px;
+      display: grid;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      border: 2px dashed var(--ink);
+      border-radius: 50%;
+      background: var(--paper);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .detail-copy {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 18px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .detail-copy h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.05;
+    }
+
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 78px;
+      border-top: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .nav-button {
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      border: 0;
+      border-right: 2px solid var(--ink);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .nav-button:last-child {
+      border-right: 0;
+    }
+
+    .nav-button.active {
+      color: var(--ink);
+      background: #ededE8;
+      font-weight: 750;
+    }
+
+    .nav-icon {
+      position: relative;
+      width: 25px;
+      height: 22px;
+      border: 2px solid currentColor;
+    }
+
+    .nav-icon.home::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: -9px;
+      width: 13px;
+      height: 13px;
+      border-left: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      background: var(--paper);
+      transform: rotate(45deg);
+    }
+
+    .nav-icon.mail::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      top: 5px;
+      height: 12px;
+      border-top: 2px solid currentColor;
+      transform: skewY(-28deg);
+    }
+
+    @media (max-width: 460px) {
+      body {
+        display: block;
+        background: var(--surface);
+      }
+
+      .phone {
+        width: 100vw;
+        height: 100svh;
+        min-height: 760px;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    @media (max-height: 880px) {
+      .phone {
+        --phone-h: 100vh;
+      }
+
+      .status-bar {
+        height: 48px;
+        padding-top: 14px;
+      }
+
+      .view {
+        padding-left: 22px;
+        padding-right: 22px;
+        gap: 10px;
+      }
+
+      .screen-title {
+        font-size: 32px;
+      }
+
+      .room {
+        min-height: 360px;
+      }
+
+      .wish-card {
+        padding: 14px;
+      }
+
+      .wish-card h3 {
+        font-size: 18px;
+      }
+
+      .bottom-nav {
+        height: 68px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="iPhone 17 Pro Max 黑白线框原型">
+    <div class="phone-screen">
+      <div class="status-bar">
+        <span>09:41</span>
+        <span>Health 已连接</span>
+      </div>
+
+      <section class="view active" data-view="home" aria-label="小屋页面">
+        <div class="top-row">
+          <h1 class="screen-title">小屋</h1>
+          <button class="settings-button" aria-label="设置">设置</button>
+        </div>
+
+        <div class="room" aria-label="小屋和随机来访小动物">
+          <div class="window"></div>
+          <div class="map"></div>
+          <div class="table"></div>
+          <div class="visitor-note">门口来了新的小伙伴，旅行回来后可能留下。</div>
+          <div class="visitor" aria-label="随机来访的小动物">?</div>
+          <div class="pet" aria-label="小猫">
+            <span class="ear left"></span>
+            <span class="ear right"></span>
+            <span class="face"></span>
+          </div>
+        </div>
+
+        <article class="wish-card">
+          <p>今天走过的路已经足够温柔。把它们送给小猫，它就带着这张机票出发。</p>
+          <div class="ticket-rule">
+            当日脚步超过 3000 步，即赠送 1 张机票给小动物
+          </div>
+          <button class="primary-action">赠送今日脚步，让它出发</button>
+        </article>
+      </section>
+
+      <section class="view mail-view" data-view="mail" aria-label="邮箱页面">
+        <div class="top-row">
+          <h1 class="screen-title">邮箱</h1>
+        </div>
+
+        <section class="mail-empty" aria-label="邮箱状态">
+          <h2>今天可能会有远方来信</h2>
+          <p>小动物旅行时，明信片会安静地落进这里。</p>
+        </section>
+
+        <div class="mail-list">
+          <button class="envelope-card" data-postcard="paris" type="button">
+            <div class="envelope-art" aria-hidden="true"></div>
+            <div>
+              <div class="mail-meta">
+                <span>来自巴黎</span>
+                <span>第 2 天清晨</span>
+              </div>
+              <h3>小猫寄来的自拍</h3>
+              <p>这里的风很轻，我替你多看了一会儿。</p>
+              <div class="open-hint">打开信封</div>
+            </div>
+          </button>
+
+          <button class="envelope-card" data-postcard="iceland" type="button">
+            <div class="envelope-art" aria-hidden="true"></div>
+            <div>
+              <div class="mail-meta">
+                <span>来自冰岛</span>
+                <span>旧明信片</span>
+              </div>
+              <h3>云下面的远方</h3>
+              <p>今天迷路了，但看见了很好看的云。</p>
+              <div class="open-hint">打开信封</div>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <section class="postcard-detail" aria-label="明信片详情" aria-hidden="true">
+        <div class="detail-header">
+          <button class="back-button" type="button">返回</button>
+          <span class="detail-place">来自巴黎</span>
+        </div>
+
+        <div class="detail-body">
+          <div class="detail-postcard" aria-label="明信片图片">
+            <div class="detail-stamp">PARIS</div>
+            <div class="detail-landmark"></div>
+            <div class="detail-pet"></div>
+          </div>
+
+          <article class="detail-copy">
+            <p class="label detail-time">第 2 天清晨</p>
+            <h1 class="detail-title">小猫寄来的自拍</h1>
+            <p class="detail-text">这里的风很轻，我替你多看了一会儿。铁塔下面有人在拍照，也有人只是坐着发呆。你今天走过的路，刚好把我送到了这里。</p>
+          </article>
+        </div>
+      </section>
+
+      <nav class="bottom-nav" aria-label="底部导航">
+        <button class="nav-button active" data-target="home">
+          <span class="nav-icon home"></span>
+          <span>小屋</span>
+        </button>
+        <button class="nav-button" data-target="mail">
+          <span class="nav-icon mail"></span>
+          <span>邮箱</span>
+        </button>
+      </nav>
+    </div>
+  </main>
+
+  <script>
+    const navButtons = Array.from(document.querySelectorAll(".nav-button"));
+    const views = Array.from(document.querySelectorAll(".view"));
+    const detail = document.querySelector(".postcard-detail");
+    const postcardData = {
+      paris: {
+        place: "来自巴黎",
+        stamp: "PARIS",
+        time: "第 2 天清晨",
+        title: "小猫寄来的自拍",
+        text: "这里的风很轻，我替你多看了一会儿。铁塔下面有人在拍照，也有人只是坐着发呆。你今天走过的路，刚好把我送到了这里。"
+      },
+      iceland: {
+        place: "来自冰岛",
+        stamp: "ICE",
+        time: "旧明信片",
+        title: "云下面的远方",
+        text: "今天迷路了，但看见了很好看的云。风从很远的海面吹过来，我想把这片安静也一起寄给你。"
+      }
+    };
+
+    function openView(name) {
+      closePostcard();
+      views.forEach((view) => {
+        view.classList.toggle("active", view.dataset.view === name);
+      });
+      navButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.target === name);
+      });
+    }
+
+    function openPostcard(id) {
+      const data = postcardData[id];
+      if (!data || !detail) return;
+      detail.querySelector(".detail-place").textContent = data.place;
+      detail.querySelector(".detail-stamp").textContent = data.stamp;
+      detail.querySelector(".detail-time").textContent = data.time;
+      detail.querySelector(".detail-title").textContent = data.title;
+      detail.querySelector(".detail-text").textContent = data.text;
+      detail.classList.add("active");
+      detail.setAttribute("aria-hidden", "false");
+    }
+
+    function closePostcard() {
+      if (!detail) return;
+      detail.classList.remove("active");
+      detail.setAttribute("aria-hidden", "true");
+    }
+
+    navButtons.forEach((button) => {
+      button.addEventListener("click", () => openView(button.dataset.target));
+    });
+
+    document.querySelectorAll("[data-postcard]").forEach((button) => {
+      button.addEventListener("click", () => openPostcard(button.dataset.postcard));
+    });
+
+    document.querySelector(".back-button")?.addEventListener("click", closePostcard);
+  </script>
+</body>
+</html>

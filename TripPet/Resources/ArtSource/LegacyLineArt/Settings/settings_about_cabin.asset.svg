@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="360" viewBox="0 0 560 360" role="img" aria-label="settings_about_cabin" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="560" height="360" fill="none"/>
+    <ellipse cx="283" cy="270" rx="190" ry="38" fill="#DED6C7" opacity="0.13" filter="url(#softBleed)"/>
+    <circle cx="409" cy="88" r="27" fill="#D8B36A" opacity="0.28" filter="url(#softBleed)"/>
+    <path d="M160 198 L257 116 L354 198 Z" fill="#E9B9A4" opacity="0.32" stroke="#3D4338" stroke-width="5" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <path d="M180 196 L335 196 L324 286 L194 286 Z" fill="#F7EEDC" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <rect x="234" y="232" width="45" height="54" rx="14" fill="#8FAF95" opacity="0.38" stroke="#3D4338" stroke-width="4"/>
+    <rect x="292" y="219" width="32" height="32" rx="8" fill="#A9C9D8" opacity="0.55" stroke="#74766F" stroke-width="3"/>
+    <path d="M112 287 C215 312 341 312 447 286" fill="none" stroke="#DED6C7" stroke-width="4" stroke-linecap="round" opacity="0.42"/>
+    <path d="M367 168 C398 149 440 151 467 176" fill="none" stroke="#FFF9EF" stroke-width="8" stroke-linecap="round" opacity="0.88"/>
+  
+</svg>

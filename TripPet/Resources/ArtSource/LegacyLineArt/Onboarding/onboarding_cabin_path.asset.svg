@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="onboarding_cabin_path" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="900" height="620" fill="#FFF9EF"/>
+    <rect width="900" height="620" fill="#D8B36A" opacity="0.08" filter="url(#paperNoise)"/>
+    <ellipse cx="448" cy="176" rx="360" ry="150" fill="#A9C9D8" opacity="0.22" filter="url(#softBleed)"/>
+    <path d="M70 456 C190 391 292 402 402 453 C531 513 674 481 831 408 L831 620 L70 620 Z" fill="#8FAF95" opacity="0.22" filter="url(#softBleed)"/>
+    <path d="M386 614 C377 517 405 441 476 376 C520 336 566 308 600 265" fill="none" stroke="#D8B36A" stroke-width="46" stroke-linecap="round" opacity="0.32" filter="url(#softBleed)"/>
+    <path d="M389 614 C380 518 407 444 476 377 C520 335 566 309 600 265" fill="none" stroke="#FFF9EF" stroke-width="26" stroke-linecap="round" opacity="0.72"/>
+    <path d="M166 352 L290 250 L414 352 Z" fill="#E9B9A4" opacity="0.34" stroke="#3D4338" stroke-width="5" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <path d="M190 346 L391 346 L378 489 L205 489 Z" fill="#F7EEDC" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <rect x="255" y="394" width="58" height="95" rx="18" fill="#8FAF95" opacity="0.42" stroke="#3D4338" stroke-width="4"/>
+    <rect x="326" y="381" width="42" height="42" rx="10" fill="#A9C9D8" opacity="0.62" stroke="#74766F" stroke-width="3"/>
+    <path d="M143 494 C239 522 352 522 434 493" fill="none" stroke="#DED6C7" stroke-width="5" stroke-linecap="round" opacity="0.46"/>
+    <path d="M627 235 C674 206 735 211 775 244 C813 218 854 227 879 259" fill="none" stroke="#FFF9EF" stroke-width="9" stroke-linecap="round" opacity="0.92"/>
+    <circle cx="735" cy="139" r="34" fill="#D8B36A" opacity="0.3" filter="url(#softBleed)"/>
+    <path d="M99 397 C137 365 176 359 216 378" fill="none" stroke="#8FAF95" stroke-width="12" stroke-linecap="round" opacity="0.33"/>
+  
+</svg>

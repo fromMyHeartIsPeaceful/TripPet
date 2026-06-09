@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="trip_route_map_iceland" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="640" height="360" fill="none"/>
+    <path d="M 58 43 L 584 54 L 570 315 L 70 306 Z" fill="#FFF9EF" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M116 253 C177 219 211 165 276 165 C342 164 377 109 443 111 C486 112 516 86 548 61" fill="none" stroke="#A9C9D8" stroke-width="15" stroke-linecap="round" opacity="0.52" filter="url(#softBleed)"/>
+    <path d="M116 253 C177 219 211 165 276 165 C342 164 377 109 443 111 C486 112 516 86 548 61" fill="none" stroke="#3D4338" stroke-width="4" stroke-dasharray="10 13" stroke-linecap="round" opacity="0.58" filter="url(#pencilRough)"/>
+    <circle cx="116" cy="253" r="24" fill="#8FAF95" opacity="0.46" stroke="#3D4338" stroke-width="4" filter="url(#softBleed)"/>
+    <path d="M104 253 L117 241 L130 253 M110 253 L110 269 L124 269 L124 253" fill="none" stroke="#3D4338" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="548" cy="61" r="27" fill="#A9C9D8" opacity="0.58" stroke="#3D4338" stroke-width="4" filter="url(#softBleed)"/>
+    <path d="M514 90 L544 48 L562 75 L581 43 L606 90 Z" fill="none" stroke="#3D4338" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M89 125 C132 93 184 97 220 127 C264 96 337 98 378 137" fill="none" stroke="#74766F" stroke-width="5" stroke-linecap="round" opacity="0.34"/>
+    <path d="M110 297 C226 322 421 321 546 294" fill="none" stroke="#8FAF95" stroke-width="8" stroke-linecap="round" opacity="0.22"/>
+    <path d="M312 252 C351 220 394 219 433 248 C466 225 511 230 544 260" fill="none" stroke="#DED6C7" stroke-width="5" stroke-linecap="round" opacity="0.32"/>
+  
+</svg>

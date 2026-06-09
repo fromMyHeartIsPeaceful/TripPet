@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="420" viewBox="0 0 380 420" role="img" aria-label="animal_visitor_unknown" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <ellipse cx="185" cy="235" rx="120" ry="112" fill="#A9C9D8" opacity="0.25" filter="url(#softBleed)"/>
+    <path d="M106 344 C111 254 147 189 203 170 C254 188 292 256 298 344 Z" fill="#8FAF95" opacity="0.36" stroke="#74766F" stroke-width="5" filter="url(#softBleed)"/>
+    <path d="M143 174 L169 111 L199 169 M216 168 L248 111 L271 177" fill="#8FAF95" opacity="0.28" stroke="#74766F" stroke-width="5" stroke-linejoin="round" filter="url(#pencilRough)"/>
+    <path d="M188 235 C188 211 202 198 222 198 C244 198 258 211 258 230 C258 250 239 259 221 271 C211 278 207 288 207 301" fill="none" stroke="#3D4338" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.72" filter="url(#pencilRough)"/>
+    <circle cx="207" cy="332" r="8" fill="#3D4338" opacity="0.72"/>
+    <path d="M82 346 C134 366 267 364 326 346" fill="none" stroke="#DED6C7" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
+  
+</svg>

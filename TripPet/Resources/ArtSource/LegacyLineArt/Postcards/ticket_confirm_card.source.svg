@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="500" viewBox="0 0 760 500" role="img" aria-label="ticket_confirm_card" >
+  <defs>
+    <filter id="paperNoise" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="softBleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="texture"/>
+      <feDisplacementMap in="SourceGraphic" in2="texture" scale="3.2"/>
+    </filter>
+    <filter id="pencilRough" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="1.1"/>
+    </filter>
+    
+  </defs>
+  
+    <rect width="760" height="500" fill="none"/>
+    <path d="M 76 82 L 684 62 L 706 405 L 93 428 Z" fill="#F7EEDC" stroke="#74766F" stroke-width="6" filter="url(#softBleed)"/>
+    <path d="M 118 132 L 637 112 L 653 348 L 132 369 Z" fill="#D8B36A" opacity="0.28" stroke="#74766F" stroke-width="4" filter="url(#pencilRough)"/>
+    <path d="M259 123 C230 166 235 319 271 360" fill="none" stroke="#74766F" stroke-width="5" stroke-dasharray="14 13" opacity="0.58"/>
+    <circle cx="177" cy="241" r="54" fill="#FFF9EF" opacity="0.75" stroke="#74766F" stroke-width="5"/>
+    <path d="M151 242 C176 214 204 214 228 241 C204 271 176 271 151 242 Z" fill="none" stroke="#8FAF95" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M321 178 C396 154 511 160 588 194" fill="none" stroke="#8FAF95" stroke-width="12" stroke-linecap="round" opacity="0.36"/>
+    <path d="M323 242 L606 232 M326 292 L548 284" stroke="#3D4338" stroke-width="7" stroke-linecap="round" opacity="0.34"/>
+    <rect x="574" y="113" width="54" height="48" rx="10" fill="#E9B9A4" opacity="0.46" stroke="#74766F" stroke-width="3"/>
+    <path d="M107 438 C239 464 525 461 682 430" fill="none" stroke="#DED6C7" stroke-width="5" stroke-linecap="round" opacity="0.32"/>
+  
+</svg>
