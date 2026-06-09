@@ -1,0 +1,5409 @@
+{
+  "version": 2,
+  "locale": "zh-Hans",
+  "count": 300,
+  "purpose": "coarse geography guardrail for filtering obvious scene/location mismatches before human final review",
+  "defaultPolicy": "unknown capabilities default to false; uncertain water, tram, ferry and slope scenes downgrade to ordinary daily spaces",
+  "capabilities": [
+    {
+      "cityId": "cn_beijing",
+      "cityNameZh": "北京",
+      "cityNameLocal": "Beijing",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_shanghai",
+      "cityNameZh": "上海",
+      "cityNameLocal": "Shanghai",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_guangzhou",
+      "cityNameZh": "广州",
+      "cityNameLocal": "Guangzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_shenzhen",
+      "cityNameZh": "深圳",
+      "cityNameLocal": "Shenzhen",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_chengdu",
+      "cityNameZh": "成都",
+      "cityNameLocal": "Chengdu",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_hangzhou",
+      "cityNameZh": "杭州",
+      "cityNameLocal": "Hangzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_suzhou",
+      "cityNameZh": "苏州",
+      "cityNameLocal": "Suzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_nanjing",
+      "cityNameZh": "南京",
+      "cityNameLocal": "Nanjing",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_wuhan",
+      "cityNameZh": "武汉",
+      "cityNameLocal": "Wuhan",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_xian",
+      "cityNameZh": "西安",
+      "cityNameLocal": "Xian",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_chongqing",
+      "cityNameZh": "重庆",
+      "cityNameLocal": "Chongqing",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_tianjin",
+      "cityNameZh": "天津",
+      "cityNameLocal": "Tianjin",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_qingdao",
+      "cityNameZh": "青岛",
+      "cityNameLocal": "Qingdao",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_xiamen",
+      "cityNameZh": "厦门",
+      "cityNameLocal": "Xiamen",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_changsha",
+      "cityNameZh": "长沙",
+      "cityNameLocal": "Changsha",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_kunming",
+      "cityNameZh": "昆明",
+      "cityNameLocal": "Kunming",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_dali",
+      "cityNameZh": "大理",
+      "cityNameLocal": "Dali",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_lijiang",
+      "cityNameZh": "丽江",
+      "cityNameLocal": "Lijiang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_guilin",
+      "cityNameZh": "桂林",
+      "cityNameLocal": "Guilin",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_fuzhou",
+      "cityNameZh": "福州",
+      "cityNameLocal": "Fuzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_quanzhou",
+      "cityNameZh": "泉州",
+      "cityNameLocal": "Quanzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_ningbo",
+      "cityNameZh": "宁波",
+      "cityNameLocal": "Ningbo",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_wenzhou",
+      "cityNameZh": "温州",
+      "cityNameLocal": "Wenzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_hefei",
+      "cityNameZh": "合肥",
+      "cityNameLocal": "Hefei",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_jinan",
+      "cityNameZh": "济南",
+      "cityNameLocal": "Jinan",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_zhengzhou",
+      "cityNameZh": "郑州",
+      "cityNameLocal": "Zhengzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_luoyang",
+      "cityNameZh": "洛阳",
+      "cityNameLocal": "Luoyang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_haerbin",
+      "cityNameZh": "哈尔滨",
+      "cityNameLocal": "Harbin",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_changchun",
+      "cityNameZh": "长春",
+      "cityNameLocal": "Changchun",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_shenyang",
+      "cityNameZh": "沈阳",
+      "cityNameLocal": "Shenyang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_dalian",
+      "cityNameZh": "大连",
+      "cityNameLocal": "Dalian",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_huhehaote",
+      "cityNameZh": "呼和浩特",
+      "cityNameLocal": "Hohhot",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_yinchuan",
+      "cityNameZh": "银川",
+      "cityNameLocal": "Yinchuan",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_lanzhou",
+      "cityNameZh": "兰州",
+      "cityNameLocal": "Lanzhou",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_xining",
+      "cityNameZh": "西宁",
+      "cityNameLocal": "Xining",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_urumqi",
+      "cityNameZh": "乌鲁木齐",
+      "cityNameLocal": "Urumqi",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_lhasa",
+      "cityNameZh": "拉萨",
+      "cityNameLocal": "Lhasa",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_nanning",
+      "cityNameZh": "南宁",
+      "cityNameLocal": "Nanning",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_haikou",
+      "cityNameZh": "海口",
+      "cityNameLocal": "Haikou",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_sanya",
+      "cityNameZh": "三亚",
+      "cityNameLocal": "Sanya",
+      "countryOrRegion": "中国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_guiyang",
+      "cityNameZh": "贵阳",
+      "cityNameLocal": "Guiyang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_taiyuan",
+      "cityNameZh": "太原",
+      "cityNameLocal": "Taiyuan",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_nanchang",
+      "cityNameZh": "南昌",
+      "cityNameLocal": "Nanchang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_shijiazhuang",
+      "cityNameZh": "石家庄",
+      "cityNameLocal": "Shijiazhuang",
+      "countryOrRegion": "中国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_hongkong",
+      "cityNameZh": "香港",
+      "cityNameLocal": "Hong Kong",
+      "countryOrRegion": "中国香港",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cn_macau",
+      "cityNameZh": "澳门",
+      "cityNameLocal": "Macau",
+      "countryOrRegion": "中国澳门",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tw_taipei",
+      "cityNameZh": "台北",
+      "cityNameLocal": "Taipei",
+      "countryOrRegion": "中国台湾",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tw_tainan",
+      "cityNameZh": "台南",
+      "cityNameLocal": "Tainan",
+      "countryOrRegion": "中国台湾",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tw_kaohsiung",
+      "cityNameZh": "高雄",
+      "cityNameLocal": "Kaohsiung",
+      "countryOrRegion": "中国台湾",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_tokyo",
+      "cityNameZh": "东京",
+      "cityNameLocal": "Tokyo",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_kyoto",
+      "cityNameZh": "京都",
+      "cityNameLocal": "Kyoto",
+      "countryOrRegion": "日本",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_osaka",
+      "cityNameZh": "大阪",
+      "cityNameLocal": "Osaka",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_sapporo",
+      "cityNameZh": "札幌",
+      "cityNameLocal": "Sapporo",
+      "countryOrRegion": "日本",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_fukuoka",
+      "cityNameZh": "福冈",
+      "cityNameLocal": "Fukuoka",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_nagoya",
+      "cityNameZh": "名古屋",
+      "cityNameLocal": "Nagoya",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_kobe",
+      "cityNameZh": "神户",
+      "cityNameLocal": "Kobe",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jp_yokohama",
+      "cityNameZh": "横滨",
+      "cityNameLocal": "Yokohama",
+      "countryOrRegion": "日本",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kr_seoul",
+      "cityNameZh": "首尔",
+      "cityNameLocal": "Seoul",
+      "countryOrRegion": "韩国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kr_busan",
+      "cityNameZh": "釜山",
+      "cityNameLocal": "Busan",
+      "countryOrRegion": "韩国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kr_incheon",
+      "cityNameZh": "仁川",
+      "cityNameLocal": "Incheon",
+      "countryOrRegion": "韩国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kr_jeju",
+      "cityNameZh": "济州",
+      "cityNameLocal": "Jeju",
+      "countryOrRegion": "韩国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mn_ulaanbaatar",
+      "cityNameZh": "乌兰巴托",
+      "cityNameLocal": "Ulaanbaatar",
+      "countryOrRegion": "蒙古",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sg_singapore",
+      "cityNameZh": "新加坡",
+      "cityNameLocal": "Singapore",
+      "countryOrRegion": "新加坡",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "my_kuala_lumpur",
+      "cityNameZh": "吉隆坡",
+      "cityNameLocal": "Kuala Lumpur",
+      "countryOrRegion": "马来西亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "my_penang",
+      "cityNameZh": "槟城",
+      "cityNameLocal": "Penang",
+      "countryOrRegion": "马来西亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "my_melaka",
+      "cityNameZh": "马六甲",
+      "cityNameLocal": "Melaka",
+      "countryOrRegion": "马来西亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "th_bangkok",
+      "cityNameZh": "曼谷",
+      "cityNameLocal": "Bangkok",
+      "countryOrRegion": "泰国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "th_chiang_mai",
+      "cityNameZh": "清迈",
+      "cityNameLocal": "Chiang Mai",
+      "countryOrRegion": "泰国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "vn_hanoi",
+      "cityNameZh": "河内",
+      "cityNameLocal": "Hanoi",
+      "countryOrRegion": "越南",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "vn_ho_chi_minh",
+      "cityNameZh": "胡志明市",
+      "cityNameLocal": "Ho Chi Minh City",
+      "countryOrRegion": "越南",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "vn_da_nang",
+      "cityNameZh": "岘港",
+      "cityNameLocal": "Da Nang",
+      "countryOrRegion": "越南",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "id_jakarta",
+      "cityNameZh": "雅加达",
+      "cityNameLocal": "Jakarta",
+      "countryOrRegion": "印度尼西亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "id_yogyakarta",
+      "cityNameZh": "日惹",
+      "cityNameLocal": "Yogyakarta",
+      "countryOrRegion": "印度尼西亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "id_denpasar",
+      "cityNameZh": "登巴萨",
+      "cityNameLocal": "Denpasar",
+      "countryOrRegion": "印度尼西亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ph_manila",
+      "cityNameZh": "马尼拉",
+      "cityNameLocal": "Manila",
+      "countryOrRegion": "菲律宾",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ph_cebu",
+      "cityNameZh": "宿务",
+      "cityNameLocal": "Cebu",
+      "countryOrRegion": "菲律宾",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kh_phnom_penh",
+      "cityNameZh": "金边",
+      "cityNameLocal": "Phnom Penh",
+      "countryOrRegion": "柬埔寨",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kh_siem_reap",
+      "cityNameZh": "暹粒",
+      "cityNameLocal": "Siem Reap",
+      "countryOrRegion": "柬埔寨",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "la_vientiane",
+      "cityNameZh": "万象",
+      "cityNameLocal": "Vientiane",
+      "countryOrRegion": "老挝",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mm_yangon",
+      "cityNameZh": "仰光",
+      "cityNameLocal": "Yangon",
+      "countryOrRegion": "缅甸",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bn_bandar_seri_begawan",
+      "cityNameZh": "斯里巴加湾市",
+      "cityNameLocal": "Bandar Seri Begawan",
+      "countryOrRegion": "文莱",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tl_dili",
+      "cityNameZh": "帝力",
+      "cityNameLocal": "Dili",
+      "countryOrRegion": "东帝汶",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bt_thimphu",
+      "cityNameZh": "廷布",
+      "cityNameLocal": "Thimphu",
+      "countryOrRegion": "不丹",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mv_male",
+      "cityNameZh": "马累",
+      "cityNameLocal": "Male",
+      "countryOrRegion": "马尔代夫",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_delhi",
+      "cityNameZh": "德里",
+      "cityNameLocal": "Delhi",
+      "countryOrRegion": "印度",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_mumbai",
+      "cityNameZh": "孟买",
+      "cityNameLocal": "Mumbai",
+      "countryOrRegion": "印度",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_kolkata",
+      "cityNameZh": "加尔各答",
+      "cityNameLocal": "Kolkata",
+      "countryOrRegion": "印度",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_bengaluru",
+      "cityNameZh": "班加罗尔",
+      "cityNameLocal": "Bengaluru",
+      "countryOrRegion": "印度",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_chennai",
+      "cityNameZh": "金奈",
+      "cityNameLocal": "Chennai",
+      "countryOrRegion": "印度",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "np_kathmandu",
+      "cityNameZh": "加德满都",
+      "cityNameLocal": "Kathmandu",
+      "countryOrRegion": "尼泊尔",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "lk_colombo",
+      "cityNameZh": "科伦坡",
+      "cityNameLocal": "Colombo",
+      "countryOrRegion": "斯里兰卡",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bd_dhaka",
+      "cityNameZh": "达卡",
+      "cityNameLocal": "Dhaka",
+      "countryOrRegion": "孟加拉国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pk_lahore",
+      "cityNameZh": "拉合尔",
+      "cityNameLocal": "Lahore",
+      "countryOrRegion": "巴基斯坦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pk_karachi",
+      "cityNameZh": "卡拉奇",
+      "cityNameLocal": "Karachi",
+      "countryOrRegion": "巴基斯坦",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ir_tehran",
+      "cityNameZh": "德黑兰",
+      "cityNameLocal": "Tehran",
+      "countryOrRegion": "伊朗",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ir_isfahan",
+      "cityNameZh": "伊斯法罕",
+      "cityNameLocal": "Isfahan",
+      "countryOrRegion": "伊朗",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "iq_baghdad",
+      "cityNameZh": "巴格达",
+      "cityNameLocal": "Baghdad",
+      "countryOrRegion": "伊拉克",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kz_almaty",
+      "cityNameZh": "阿拉木图",
+      "cityNameLocal": "Almaty",
+      "countryOrRegion": "哈萨克斯坦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uz_tashkent",
+      "cityNameZh": "塔什干",
+      "cityNameLocal": "Tashkent",
+      "countryOrRegion": "乌兹别克斯坦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tr_istanbul",
+      "cityNameZh": "伊斯坦布尔",
+      "cityNameLocal": "Istanbul",
+      "countryOrRegion": "土耳其",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tr_ankara",
+      "cityNameZh": "安卡拉",
+      "cityNameLocal": "Ankara",
+      "countryOrRegion": "土耳其",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tr_izmir",
+      "cityNameZh": "伊兹密尔",
+      "cityNameLocal": "Izmir",
+      "countryOrRegion": "土耳其",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tr_antalya",
+      "cityNameZh": "安塔利亚",
+      "cityNameLocal": "Antalya",
+      "countryOrRegion": "土耳其",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ae_dubai",
+      "cityNameZh": "迪拜",
+      "cityNameLocal": "Dubai",
+      "countryOrRegion": "阿联酋",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "qa_doha",
+      "cityNameZh": "多哈",
+      "cityNameLocal": "Doha",
+      "countryOrRegion": "卡塔尔",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "il_tel_aviv",
+      "cityNameZh": "特拉维夫",
+      "cityNameLocal": "Tel Aviv",
+      "countryOrRegion": "以色列",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jo_amman",
+      "cityNameZh": "安曼",
+      "cityNameLocal": "Amman",
+      "countryOrRegion": "约旦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "lb_beirut",
+      "cityNameZh": "贝鲁特",
+      "cityNameLocal": "Beirut",
+      "countryOrRegion": "黎巴嫩",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "az_baku",
+      "cityNameZh": "巴库",
+      "cityNameLocal": "Baku",
+      "countryOrRegion": "阿塞拜疆",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ge_tbilisi",
+      "cityNameZh": "第比利斯",
+      "cityNameLocal": "Tbilisi",
+      "countryOrRegion": "格鲁吉亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "am_yerevan",
+      "cityNameZh": "埃里温",
+      "cityNameLocal": "Yerevan",
+      "countryOrRegion": "亚美尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sa_riyadh",
+      "cityNameZh": "利雅得",
+      "cityNameLocal": "Riyadh",
+      "countryOrRegion": "沙特阿拉伯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "om_muscat",
+      "cityNameZh": "马斯喀特",
+      "cityNameLocal": "Muscat",
+      "countryOrRegion": "阿曼",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bh_manama",
+      "cityNameZh": "麦纳麦",
+      "cityNameLocal": "Manama",
+      "countryOrRegion": "巴林",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kw_kuwait_city",
+      "cityNameZh": "科威特城",
+      "cityNameLocal": "Kuwait City",
+      "countryOrRegion": "科威特",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cy_nicosia",
+      "cityNameZh": "尼科西亚",
+      "cityNameLocal": "Nicosia",
+      "countryOrRegion": "塞浦路斯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_paris",
+      "cityNameZh": "巴黎",
+      "cityNameLocal": "Paris",
+      "countryOrRegion": "法国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_lyon",
+      "cityNameZh": "里昂",
+      "cityNameLocal": "Lyon",
+      "countryOrRegion": "法国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_marseille",
+      "cityNameZh": "马赛",
+      "cityNameLocal": "Marseille",
+      "countryOrRegion": "法国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_nice",
+      "cityNameZh": "尼斯",
+      "cityNameLocal": "Nice",
+      "countryOrRegion": "法国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_toulouse",
+      "cityNameZh": "图卢兹",
+      "cityNameLocal": "Toulouse",
+      "countryOrRegion": "法国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fr_bordeaux",
+      "cityNameZh": "波尔多",
+      "cityNameLocal": "Bordeaux",
+      "countryOrRegion": "法国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uk_london",
+      "cityNameZh": "伦敦",
+      "cityNameLocal": "London",
+      "countryOrRegion": "英国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uk_manchester",
+      "cityNameZh": "曼彻斯特",
+      "cityNameLocal": "Manchester",
+      "countryOrRegion": "英国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uk_edinburgh",
+      "cityNameZh": "爱丁堡",
+      "cityNameLocal": "Edinburgh",
+      "countryOrRegion": "英国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uk_bristol",
+      "cityNameZh": "布里斯托",
+      "cityNameLocal": "Bristol",
+      "countryOrRegion": "英国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uk_liverpool",
+      "cityNameZh": "利物浦",
+      "cityNameLocal": "Liverpool",
+      "countryOrRegion": "英国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ie_dublin",
+      "cityNameZh": "都柏林",
+      "cityNameLocal": "Dublin",
+      "countryOrRegion": "爱尔兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "es_madrid",
+      "cityNameZh": "马德里",
+      "cityNameLocal": "Madrid",
+      "countryOrRegion": "西班牙",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "es_barcelona",
+      "cityNameZh": "巴塞罗那",
+      "cityNameLocal": "Barcelona",
+      "countryOrRegion": "西班牙",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "es_seville",
+      "cityNameZh": "塞维利亚",
+      "cityNameLocal": "Seville",
+      "countryOrRegion": "西班牙",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "es_valencia",
+      "cityNameZh": "瓦伦西亚",
+      "cityNameLocal": "Valencia",
+      "countryOrRegion": "西班牙",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "es_granada",
+      "cityNameZh": "格拉纳达",
+      "cityNameLocal": "Granada",
+      "countryOrRegion": "西班牙",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pt_lisbon",
+      "cityNameZh": "里斯本",
+      "cityNameLocal": "Lisbon",
+      "countryOrRegion": "葡萄牙",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pt_porto",
+      "cityNameZh": "波尔图",
+      "cityNameLocal": "Porto",
+      "countryOrRegion": "葡萄牙",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_rome",
+      "cityNameZh": "罗马",
+      "cityNameLocal": "Rome",
+      "countryOrRegion": "意大利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_milan",
+      "cityNameZh": "米兰",
+      "cityNameLocal": "Milan",
+      "countryOrRegion": "意大利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_venice",
+      "cityNameZh": "威尼斯",
+      "cityNameLocal": "Venice",
+      "countryOrRegion": "意大利",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_florence",
+      "cityNameZh": "佛罗伦萨",
+      "cityNameLocal": "Florence",
+      "countryOrRegion": "意大利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_naples",
+      "cityNameZh": "那不勒斯",
+      "cityNameLocal": "Naples",
+      "countryOrRegion": "意大利",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "it_bologna",
+      "cityNameZh": "博洛尼亚",
+      "cityNameLocal": "Bologna",
+      "countryOrRegion": "意大利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_berlin",
+      "cityNameZh": "柏林",
+      "cityNameLocal": "Berlin",
+      "countryOrRegion": "德国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_munich",
+      "cityNameZh": "慕尼黑",
+      "cityNameLocal": "Munich",
+      "countryOrRegion": "德国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_hamburg",
+      "cityNameZh": "汉堡",
+      "cityNameLocal": "Hamburg",
+      "countryOrRegion": "德国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_cologne",
+      "cityNameZh": "科隆",
+      "cityNameLocal": "Cologne",
+      "countryOrRegion": "德国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_frankfurt",
+      "cityNameZh": "法兰克福",
+      "cityNameLocal": "Frankfurt",
+      "countryOrRegion": "德国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "de_dresden",
+      "cityNameZh": "德累斯顿",
+      "cityNameLocal": "Dresden",
+      "countryOrRegion": "德国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nl_amsterdam",
+      "cityNameZh": "阿姆斯特丹",
+      "cityNameLocal": "Amsterdam",
+      "countryOrRegion": "荷兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nl_rotterdam",
+      "cityNameZh": "鹿特丹",
+      "cityNameLocal": "Rotterdam",
+      "countryOrRegion": "荷兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "be_brussels",
+      "cityNameZh": "布鲁塞尔",
+      "cityNameLocal": "Brussels",
+      "countryOrRegion": "比利时",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "be_antwerp",
+      "cityNameZh": "安特卫普",
+      "cityNameLocal": "Antwerp",
+      "countryOrRegion": "比利时",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ch_zurich",
+      "cityNameZh": "苏黎世",
+      "cityNameLocal": "Zurich",
+      "countryOrRegion": "瑞士",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ch_geneva",
+      "cityNameZh": "日内瓦",
+      "cityNameLocal": "Geneva",
+      "countryOrRegion": "瑞士",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "at_vienna",
+      "cityNameZh": "维也纳",
+      "cityNameLocal": "Vienna",
+      "countryOrRegion": "奥地利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "at_salzburg",
+      "cityNameZh": "萨尔茨堡",
+      "cityNameLocal": "Salzburg",
+      "countryOrRegion": "奥地利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cz_prague",
+      "cityNameZh": "布拉格",
+      "cityNameLocal": "Prague",
+      "countryOrRegion": "捷克",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pl_warsaw",
+      "cityNameZh": "华沙",
+      "cityNameLocal": "Warsaw",
+      "countryOrRegion": "波兰",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pl_krakow",
+      "cityNameZh": "克拉科夫",
+      "cityNameLocal": "Krakow",
+      "countryOrRegion": "波兰",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "hu_budapest",
+      "cityNameZh": "布达佩斯",
+      "cityNameLocal": "Budapest",
+      "countryOrRegion": "匈牙利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "hr_zagreb",
+      "cityNameZh": "萨格勒布",
+      "cityNameLocal": "Zagreb",
+      "countryOrRegion": "克罗地亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "hr_dubrovnik",
+      "cityNameZh": "杜布罗夫尼克",
+      "cityNameLocal": "Dubrovnik",
+      "countryOrRegion": "克罗地亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "gr_athens",
+      "cityNameZh": "雅典",
+      "cityNameLocal": "Athens",
+      "countryOrRegion": "希腊",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "gr_thessaloniki",
+      "cityNameZh": "塞萨洛尼基",
+      "cityNameLocal": "Thessaloniki",
+      "countryOrRegion": "希腊",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "dk_copenhagen",
+      "cityNameZh": "哥本哈根",
+      "cityNameLocal": "Copenhagen",
+      "countryOrRegion": "丹麦",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "se_stockholm",
+      "cityNameZh": "斯德哥尔摩",
+      "cityNameLocal": "Stockholm",
+      "countryOrRegion": "瑞典",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "se_gothenburg",
+      "cityNameZh": "哥德堡",
+      "cityNameLocal": "Gothenburg",
+      "countryOrRegion": "瑞典",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "no_oslo",
+      "cityNameZh": "奥斯陆",
+      "cityNameLocal": "Oslo",
+      "countryOrRegion": "挪威",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fi_helsinki",
+      "cityNameZh": "赫尔辛基",
+      "cityNameLocal": "Helsinki",
+      "countryOrRegion": "芬兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "is_reykjavik",
+      "cityNameZh": "雷克雅未克",
+      "cityNameLocal": "Reykjavik",
+      "countryOrRegion": "冰岛",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ru_moscow",
+      "cityNameZh": "莫斯科",
+      "cityNameLocal": "Moscow",
+      "countryOrRegion": "俄罗斯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ru_saint_petersburg",
+      "cityNameZh": "圣彼得堡",
+      "cityNameLocal": "Saint Petersburg",
+      "countryOrRegion": "俄罗斯",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ua_kyiv",
+      "cityNameZh": "基辅",
+      "cityNameLocal": "Kyiv",
+      "countryOrRegion": "乌克兰",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ro_bucharest",
+      "cityNameZh": "布加勒斯特",
+      "cityNameLocal": "Bucharest",
+      "countryOrRegion": "罗马尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bg_sofia",
+      "cityNameZh": "索非亚",
+      "cityNameLocal": "Sofia",
+      "countryOrRegion": "保加利亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "rs_belgrade",
+      "cityNameZh": "贝尔格莱德",
+      "cityNameLocal": "Belgrade",
+      "countryOrRegion": "塞尔维亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "si_ljubljana",
+      "cityNameZh": "卢布尔雅那",
+      "cityNameLocal": "Ljubljana",
+      "countryOrRegion": "斯洛文尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ee_tallinn",
+      "cityNameZh": "塔林",
+      "cityNameLocal": "Tallinn",
+      "countryOrRegion": "爱沙尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "lv_riga",
+      "cityNameZh": "里加",
+      "cityNameLocal": "Riga",
+      "countryOrRegion": "拉脱维亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "lt_vilnius",
+      "cityNameZh": "维尔纽斯",
+      "cityNameLocal": "Vilnius",
+      "countryOrRegion": "立陶宛",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mt_valletta",
+      "cityNameZh": "瓦莱塔",
+      "cityNameLocal": "Valletta",
+      "countryOrRegion": "马耳他",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "al_tirana",
+      "cityNameZh": "地拉那",
+      "cityNameLocal": "Tirana",
+      "countryOrRegion": "阿尔巴尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mk_skopje",
+      "cityNameZh": "斯科普里",
+      "cityNameLocal": "Skopje",
+      "countryOrRegion": "北马其顿",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ba_sarajevo",
+      "cityNameZh": "萨拉热窝",
+      "cityNameLocal": "Sarajevo",
+      "countryOrRegion": "波黑",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "me_podgorica",
+      "cityNameZh": "波德戈里察",
+      "cityNameLocal": "Podgorica",
+      "countryOrRegion": "黑山",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sk_bratislava",
+      "cityNameZh": "布拉迪斯拉发",
+      "cityNameLocal": "Bratislava",
+      "countryOrRegion": "斯洛伐克",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "lu_luxembourg",
+      "cityNameZh": "卢森堡",
+      "cityNameLocal": "Luxembourg",
+      "countryOrRegion": "卢森堡",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mc_monaco",
+      "cityNameZh": "摩纳哥",
+      "cityNameLocal": "Monaco",
+      "countryOrRegion": "摩纳哥",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "li_vaduz",
+      "cityNameZh": "瓦杜兹",
+      "cityNameLocal": "Vaduz",
+      "countryOrRegion": "列支敦士登",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sm_san_marino",
+      "cityNameZh": "圣马力诺",
+      "cityNameLocal": "San Marino",
+      "countryOrRegion": "圣马力诺",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ad_andorra_la_vella",
+      "cityNameZh": "安道尔城",
+      "cityNameLocal": "Andorra la Vella",
+      "countryOrRegion": "安道尔",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "md_chisinau",
+      "cityNameZh": "基希讷乌",
+      "cityNameLocal": "Chisinau",
+      "countryOrRegion": "摩尔多瓦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "by_minsk",
+      "cityNameZh": "明斯克",
+      "cityNameLocal": "Minsk",
+      "countryOrRegion": "白俄罗斯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_new_york",
+      "cityNameZh": "纽约",
+      "cityNameLocal": "New York",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_los_angeles",
+      "cityNameZh": "洛杉矶",
+      "cityNameLocal": "Los Angeles",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_san_francisco",
+      "cityNameZh": "旧金山",
+      "cityNameLocal": "San Francisco",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_chicago",
+      "cityNameZh": "芝加哥",
+      "cityNameLocal": "Chicago",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_boston",
+      "cityNameZh": "波士顿",
+      "cityNameLocal": "Boston",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_seattle",
+      "cityNameZh": "西雅图",
+      "cityNameLocal": "Seattle",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_portland",
+      "cityNameZh": "波特兰",
+      "cityNameLocal": "Portland",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_washington_dc",
+      "cityNameZh": "华盛顿",
+      "cityNameLocal": "Washington DC",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_philadelphia",
+      "cityNameZh": "费城",
+      "cityNameLocal": "Philadelphia",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_new_orleans",
+      "cityNameZh": "新奥尔良",
+      "cityNameLocal": "New Orleans",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_miami",
+      "cityNameZh": "迈阿密",
+      "cityNameLocal": "Miami",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_austin",
+      "cityNameZh": "奥斯汀",
+      "cityNameLocal": "Austin",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_denver",
+      "cityNameZh": "丹佛",
+      "cityNameLocal": "Denver",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_atlanta",
+      "cityNameZh": "亚特兰大",
+      "cityNameLocal": "Atlanta",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_dallas",
+      "cityNameZh": "达拉斯",
+      "cityNameLocal": "Dallas",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_houston",
+      "cityNameZh": "休斯敦",
+      "cityNameLocal": "Houston",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_phoenix",
+      "cityNameZh": "凤凰城",
+      "cityNameLocal": "Phoenix",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_san_diego",
+      "cityNameZh": "圣迭戈",
+      "cityNameLocal": "San Diego",
+      "countryOrRegion": "美国",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_minneapolis",
+      "cityNameZh": "明尼阿波利斯",
+      "cityNameLocal": "Minneapolis",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "us_nashville",
+      "cityNameZh": "纳什维尔",
+      "cityNameLocal": "Nashville",
+      "countryOrRegion": "美国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_toronto",
+      "cityNameZh": "多伦多",
+      "cityNameLocal": "Toronto",
+      "countryOrRegion": "加拿大",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_vancouver",
+      "cityNameZh": "温哥华",
+      "cityNameLocal": "Vancouver",
+      "countryOrRegion": "加拿大",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_montreal",
+      "cityNameZh": "蒙特利尔",
+      "cityNameLocal": "Montreal",
+      "countryOrRegion": "加拿大",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_quebec_city",
+      "cityNameZh": "魁北克城",
+      "cityNameLocal": "Quebec City",
+      "countryOrRegion": "加拿大",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_calgary",
+      "cityNameZh": "卡尔加里",
+      "cityNameLocal": "Calgary",
+      "countryOrRegion": "加拿大",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_ottawa",
+      "cityNameZh": "渥太华",
+      "cityNameLocal": "Ottawa",
+      "countryOrRegion": "加拿大",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ca_halifax",
+      "cityNameZh": "哈利法克斯",
+      "cityNameLocal": "Halifax",
+      "countryOrRegion": "加拿大",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mx_mexico_city",
+      "cityNameZh": "墨西哥城",
+      "cityNameLocal": "Mexico City",
+      "countryOrRegion": "墨西哥",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mx_guadalajara",
+      "cityNameZh": "瓜达拉哈拉",
+      "cityNameLocal": "Guadalajara",
+      "countryOrRegion": "墨西哥",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mx_oaxaca",
+      "cityNameZh": "瓦哈卡",
+      "cityNameLocal": "Oaxaca",
+      "countryOrRegion": "墨西哥",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mx_puebla",
+      "cityNameZh": "普埃布拉",
+      "cityNameLocal": "Puebla",
+      "countryOrRegion": "墨西哥",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mx_merida",
+      "cityNameZh": "梅里达",
+      "cityNameLocal": "Merida",
+      "countryOrRegion": "墨西哥",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cu_havana",
+      "cityNameZh": "哈瓦那",
+      "cityNameLocal": "Havana",
+      "countryOrRegion": "古巴",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pa_panama_city",
+      "cityNameZh": "巴拿马城",
+      "cityNameLocal": "Panama City",
+      "countryOrRegion": "巴拿马",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cr_san_jose",
+      "cityNameZh": "圣何塞",
+      "cityNameLocal": "San Jose",
+      "countryOrRegion": "哥斯达黎加",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "gt_guatemala_city",
+      "cityNameZh": "危地马拉城",
+      "cityNameLocal": "Guatemala City",
+      "countryOrRegion": "危地马拉",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sv_san_salvador",
+      "cityNameZh": "圣萨尔瓦多",
+      "cityNameLocal": "San Salvador",
+      "countryOrRegion": "萨尔瓦多",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "hn_tegucigalpa",
+      "cityNameZh": "特古西加尔巴",
+      "cityNameLocal": "Tegucigalpa",
+      "countryOrRegion": "洪都拉斯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ni_managua",
+      "cityNameZh": "马那瓜",
+      "cityNameLocal": "Managua",
+      "countryOrRegion": "尼加拉瓜",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "do_santo_domingo",
+      "cityNameZh": "圣多明各",
+      "cityNameLocal": "Santo Domingo",
+      "countryOrRegion": "多米尼加",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "jm_kingston",
+      "cityNameZh": "金斯敦",
+      "cityNameLocal": "Kingston",
+      "countryOrRegion": "牙买加",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tt_port_of_spain",
+      "cityNameZh": "西班牙港",
+      "cityNameLocal": "Port of Spain",
+      "countryOrRegion": "特立尼达和多巴哥",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bs_nassau",
+      "cityNameZh": "拿骚",
+      "cityNameLocal": "Nassau",
+      "countryOrRegion": "巴哈马",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "co_bogota",
+      "cityNameZh": "波哥大",
+      "cityNameLocal": "Bogota",
+      "countryOrRegion": "哥伦比亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "co_medellin",
+      "cityNameZh": "麦德林",
+      "cityNameLocal": "Medellin",
+      "countryOrRegion": "哥伦比亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pe_lima",
+      "cityNameZh": "利马",
+      "cityNameLocal": "Lima",
+      "countryOrRegion": "秘鲁",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pe_cusco",
+      "cityNameZh": "库斯科",
+      "cityNameLocal": "Cusco",
+      "countryOrRegion": "秘鲁",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cl_santiago",
+      "cityNameZh": "圣地亚哥",
+      "cityNameLocal": "Santiago",
+      "countryOrRegion": "智利",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ar_buenos_aires",
+      "cityNameZh": "布宜诺斯艾利斯",
+      "cityNameLocal": "Buenos Aires",
+      "countryOrRegion": "阿根廷",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ar_cordoba",
+      "cityNameZh": "科尔多瓦",
+      "cityNameLocal": "Cordoba",
+      "countryOrRegion": "阿根廷",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ar_mendoza",
+      "cityNameZh": "门多萨",
+      "cityNameLocal": "Mendoza",
+      "countryOrRegion": "阿根廷",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_sao_paulo",
+      "cityNameZh": "圣保罗",
+      "cityNameLocal": "Sao Paulo",
+      "countryOrRegion": "巴西",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_rio",
+      "cityNameZh": "里约热内卢",
+      "cityNameLocal": "Rio de Janeiro",
+      "countryOrRegion": "巴西",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_salvador",
+      "cityNameZh": "萨尔瓦多",
+      "cityNameLocal": "Salvador",
+      "countryOrRegion": "巴西",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_brasilia",
+      "cityNameZh": "巴西利亚",
+      "cityNameLocal": "Brasilia",
+      "countryOrRegion": "巴西",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_recife",
+      "cityNameZh": "累西腓",
+      "cityNameLocal": "Recife",
+      "countryOrRegion": "巴西",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "br_curitiba",
+      "cityNameZh": "库里蒂巴",
+      "cityNameLocal": "Curitiba",
+      "countryOrRegion": "巴西",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "uy_montevideo",
+      "cityNameZh": "蒙得维的亚",
+      "cityNameLocal": "Montevideo",
+      "countryOrRegion": "乌拉圭",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ec_quito",
+      "cityNameZh": "基多",
+      "cityNameLocal": "Quito",
+      "countryOrRegion": "厄瓜多尔",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bo_la_paz",
+      "cityNameZh": "拉巴斯",
+      "cityNameLocal": "La Paz",
+      "countryOrRegion": "玻利维亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "py_asuncion",
+      "cityNameZh": "亚松森",
+      "cityNameLocal": "Asuncion",
+      "countryOrRegion": "巴拉圭",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ve_caracas",
+      "cityNameZh": "加拉加斯",
+      "cityNameLocal": "Caracas",
+      "countryOrRegion": "委内瑞拉",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "gy_georgetown",
+      "cityNameZh": "乔治敦",
+      "cityNameLocal": "Georgetown",
+      "countryOrRegion": "圭亚那",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sr_paramaribo",
+      "cityNameZh": "帕拉马里博",
+      "cityNameLocal": "Paramaribo",
+      "countryOrRegion": "苏里南",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "eg_cairo",
+      "cityNameZh": "开罗",
+      "cityNameLocal": "Cairo",
+      "countryOrRegion": "埃及",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ma_marrakech",
+      "cityNameZh": "马拉喀什",
+      "cityNameLocal": "Marrakech",
+      "countryOrRegion": "摩洛哥",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ma_casablanca",
+      "cityNameZh": "卡萨布兰卡",
+      "cityNameLocal": "Casablanca",
+      "countryOrRegion": "摩洛哥",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "za_cape_town",
+      "cityNameZh": "开普敦",
+      "cityNameLocal": "Cape Town",
+      "countryOrRegion": "南非",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "za_johannesburg",
+      "cityNameZh": "约翰内斯堡",
+      "cityNameLocal": "Johannesburg",
+      "countryOrRegion": "南非",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ke_nairobi",
+      "cityNameZh": "内罗毕",
+      "cityNameLocal": "Nairobi",
+      "countryOrRegion": "肯尼亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tz_dar_es_salaam",
+      "cityNameZh": "达累斯萨拉姆",
+      "cityNameLocal": "Dar es Salaam",
+      "countryOrRegion": "坦桑尼亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "et_addis_ababa",
+      "cityNameZh": "亚的斯亚贝巴",
+      "cityNameLocal": "Addis Ababa",
+      "countryOrRegion": "埃塞俄比亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ng_lagos",
+      "cityNameZh": "拉各斯",
+      "cityNameLocal": "Lagos",
+      "countryOrRegion": "尼日利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "gh_accra",
+      "cityNameZh": "阿克拉",
+      "cityNameLocal": "Accra",
+      "countryOrRegion": "加纳",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sn_dakar",
+      "cityNameZh": "达喀尔",
+      "cityNameLocal": "Dakar",
+      "countryOrRegion": "塞内加尔",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "tn_tunis",
+      "cityNameZh": "突尼斯",
+      "cityNameLocal": "Tunis",
+      "countryOrRegion": "突尼斯",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "dz_algiers",
+      "cityNameZh": "阿尔及尔",
+      "cityNameLocal": "Algiers",
+      "countryOrRegion": "阿尔及利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ug_kampala",
+      "cityNameZh": "坎帕拉",
+      "cityNameLocal": "Kampala",
+      "countryOrRegion": "乌干达",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "rw_kigali",
+      "cityNameZh": "基加利",
+      "cityNameLocal": "Kigali",
+      "countryOrRegion": "卢旺达",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mu_port_louis",
+      "cityNameZh": "路易港",
+      "cityNameLocal": "Port Louis",
+      "countryOrRegion": "毛里求斯",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ao_luanda",
+      "cityNameZh": "罗安达",
+      "cityNameLocal": "Luanda",
+      "countryOrRegion": "安哥拉",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "cm_douala",
+      "cityNameZh": "杜阿拉",
+      "cityNameLocal": "Douala",
+      "countryOrRegion": "喀麦隆",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ci_abidjan",
+      "cityNameZh": "阿比让",
+      "cityNameLocal": "Abidjan",
+      "countryOrRegion": "科特迪瓦",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mg_antananarivo",
+      "cityNameZh": "塔那那利佛",
+      "cityNameLocal": "Antananarivo",
+      "countryOrRegion": "马达加斯加",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mz_maputo",
+      "cityNameZh": "马普托",
+      "cityNameLocal": "Maputo",
+      "countryOrRegion": "莫桑比克",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "zm_lusaka",
+      "cityNameZh": "卢萨卡",
+      "cityNameLocal": "Lusaka",
+      "countryOrRegion": "赞比亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "zw_harare",
+      "cityNameZh": "哈拉雷",
+      "cityNameLocal": "Harare",
+      "countryOrRegion": "津巴布韦",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "na_windhoek",
+      "cityNameZh": "温得和克",
+      "cityNameLocal": "Windhoek",
+      "countryOrRegion": "纳米比亚",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "bw_gaborone",
+      "cityNameZh": "哈博罗内",
+      "cityNameLocal": "Gaborone",
+      "countryOrRegion": "博茨瓦纳",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "sd_khartoum",
+      "cityNameZh": "喀土穆",
+      "cityNameLocal": "Khartoum",
+      "countryOrRegion": "苏丹",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "mu_curepipe",
+      "cityNameZh": "居尔皮普",
+      "cityNameLocal": "Curepipe",
+      "countryOrRegion": "毛里求斯",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_sydney",
+      "cityNameZh": "悉尼",
+      "cityNameLocal": "Sydney",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_melbourne",
+      "cityNameZh": "墨尔本",
+      "cityNameLocal": "Melbourne",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_brisbane",
+      "cityNameZh": "布里斯班",
+      "cityNameLocal": "Brisbane",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_perth",
+      "cityNameZh": "珀斯",
+      "cityNameLocal": "Perth",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_adelaide",
+      "cityNameZh": "阿德莱德",
+      "cityNameLocal": "Adelaide",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": true,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_hobart",
+      "cityNameZh": "霍巴特",
+      "cityNameLocal": "Hobart",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nz_auckland",
+      "cityNameZh": "奥克兰",
+      "cityNameLocal": "Auckland",
+      "countryOrRegion": "新西兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nz_wellington",
+      "cityNameZh": "惠灵顿",
+      "cityNameLocal": "Wellington",
+      "countryOrRegion": "新西兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": true,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "fj_suva",
+      "cityNameZh": "苏瓦",
+      "cityNameLocal": "Suva",
+      "countryOrRegion": "斐济",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pg_port_moresby",
+      "cityNameZh": "莫尔兹比港",
+      "cityNameLocal": "Port Moresby",
+      "countryOrRegion": "巴布亚新几内亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nc_noumea",
+      "cityNameZh": "努美阿",
+      "cityNameLocal": "Noumea",
+      "countryOrRegion": "新喀里多尼亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "pf_papeete",
+      "cityNameZh": "帕皮提",
+      "cityNameLocal": "Papeete",
+      "countryOrRegion": "法属波利尼西亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "au_darwin",
+      "cityNameZh": "达尔文",
+      "cityNameLocal": "Darwin",
+      "countryOrRegion": "澳大利亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "nz_christchurch",
+      "cityNameZh": "基督城",
+      "cityNameLocal": "Christchurch",
+      "countryOrRegion": "新西兰",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "ws_apia",
+      "cityNameZh": "阿皮亚",
+      "cityNameLocal": "Apia",
+      "countryOrRegion": "萨摩亚",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "to_nukualofa",
+      "cityNameZh": "努库阿洛法",
+      "cityNameLocal": "Nukualofa",
+      "countryOrRegion": "汤加",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "vu_port_vila",
+      "cityNameZh": "维拉港",
+      "cityNameLocal": "Port Vila",
+      "countryOrRegion": "瓦努阿图",
+      "isCoastal": true,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": true,
+      "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    }
+  ]
+}

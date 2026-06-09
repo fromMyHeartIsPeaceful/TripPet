@@ -1,0 +1,4708 @@
+{
+  "version": 2,
+  "locale": "zh-Hans",
+  "count": 100,
+  "duplicatePolicy": "eventName must be unique in V2 rebuilt library",
+  "events": [
+    {
+      "eventId": "transport_waiting_01",
+      "eventName": "等车换乘：等车",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“等车”这件小事。",
+      "coreObject": "车票",
+      "actionOptions": [
+        "多看一遍再决定",
+        "放到更稳的位置",
+        "把它压平"
+      ],
+      "possibleOutcomes": [
+        "车票的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "反转型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaoman_hamster",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“车票”或“等车”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_02",
+      "eventName": "等车换乘：买票",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“买票”这件小事。",
+      "coreObject": "站牌",
+      "actionOptions": [
+        "放到更稳的位置",
+        "把它压平",
+        "多看一遍再决定"
+      ],
+      "possibleOutcomes": [
+        "站牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "缺席型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "personality_reaction",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“站牌”或“买票”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_03",
+      "eventName": "等车换乘：错过车",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“错过车”这件小事。",
+      "coreObject": "路线图",
+      "actionOptions": [
+        "多看一遍再决定",
+        "放到更稳的位置",
+        "把它压平"
+      ],
+      "possibleOutcomes": [
+        "路线图的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "选择型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“路线图”或“错过车”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_04",
+      "eventName": "等车换乘：看错方向",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“看错方向”这件小事。",
+      "coreObject": "号码纸",
+      "actionOptions": [
+        "把它压平",
+        "多看一遍再决定",
+        "放到更稳的位置"
+      ],
+      "possibleOutcomes": [
+        "号码纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "回声型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "xiaoman_hamster",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "market",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“号码纸”或“看错方向”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_05",
+      "eventName": "等车换乘：临时改道",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“临时改道”这件小事。",
+      "coreObject": "行李挂牌",
+      "actionOptions": [
+        "多看一遍再决定",
+        "把它压平",
+        "放到更稳的位置"
+      ],
+      "possibleOutcomes": [
+        "行李挂牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "误会型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "dengdeng_rabbit",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "quiet_place",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“行李挂牌”或“临时改道”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_06",
+      "eventName": "等车换乘：出口看错",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“出口看错”这件小事。",
+      "coreObject": "交通卡",
+      "actionOptions": [
+        "多看一遍再决定",
+        "把它压平",
+        "放到更稳的位置"
+      ],
+      "possibleOutcomes": [
+        "交通卡的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "动作型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "feifei_parrot",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "quiet_place",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“交通卡”或“出口看错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_07",
+      "eventName": "等车换乘：票角折皱",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“票角折皱”这件小事。",
+      "coreObject": "纸杯",
+      "actionOptions": [
+        "把它压平",
+        "放到更稳的位置",
+        "多看一遍再决定"
+      ],
+      "possibleOutcomes": [
+        "纸杯的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "旁观型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "motif_echo",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸杯”或“票角折皱”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_08",
+      "eventName": "等车换乘：行李挂牌掉了",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“行李挂牌掉了”这件小事。",
+      "coreObject": "改线公告",
+      "actionOptions": [
+        "放到更稳的位置",
+        "把它压平",
+        "多看一遍再决定"
+      ],
+      "possibleOutcomes": [
+        "改线公告的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "缺席型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "feifei_parrot",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "market",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“改线公告”或“行李挂牌掉了”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_09",
+      "eventName": "等车换乘：末班车晚到",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“末班车晚到”这件小事。",
+      "coreObject": "票夹",
+      "actionOptions": [
+        "把它压平",
+        "多看一遍再决定",
+        "放到更稳的位置"
+      ],
+      "possibleOutcomes": [
+        "票夹的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "缺席型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "tangyuan_puppy",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_place",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“票夹”或“末班车晚到”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "transport_waiting_10",
+      "eventName": "等车换乘：车票被风吹起",
+      "eventType": "transport_waiting",
+      "trigger": "旅行途中在适配场景遇到“车票被风吹起”这件小事。",
+      "coreObject": "出口编号",
+      "actionOptions": [
+        "放到更稳的位置",
+        "把它压平",
+        "多看一遍再决定"
+      ],
+      "possibleOutcomes": [
+        "出口编号的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "选择型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "personality_reaction",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "tangyuan_puppy",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "street_corner",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“出口编号”或“车票被风吹起”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_01",
+      "eventName": "天气避让：避雨",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“避雨”这件小事。",
+      "coreObject": "雨伞",
+      "actionOptions": [
+        "让开门口",
+        "等一小会儿",
+        "擦掉水痕"
+      ],
+      "possibleOutcomes": [
+        "雨伞的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "回声型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "street_corner",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“雨伞”或“避雨”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_02",
+      "eventName": "天气避让：风吹开地图",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“风吹开地图”这件小事。",
+      "coreObject": "伞套",
+      "actionOptions": [
+        "让开门口",
+        "擦掉水痕",
+        "等一小会儿"
+      ],
+      "possibleOutcomes": [
+        "伞套的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "缺席型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "transport_hub",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“伞套”或“风吹开地图”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_03",
+      "eventName": "天气避让：鞋底湿",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“鞋底湿”这件小事。",
+      "coreObject": "湿纸巾",
+      "actionOptions": [
+        "让开门口",
+        "等一小会儿",
+        "擦掉水痕"
+      ],
+      "possibleOutcomes": [
+        "湿纸巾的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "误会型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaoman_hamster",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“湿纸巾”或“鞋底湿”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_04",
+      "eventName": "天气避让：突然降温",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“突然降温”这件小事。",
+      "coreObject": "帽檐",
+      "actionOptions": [
+        "擦掉水痕",
+        "等一小会儿",
+        "让开门口"
+      ],
+      "possibleOutcomes": [
+        "帽檐的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "旁观型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "quiet_return",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“帽檐”或“突然降温”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_05",
+      "eventName": "天气避让：伞收不起来",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“伞收不起来”这件小事。",
+      "coreObject": "鞋印",
+      "actionOptions": [
+        "等一小会儿",
+        "擦掉水痕",
+        "让开门口"
+      ],
+      "possibleOutcomes": [
+        "鞋印的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "动作型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "quiet_return",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“鞋印”或“伞收不起来”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_06",
+      "eventName": "天气避让：门垫积水",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“门垫积水”这件小事。",
+      "coreObject": "围巾",
+      "actionOptions": [
+        "擦掉水痕",
+        "让开门口",
+        "等一小会儿"
+      ],
+      "possibleOutcomes": [
+        "围巾的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "误会型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“围巾”或“门垫积水”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_07",
+      "eventName": "天气避让：纸袋被打湿",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“纸袋被打湿”这件小事。",
+      "coreObject": "纸袋",
+      "actionOptions": [
+        "让开门口",
+        "等一小会儿",
+        "擦掉水痕"
+      ],
+      "possibleOutcomes": [
+        "纸袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "误会型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "personality_reaction",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "xiaoman_hamster",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "quiet_place",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸袋”或“纸袋被打湿”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_08",
+      "eventName": "天气避让：围巾滑落",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“围巾滑落”这件小事。",
+      "coreObject": "门垫",
+      "actionOptions": [
+        "擦掉水痕",
+        "等一小会儿",
+        "让开门口"
+      ],
+      "possibleOutcomes": [
+        "门垫的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "缺席型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "feifei_parrot",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "quiet_place",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“门垫”或“围巾滑落”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_09",
+      "eventName": "天气避让：台阶反光",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“台阶反光”这件小事。",
+      "coreObject": "水痕",
+      "actionOptions": [
+        "等一小会儿",
+        "擦掉水痕",
+        "让开门口"
+      ],
+      "possibleOutcomes": [
+        "水痕的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "回声型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "dengdeng_rabbit",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“水痕”或“台阶反光”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "weather_shelter_10",
+      "eventName": "天气避让：伞套漏水",
+      "eventType": "weather_shelter",
+      "trigger": "旅行途中在适配场景遇到“伞套漏水”这件小事。",
+      "coreObject": "折伞扣",
+      "actionOptions": [
+        "等一小会儿",
+        "擦掉水痕",
+        "让开门口"
+      ],
+      "possibleOutcomes": [
+        "折伞扣的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "误会型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "small_shop",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“折伞扣”或“伞套漏水”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_01",
+      "eventName": "小额购买：找零钱",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“找零钱”这件小事。",
+      "coreObject": "零钱",
+      "actionOptions": [
+        "递还给对方",
+        "把多的一份留出来",
+        "重新排到队尾"
+      ],
+      "possibleOutcomes": [
+        "零钱的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "旁观型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "food_counter",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“零钱”或“找零钱”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_02",
+      "eventName": "小额购买：买错东西",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“买错东西”这件小事。",
+      "coreObject": "收据",
+      "actionOptions": [
+        "重新排到队尾",
+        "把多的一份留出来",
+        "递还给对方"
+      ],
+      "possibleOutcomes": [
+        "收据的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "反转型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "moji_cat",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "food_counter",
+        "quiet_place",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“收据”或“买错东西”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_03",
+      "eventName": "小额购买：多买一份",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“多买一份”这件小事。",
+      "coreObject": "杯套",
+      "actionOptions": [
+        "重新排到队尾",
+        "把多的一份留出来",
+        "递还给对方"
+      ],
+      "possibleOutcomes": [
+        "杯套的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "误会型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaolu_guinea_pig",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "transport_hub",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“杯套”或“多买一份”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_04",
+      "eventName": "小额购买：杯名写错",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“杯名写错”这件小事。",
+      "coreObject": "菜单",
+      "actionOptions": [
+        "重新排到队尾",
+        "把多的一份留出来",
+        "递还给对方"
+      ],
+      "possibleOutcomes": [
+        "菜单的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "回声型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "feifei_parrot",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "food_counter",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“菜单”或“杯名写错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_05",
+      "eventName": "小额购买：点错菜单",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“点错菜单”这件小事。",
+      "coreObject": "油纸袋",
+      "actionOptions": [
+        "递还给对方",
+        "重新排到队尾",
+        "把多的一份留出来"
+      ],
+      "possibleOutcomes": [
+        "油纸袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "反转型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "personality_reaction",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "street_corner",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“油纸袋”或“点错菜单”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_06",
+      "eventName": "小额购买：小票夹住",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“小票夹住”这件小事。",
+      "coreObject": "找零盒",
+      "actionOptions": [
+        "重新排到队尾",
+        "递还给对方",
+        "把多的一份留出来"
+      ],
+      "possibleOutcomes": [
+        "找零盒的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "反转型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "feifei_parrot",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "street_corner",
+        "food_counter"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“找零盒”或“小票夹住”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_07",
+      "eventName": "小额购买：号码夹拿错",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“号码夹拿错”这件小事。",
+      "coreObject": "号码夹",
+      "actionOptions": [
+        "重新排到队尾",
+        "把多的一份留出来",
+        "递还给对方"
+      ],
+      "possibleOutcomes": [
+        "号码夹的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "旁观型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "market",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“号码夹”或“号码夹拿错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_08",
+      "eventName": "小额购买：瓶盖滚远",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“瓶盖滚远”这件小事。",
+      "coreObject": "餐巾纸",
+      "actionOptions": [
+        "递还给对方",
+        "重新排到队尾",
+        "把多的一份留出来"
+      ],
+      "possibleOutcomes": [
+        "餐巾纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "反转型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“餐巾纸”或“瓶盖滚远”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_09",
+      "eventName": "小额购买：餐巾纸被吹起",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“餐巾纸被吹起”这件小事。",
+      "coreObject": "小票",
+      "actionOptions": [
+        "重新排到队尾",
+        "把多的一份留出来",
+        "递还给对方"
+      ],
+      "possibleOutcomes": [
+        "小票的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "缺席型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "transport_hub",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“小票”或“餐巾纸被吹起”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "small_purchase_10",
+      "eventName": "小额购买：外带袋漏出一角",
+      "eventType": "small_purchase",
+      "trigger": "旅行途中在适配场景遇到“外带袋漏出一角”这件小事。",
+      "coreObject": "瓶盖",
+      "actionOptions": [
+        "重新排到队尾",
+        "递还给对方",
+        "把多的一份留出来"
+      ],
+      "possibleOutcomes": [
+        "瓶盖的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "旁观型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "xiaoman_hamster",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“瓶盖”或“外带袋漏出一角”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_01",
+      "eventName": "排队与顺序：排错队",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“排错队”这件小事。",
+      "coreObject": "队尾标识",
+      "actionOptions": [
+        "往后退半步",
+        "扶正被碰歪的东西",
+        "确认顺序"
+      ],
+      "possibleOutcomes": [
+        "队尾标识的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "缺席型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "transport_hub",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“队尾标识”或“排错队”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_02",
+      "eventName": "排队与顺序：让别人先",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“让别人先”这件小事。",
+      "coreObject": "号码牌",
+      "actionOptions": [
+        "确认顺序",
+        "往后退半步",
+        "扶正被碰歪的东西"
+      ],
+      "possibleOutcomes": [
+        "号码牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "缺席型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "personality_reaction",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "quiet_place",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“号码牌”或“让别人先”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_03",
+      "eventName": "排队与顺序：被催促",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“被催促”这件小事。",
+      "coreObject": "排队绳",
+      "actionOptions": [
+        "往后退半步",
+        "确认顺序",
+        "扶正被碰歪的东西"
+      ],
+      "possibleOutcomes": [
+        "排队绳的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "动作型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "xiaoman_hamster",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "small_shop",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“排队绳”或“被催促”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_04",
+      "eventName": "排队与顺序：拿错号码",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“拿错号码”这件小事。",
+      "coreObject": "餐盘",
+      "actionOptions": [
+        "扶正被碰歪的东西",
+        "确认顺序",
+        "往后退半步"
+      ],
+      "possibleOutcomes": [
+        "餐盘的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "缺席型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "tangyuan_puppy",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "transport_hub",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“餐盘”或“拿错号码”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_05",
+      "eventName": "排队与顺序：多等一会儿",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“多等一会儿”这件小事。",
+      "coreObject": "称台小票",
+      "actionOptions": [
+        "确认顺序",
+        "扶正被碰歪的东西",
+        "往后退半步"
+      ],
+      "possibleOutcomes": [
+        "称台小票的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "反转型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "feifei_parrot",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“称台小票”或“多等一会儿”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_06",
+      "eventName": "排队与顺序：排队绳歪了",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“排队绳歪了”这件小事。",
+      "coreObject": "找零盒",
+      "actionOptions": [
+        "确认顺序",
+        "扶正被碰歪的东西",
+        "往后退半步"
+      ],
+      "possibleOutcomes": [
+        "找零盒的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "反转型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "personality_reaction",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "quiet_place",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“找零盒”或“排队绳歪了”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_07",
+      "eventName": "排队与顺序：托盘滑了一下",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“托盘滑了一下”这件小事。",
+      "coreObject": "纸袋",
+      "actionOptions": [
+        "确认顺序",
+        "往后退半步",
+        "扶正被碰歪的东西"
+      ],
+      "possibleOutcomes": [
+        "纸袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "反转型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "personality_reaction",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸袋”或“托盘滑了一下”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_08",
+      "eventName": "排队与顺序：找零盒满了",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“找零盒满了”这件小事。",
+      "coreObject": "座位号纸",
+      "actionOptions": [
+        "往后退半步",
+        "扶正被碰歪的东西",
+        "确认顺序"
+      ],
+      "possibleOutcomes": [
+        "座位号纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "反转型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "street_corner",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“座位号纸”或“找零盒满了”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_09",
+      "eventName": "排队与顺序：座位号看反",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“座位号看反”这件小事。",
+      "coreObject": "托盘",
+      "actionOptions": [
+        "确认顺序",
+        "往后退半步",
+        "扶正被碰歪的东西"
+      ],
+      "possibleOutcomes": [
+        "托盘的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "回声型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "feifei_parrot",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "market",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“托盘”或“座位号看反”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "queue_and_order_10",
+      "eventName": "排队与顺序：称台小票没拿",
+      "eventType": "queue_and_order",
+      "trigger": "旅行途中在适配场景遇到“称台小票没拿”这件小事。",
+      "coreObject": "外带袋",
+      "actionOptions": [
+        "扶正被碰歪的东西",
+        "往后退半步",
+        "确认顺序"
+      ],
+      "possibleOutcomes": [
+        "外带袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "误会型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaolu_guinea_pig",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“外带袋”或“称台小票没拿”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_01",
+      "eventName": "迷路与改道：地图折错",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“地图折错”这件小事。",
+      "coreObject": "地图",
+      "actionOptions": [
+        "把路线折回去",
+        "承认自己看错了",
+        "在边角做记号"
+      ],
+      "possibleOutcomes": [
+        "地图的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "回声型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "value_choice",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "feifei_parrot",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "quiet_place",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“地图”或“地图折错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_02",
+      "eventName": "迷路与改道：路牌看不清",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“路牌看不清”这件小事。",
+      "coreObject": "路牌",
+      "actionOptions": [
+        "承认自己看错了",
+        "在边角做记号",
+        "把路线折回去"
+      ],
+      "possibleOutcomes": [
+        "路牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "缺席型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "market",
+        "metro_transfer"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“路牌”或“路牌看不清”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_03",
+      "eventName": "迷路与改道：备用路线",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“备用路线”这件小事。",
+      "coreObject": "票背面",
+      "actionOptions": [
+        "把路线折回去",
+        "在边角做记号",
+        "承认自己看错了"
+      ],
+      "possibleOutcomes": [
+        "票背面的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "缺席型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "metro_transfer",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“票背面”或“备用路线”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_04",
+      "eventName": "迷路与改道：绕远路",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“绕远路”这件小事。",
+      "coreObject": "铅笔",
+      "actionOptions": [
+        "承认自己看错了",
+        "把路线折回去",
+        "在边角做记号"
+      ],
+      "possibleOutcomes": [
+        "铅笔的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "误会型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "metro_transfer",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“铅笔”或“绕远路”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_05",
+      "eventName": "迷路与改道：少检查一次",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“少检查一次”这件小事。",
+      "coreObject": "手机低电提示",
+      "actionOptions": [
+        "承认自己看错了",
+        "在边角做记号",
+        "把路线折回去"
+      ],
+      "possibleOutcomes": [
+        "手机低电提示的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "误会型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "feifei_parrot",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "small_shop",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“手机低电提示”或“少检查一次”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_06",
+      "eventName": "迷路与改道：出口编号记反",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“出口编号记反”这件小事。",
+      "coreObject": "出口编号",
+      "actionOptions": [
+        "在边角做记号",
+        "把路线折回去",
+        "承认自己看错了"
+      ],
+      "possibleOutcomes": [
+        "出口编号的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "动作型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "small_shop",
+        "metro_transfer"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“出口编号”或“出口编号记反”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_07",
+      "eventName": "迷路与改道：手机快没电",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“手机快没电”这件小事。",
+      "coreObject": "便签",
+      "actionOptions": [
+        "在边角做记号",
+        "把路线折回去",
+        "承认自己看错了"
+      ],
+      "possibleOutcomes": [
+        "便签的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "选择型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "market",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“便签”或“手机快没电”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_08",
+      "eventName": "迷路与改道：便签掉了",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“便签掉了”这件小事。",
+      "coreObject": "站内箭头",
+      "actionOptions": [
+        "在边角做记号",
+        "把路线折回去",
+        "承认自己看错了"
+      ],
+      "possibleOutcomes": [
+        "站内箭头的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "反转型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_place",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“站内箭头”或“便签掉了”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_09",
+      "eventName": "迷路与改道：街角门牌被挡住",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“街角门牌被挡住”这件小事。",
+      "coreObject": "街角门牌",
+      "actionOptions": [
+        "把路线折回去",
+        "在边角做记号",
+        "承认自己看错了"
+      ],
+      "possibleOutcomes": [
+        "街角门牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "回声型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "quiet_return",
+        "metro_transfer"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“街角门牌”或“街角门牌被挡住”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "lost_and_reroute_10",
+      "eventName": "迷路与改道：站内箭头贴歪",
+      "eventType": "lost_and_reroute",
+      "trigger": "旅行途中在适配场景遇到“站内箭头贴歪”这件小事。",
+      "coreObject": "小地图",
+      "actionOptions": [
+        "在边角做记号",
+        "承认自己看错了",
+        "把路线折回去"
+      ],
+      "possibleOutcomes": [
+        "小地图的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "反转型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "tangyuan_puppy",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "small_shop",
+        "metro_transfer"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“小地图”或“站内箭头贴歪”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_01",
+      "eventName": "修补小物：缝扣子",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“缝扣子”这件小事。",
+      "coreObject": "扣子",
+      "actionOptions": [
+        "临时扣好",
+        "没有立刻丢掉",
+        "把它收到小袋里"
+      ],
+      "possibleOutcomes": [
+        "扣子的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "动作型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "tangyuan_puppy",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“扣子”或“缝扣子”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_02",
+      "eventName": "修补小物：整理围巾",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“整理围巾”这件小事。",
+      "coreObject": "针线包",
+      "actionOptions": [
+        "把它收到小袋里",
+        "临时扣好",
+        "没有立刻丢掉"
+      ],
+      "possibleOutcomes": [
+        "针线包的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "回声型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "value_choice",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaolu_guinea_pig",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "transport_hub",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“针线包”或“整理围巾”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_03",
+      "eventName": "修补小物：修伞扣",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“修伞扣”这件小事。",
+      "coreObject": "坏伞",
+      "actionOptions": [
+        "把它收到小袋里",
+        "没有立刻丢掉",
+        "临时扣好"
+      ],
+      "possibleOutcomes": [
+        "坏伞的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "缺席型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“坏伞”或“修伞扣”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_04",
+      "eventName": "修补小物：贴平纸角",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“贴平纸角”这件小事。",
+      "coreObject": "袖口",
+      "actionOptions": [
+        "没有立刻丢掉",
+        "把它收到小袋里",
+        "临时扣好"
+      ],
+      "possibleOutcomes": [
+        "袖口的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "缺席型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "xiaoman_hamster",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "transport_hub",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“袖口”或“贴平纸角”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_05",
+      "eventName": "修补小物：放回盒子",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“放回盒子”这件小事。",
+      "coreObject": "纸盒",
+      "actionOptions": [
+        "没有立刻丢掉",
+        "临时扣好",
+        "把它收到小袋里"
+      ],
+      "possibleOutcomes": [
+        "纸盒的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "旁观型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "lodging",
+        "quiet_place",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸盒”或“放回盒子”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_06",
+      "eventName": "修补小物：夹回衣夹",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“夹回衣夹”这件小事。",
+      "coreObject": "胶带角",
+      "actionOptions": [
+        "把它收到小袋里",
+        "临时扣好",
+        "没有立刻丢掉"
+      ],
+      "possibleOutcomes": [
+        "胶带角的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "误会型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“胶带角”或“夹回衣夹”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_07",
+      "eventName": "修补小物：捡起备用扣",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“捡起备用扣”这件小事。",
+      "coreObject": "衣夹",
+      "actionOptions": [
+        "临时扣好",
+        "没有立刻丢掉",
+        "把它收到小袋里"
+      ],
+      "possibleOutcomes": [
+        "衣夹的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "选择型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "tangyuan_puppy",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "quiet_return",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“衣夹”或“捡起备用扣”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_08",
+      "eventName": "修补小物：夹好书签",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“夹好书签”这件小事。",
+      "coreObject": "备用扣",
+      "actionOptions": [
+        "临时扣好",
+        "没有立刻丢掉",
+        "把它收到小袋里"
+      ],
+      "possibleOutcomes": [
+        "备用扣的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "缺席型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "feifei_parrot",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "lodging",
+        "quiet_return",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“备用扣”或“夹好书签”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_09",
+      "eventName": "修补小物：拉链头卡住",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“拉链头卡住”这件小事。",
+      "coreObject": "书签",
+      "actionOptions": [
+        "没有立刻丢掉",
+        "把它收到小袋里",
+        "临时扣好"
+      ],
+      "possibleOutcomes": [
+        "书签的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "动作型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "feifei_parrot",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "lodging",
+        "quiet_place",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“书签”或“拉链头卡住”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "object_repair_10",
+      "eventName": "修补小物：胶带角翘起",
+      "eventType": "object_repair",
+      "trigger": "旅行途中在适配场景遇到“胶带角翘起”这件小事。",
+      "coreObject": "拉链头",
+      "actionOptions": [
+        "把它收到小袋里",
+        "临时扣好",
+        "没有立刻丢掉"
+      ],
+      "possibleOutcomes": [
+        "拉链头的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "动作型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "moji_cat",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "quiet_return",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“拉链头”或“胶带角翘起”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_01",
+      "eventName": "安静观察：旁观一张报纸",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“旁观一张报纸”这件小事。",
+      "coreObject": "报纸",
+      "actionOptions": [
+        "只记下一个细节",
+        "不去追问",
+        "把物件放回原处"
+      ],
+      "possibleOutcomes": [
+        "报纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "误会型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "xiaoman_hamster",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "market",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“报纸”或“旁观一张报纸”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_02",
+      "eventName": "安静观察：记下长椅编号",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“记下长椅编号”这件小事。",
+      "coreObject": "长椅编号",
+      "actionOptions": [
+        "只记下一个细节",
+        "不去追问",
+        "把物件放回原处"
+      ],
+      "possibleOutcomes": [
+        "长椅编号的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "缺席型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "personality_reaction",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "xiaoman_hamster",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "street_corner",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“长椅编号”或“记下长椅编号”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_03",
+      "eventName": "安静观察：看见落叶停住",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“看见落叶停住”这件小事。",
+      "coreObject": "落叶",
+      "actionOptions": [
+        "把物件放回原处",
+        "只记下一个细节",
+        "不去追问"
+      ],
+      "possibleOutcomes": [
+        "落叶的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "回声型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "moji_cat",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“落叶”或“看见落叶停住”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_04",
+      "eventName": "安静观察：水瓶立起来",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“水瓶立起来”这件小事。",
+      "coreObject": "水瓶",
+      "actionOptions": [
+        "只记下一个细节",
+        "不去追问",
+        "把物件放回原处"
+      ],
+      "possibleOutcomes": [
+        "水瓶的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "反转型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "value_choice",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“水瓶”或“水瓶立起来”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_05",
+      "eventName": "安静观察：绕开脚印",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“绕开脚印”这件小事。",
+      "coreObject": "脚印",
+      "actionOptions": [
+        "把物件放回原处",
+        "只记下一个细节",
+        "不去追问"
+      ],
+      "possibleOutcomes": [
+        "脚印的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "回声型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "transport_hub",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“脚印”或“绕开脚印”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_06",
+      "eventName": "安静观察：旧海报没撕完",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“旧海报没撕完”这件小事。",
+      "coreObject": "旧海报",
+      "actionOptions": [
+        "只记下一个细节",
+        "把物件放回原处",
+        "不去追问"
+      ],
+      "possibleOutcomes": [
+        "旧海报的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "反转型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "feifei_parrot",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "small_shop",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“旧海报”或“旧海报没撕完”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_07",
+      "eventName": "安静观察：窗边灰尘被照亮",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“窗边灰尘被照亮”这件小事。",
+      "coreObject": "窗边灰尘",
+      "actionOptions": [
+        "把物件放回原处",
+        "不去追问",
+        "只记下一个细节"
+      ],
+      "possibleOutcomes": [
+        "窗边灰尘的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "选择型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "market",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“窗边灰尘”或“窗边灰尘被照亮”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_08",
+      "eventName": "安静观察：票根夹在书里",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“票根夹在书里”这件小事。",
+      "coreObject": "票根",
+      "actionOptions": [
+        "只记下一个细节",
+        "不去追问",
+        "把物件放回原处"
+      ],
+      "possibleOutcomes": [
+        "票根的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "缺席型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "personality_reaction",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "moji_cat",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "small_shop",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“票根”或“票根夹在书里”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_09",
+      "eventName": "安静观察：纸页翻过一角",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“纸页翻过一角”这件小事。",
+      "coreObject": "纸页",
+      "actionOptions": [
+        "不去追问",
+        "把物件放回原处",
+        "只记下一个细节"
+      ],
+      "possibleOutcomes": [
+        "纸页的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "缺席型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸页”或“纸页翻过一角”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "quiet_observation_10",
+      "eventName": "安静观察：小石子滚到鞋边",
+      "eventType": "quiet_observation",
+      "trigger": "旅行途中在适配场景遇到“小石子滚到鞋边”这件小事。",
+      "coreObject": "小石子",
+      "actionOptions": [
+        "只记下一个细节",
+        "把物件放回原处",
+        "不去追问"
+      ],
+      "possibleOutcomes": [
+        "小石子的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "旁观型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "moji_cat",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“小石子”或“小石子滚到鞋边”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_01",
+      "eventName": "不打扰地帮忙：扶住门",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“扶住门”这件小事。",
+      "coreObject": "门把手",
+      "actionOptions": [
+        "扶一下就松手",
+        "把东西移到不挡路的位置",
+        "提醒一句就走开"
+      ],
+      "possibleOutcomes": [
+        "门把手的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "反转型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "dengdeng_rabbit",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“门把手”或“扶住门”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_02",
+      "eventName": "不打扰地帮忙：压住摊布",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“压住摊布”这件小事。",
+      "coreObject": "摊布角",
+      "actionOptions": [
+        "提醒一句就走开",
+        "把东西移到不挡路的位置",
+        "扶一下就松手"
+      ],
+      "possibleOutcomes": [
+        "摊布角的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "误会型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "motif_echo",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "quiet_return",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“摊布角”或“压住摊布”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_03",
+      "eventName": "不打扰地帮忙：捡回笔帽",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“捡回笔帽”这件小事。",
+      "coreObject": "掉落笔帽",
+      "actionOptions": [
+        "扶一下就松手",
+        "提醒一句就走开",
+        "把东西移到不挡路的位置"
+      ],
+      "possibleOutcomes": [
+        "掉落笔帽的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "旁观型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "moji_cat",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "quiet_place",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“掉落笔帽”或“捡回笔帽”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_04",
+      "eventName": "不打扰地帮忙：挪开小水桶",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“挪开小水桶”这件小事。",
+      "coreObject": "小水桶",
+      "actionOptions": [
+        "提醒一句就走开",
+        "把东西移到不挡路的位置",
+        "扶一下就松手"
+      ],
+      "possibleOutcomes": [
+        "小水桶的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "反转型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "moji_cat",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "street_corner",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“小水桶”或“挪开小水桶”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_05",
+      "eventName": "不打扰地帮忙：放回外卖袋",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“放回外卖袋”这件小事。",
+      "coreObject": "外卖袋",
+      "actionOptions": [
+        "把东西移到不挡路的位置",
+        "提醒一句就走开",
+        "扶一下就松手"
+      ],
+      "possibleOutcomes": [
+        "外卖袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "动作型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "value_choice",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "tangyuan_puppy",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "market",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“外卖袋”或“放回外卖袋”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_06",
+      "eventName": "不打扰地帮忙：确认药袋名字",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“确认药袋名字”这件小事。",
+      "coreObject": "药袋",
+      "actionOptions": [
+        "扶一下就松手",
+        "提醒一句就走开",
+        "把东西移到不挡路的位置"
+      ],
+      "possibleOutcomes": [
+        "药袋的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "回声型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "personality_reaction",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "tangyuan_puppy",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_return",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“药袋”或“确认药袋名字”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_07",
+      "eventName": "不打扰地帮忙：扶正排队绳",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“扶正排队绳”这件小事。",
+      "coreObject": "排队绳",
+      "actionOptions": [
+        "提醒一句就走开",
+        "把东西移到不挡路的位置",
+        "扶一下就松手"
+      ],
+      "possibleOutcomes": [
+        "排队绳的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "反转型",
+        "旁观型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy",
+        "dengdeng_rabbit"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "quiet_return",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“排队绳”或“扶正排队绳”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_08",
+      "eventName": "不打扰地帮忙：看一眼自行车牌",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“看一眼自行车牌”这件小事。",
+      "coreObject": "自行车牌",
+      "actionOptions": [
+        "把东西移到不挡路的位置",
+        "提醒一句就走开",
+        "扶一下就松手"
+      ],
+      "possibleOutcomes": [
+        "自行车牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "旁观型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“自行车牌”或“看一眼自行车牌”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_09",
+      "eventName": "不打扰地帮忙：按住包装纸",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“按住包装纸”这件小事。",
+      "coreObject": "包装纸",
+      "actionOptions": [
+        "把东西移到不挡路的位置",
+        "扶一下就松手",
+        "提醒一句就走开"
+      ],
+      "possibleOutcomes": [
+        "包装纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "反转型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "daily_observation",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "dengdeng_rabbit",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "small_shop",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“包装纸”或“按住包装纸”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "help_without_intrusion_10",
+      "eventName": "不打扰地帮忙：把伞放回伞架",
+      "eventType": "help_without_intrusion",
+      "trigger": "旅行途中在适配场景遇到“把伞放回伞架”这件小事。",
+      "coreObject": "伞架",
+      "actionOptions": [
+        "扶一下就松手",
+        "提醒一句就走开",
+        "把东西移到不挡路的位置"
+      ],
+      "possibleOutcomes": [
+        "伞架的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "选择型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "small_shop",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“伞架”或“把伞放回伞架”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_01",
+      "eventName": "名字与票据：票根撕歪",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“票根撕歪”这件小事。",
+      "coreObject": "票根",
+      "actionOptions": [
+        "没有改掉那个错字",
+        "把名字转到背面",
+        "夹进书页"
+      ],
+      "possibleOutcomes": [
+        "票根的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "误会型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "market",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“票根”或“票根撕歪”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_02",
+      "eventName": "名字与票据：寄存牌差点丢",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“寄存牌差点丢”这件小事。",
+      "coreObject": "寄存牌",
+      "actionOptions": [
+        "夹进书页",
+        "没有改掉那个错字",
+        "把名字转到背面"
+      ],
+      "possibleOutcomes": [
+        "寄存牌的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "动作型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "dengdeng_rabbit",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "museum_edge",
+        "transport_hub",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“寄存牌”或“寄存牌差点丢”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_03",
+      "eventName": "名字与票据：借阅条夹错",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“借阅条夹错”这件小事。",
+      "coreObject": "借阅条",
+      "actionOptions": [
+        "夹进书页",
+        "没有改掉那个错字",
+        "把名字转到背面"
+      ],
+      "possibleOutcomes": [
+        "借阅条的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "反转型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "quiet_return",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“借阅条”或“借阅条夹错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_04",
+      "eventName": "名字与票据：纸杯名字写错",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“纸杯名字写错”这件小事。",
+      "coreObject": "纸杯名字",
+      "actionOptions": [
+        "夹进书页",
+        "把名字转到背面",
+        "没有改掉那个错字"
+      ],
+      "possibleOutcomes": [
+        "纸杯名字的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "缺席型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "museum_edge",
+        "street_corner",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“纸杯名字”或“纸杯名字写错”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_05",
+      "eventName": "名字与票据：信封没写完",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“信封没写完”这件小事。",
+      "coreObject": "信封",
+      "actionOptions": [
+        "把名字转到背面",
+        "夹进书页",
+        "没有改掉那个错字"
+      ],
+      "possibleOutcomes": [
+        "信封的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "旁观型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "value_choice",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "feifei_parrot",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "small_shop",
+        "museum_edge",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“信封”或“信封没写完”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_06",
+      "eventName": "名字与票据：座位号看反",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“座位号看反”这件小事。",
+      "coreObject": "座位号",
+      "actionOptions": [
+        "把名字转到背面",
+        "没有改掉那个错字",
+        "夹进书页"
+      ],
+      "possibleOutcomes": [
+        "座位号的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "误会型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "tangyuan_puppy",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_place",
+        "museum_edge"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“座位号”或“座位号看反”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_07",
+      "eventName": "名字与票据：导览折页折反",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“导览折页折反”这件小事。",
+      "coreObject": "导览折页",
+      "actionOptions": [
+        "夹进书页",
+        "没有改掉那个错字",
+        "把名字转到背面"
+      ],
+      "possibleOutcomes": [
+        "导览折页的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "选择型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "xiaoman_hamster",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "small_shop",
+        "museum_edge"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“导览折页”或“导览折页折反”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_08",
+      "eventName": "名字与票据：房卡找不到",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“房卡找不到”这件小事。",
+      "coreObject": "房卡",
+      "actionOptions": [
+        "夹进书页",
+        "没有改掉那个错字",
+        "把名字转到背面"
+      ],
+      "possibleOutcomes": [
+        "房卡的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "回声型",
+        "选择型",
+        "误会型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "value_choice",
+        "motif_echo"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "dengdeng_rabbit",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "market",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“房卡”或“房卡找不到”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_09",
+      "eventName": "名字与票据：明信片背面空着",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“明信片背面空着”这件小事。",
+      "coreObject": "明信片背面",
+      "actionOptions": [
+        "没有改掉那个错字",
+        "把名字转到背面",
+        "夹进书页"
+      ],
+      "possibleOutcomes": [
+        "明信片背面的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "动作型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "relationship_card",
+        "value_choice"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "dengdeng_rabbit",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "transport_hub",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“明信片背面”或“明信片背面空着”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "name_and_ticket_10",
+      "eventName": "名字与票据：邮票贴歪",
+      "eventType": "name_and_ticket",
+      "trigger": "旅行途中在适配场景遇到“邮票贴歪”这件小事。",
+      "coreObject": "邮票",
+      "actionOptions": [
+        "把名字转到背面",
+        "夹进书页",
+        "没有改掉那个错字"
+      ],
+      "possibleOutcomes": [
+        "邮票的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "误会型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "moji_cat",
+        "tangyuan_puppy",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "transport_hub",
+        "street_corner",
+        "market"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“邮票”或“邮票贴歪”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_01",
+      "eventName": "没有寄出：没投出去",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“没投出去”这件小事。",
+      "coreObject": "明信片",
+      "actionOptions": [
+        "把邮票按平",
+        "合上投递口又松开",
+        "先带回去"
+      ],
+      "possibleOutcomes": [
+        "明信片的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "选择型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "feifei_parrot",
+        "xiaolu_guinea_pig"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“明信片”或“没投出去”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_02",
+      "eventName": "没有寄出：邮票按了两次",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“邮票按了两次”这件小事。",
+      "coreObject": "邮票",
+      "actionOptions": [
+        "先带回去",
+        "把邮票按平",
+        "合上投递口又松开"
+      ],
+      "possibleOutcomes": [
+        "邮票的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "误会型",
+        "选择型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "value_choice",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "dengdeng_rabbit",
+        "feifei_parrot"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "transport_hub",
+        "quiet_place"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“邮票”或“邮票按了两次”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_03",
+      "eventName": "没有寄出：投递口合上",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“投递口合上”这件小事。",
+      "coreObject": "投递口盖子",
+      "actionOptions": [
+        "先带回去",
+        "把邮票按平",
+        "合上投递口又松开"
+      ],
+      "possibleOutcomes": [
+        "投递口盖子的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "选择型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "relationship_card",
+        "daily_observation",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "quiet_return",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“投递口盖子”或“投递口合上”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_04",
+      "eventName": "没有寄出：地址写到一半",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“地址写到一半”这件小事。",
+      "coreObject": "地址栏",
+      "actionOptions": [
+        "把邮票按平",
+        "先带回去",
+        "合上投递口又松开"
+      ],
+      "possibleOutcomes": [
+        "地址栏的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "缺席型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "transport_hub",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“地址栏”或“地址写到一半”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_05",
+      "eventName": "没有寄出：铅笔太短",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“铅笔太短”这件小事。",
+      "coreObject": "铅笔",
+      "actionOptions": [
+        "合上投递口又松开",
+        "把邮票按平",
+        "先带回去"
+      ],
+      "possibleOutcomes": [
+        "铅笔的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "误会型",
+        "动作型",
+        "旁观型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "dengdeng_rabbit",
+        "moji_cat",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "market",
+        "quiet_return",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“铅笔”或“铅笔太短”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_06",
+      "eventName": "没有寄出：信封没封口",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“信封没封口”这件小事。",
+      "coreObject": "信封",
+      "actionOptions": [
+        "先带回去",
+        "把邮票按平",
+        "合上投递口又松开"
+      ],
+      "possibleOutcomes": [
+        "信封的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "缺席型",
+        "旁观型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "motif_echo",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "transport_hub",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“信封”或“信封没封口”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_07",
+      "eventName": "没有寄出：邮筒影子变长",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“邮筒影子变长”这件小事。",
+      "coreObject": "邮筒影子",
+      "actionOptions": [
+        "把邮票按平",
+        "合上投递口又松开",
+        "先带回去"
+      ],
+      "possibleOutcomes": [
+        "邮筒影子的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "误会型",
+        "反转型"
+      ],
+      "postcardTypes": [
+        "daily_observation",
+        "relationship_card",
+        "personality_reaction"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "dengdeng_rabbit",
+        "moji_cat"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "market",
+        "transport_hub"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“邮筒影子”或“邮筒影子变长”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_08",
+      "eventName": "没有寄出：胶带角翘着",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“胶带角翘着”这件小事。",
+      "coreObject": "胶带角",
+      "actionOptions": [
+        "先带回去",
+        "合上投递口又松开",
+        "把邮票按平"
+      ],
+      "possibleOutcomes": [
+        "胶带角的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "旁观型",
+        "选择型",
+        "动作型"
+      ],
+      "postcardTypes": [
+        "value_choice",
+        "relationship_card",
+        "daily_observation"
+      ],
+      "animalAffinity": [
+        "tangyuan_puppy",
+        "moji_cat",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "street_corner",
+        "small_shop",
+        "quiet_return"
+      ],
+      "emotionWeightRange": [
+        0,
+        2
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“胶带角”或“胶带角翘着”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_09",
+      "eventName": "没有寄出：公告纸边被风掀起",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“公告纸边被风掀起”这件小事。",
+      "coreObject": "公告纸边",
+      "actionOptions": [
+        "合上投递口又松开",
+        "先带回去",
+        "把邮票按平"
+      ],
+      "possibleOutcomes": [
+        "公告纸边的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "动作型",
+        "旁观型",
+        "回声型"
+      ],
+      "postcardTypes": [
+        "motif_echo",
+        "daily_observation",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "xiaoman_hamster",
+        "xiaolu_guinea_pig",
+        "tangyuan_puppy"
+      ],
+      "sceneTypeFits": [
+        "quiet_place",
+        "street_corner",
+        "small_shop"
+      ],
+      "emotionWeightRange": [
+        0,
+        3
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“公告纸边”或“公告纸边被风掀起”后，结尾不应继续成立。"
+    },
+    {
+      "eventId": "not_sending_10",
+      "eventName": "没有寄出：空白贴纸留着",
+      "eventType": "not_sending",
+      "trigger": "旅行途中在适配场景遇到“空白贴纸留着”这件小事。",
+      "coreObject": "空白贴纸",
+      "actionOptions": [
+        "先带回去",
+        "把邮票按平",
+        "合上投递口又松开"
+      ],
+      "possibleOutcomes": [
+        "空白贴纸的状态变清楚或被放稳。",
+        "小动物少带、多带或暂时收起了一样小东西。",
+        "事件没有变大，但结尾能从这个动作自然长出来。"
+      ],
+      "microArcFits": [
+        "选择型",
+        "旁观型",
+        "缺席型"
+      ],
+      "postcardTypes": [
+        "personality_reaction",
+        "motif_echo",
+        "relationship_card"
+      ],
+      "animalAffinity": [
+        "feifei_parrot",
+        "xiaolu_guinea_pig",
+        "xiaoman_hamster"
+      ],
+      "sceneTypeFits": [
+        "quiet_return",
+        "market",
+        "street_corner"
+      ],
+      "emotionWeightRange": [
+        0,
+        1
+      ],
+      "styleRisks": [
+        "不要写成抽象金句。",
+        "不要让核心物件只做背景。",
+        "结尾必须来自本事件的动作结果。"
+      ],
+      "continuityCheck": "删除“空白贴纸”或“空白贴纸留着”后，结尾不应继续成立。"
+    }
+  ]
+}
