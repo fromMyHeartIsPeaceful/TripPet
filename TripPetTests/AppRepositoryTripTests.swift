@@ -57,11 +57,12 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertNil(repository.activeTrip)
         XCTAssertEqual(repository.trips.first?.status, .completed)
         XCTAssertEqual(repository.travelWishes.first?.status, .completed)
-        XCTAssertEqual(repository.postcards.count, 1)
-        XCTAssertEqual(repository.postcards.first?.tripId, trip.id)
-        XCTAssertEqual(repository.postcards.first?.destinationAssetName, "destination_paris_line")
-        XCTAssertEqual(repository.postcards.first?.stampAssetName, "stamp_paris")
-        XCTAssertFalse(repository.postcards.first?.isRead ?? true)
+        XCTAssertEqual(repository.postcards.count, 2)
+        let generatedPostcard = try! XCTUnwrap(repository.postcards.first { $0.id == postcard.id })
+        XCTAssertEqual(generatedPostcard.tripId, trip.id)
+        XCTAssertEqual(generatedPostcard.destinationAssetName, "destination_paris_line")
+        XCTAssertEqual(generatedPostcard.stampAssetName, "stamp_paris")
+        XCTAssertFalse(generatedPostcard.isRead)
     }
 
     func testPostcardSchedulerUsesDestinationCopyTemplate() throws {
@@ -165,7 +166,7 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.activeTrip?.destination, "巴黎")
     }
 
-    func testCabinRefreshesNextAnimalAfterEmptyHour() {
+    func testCabinShowsApproachingStateAndRefreshesNextAnimalAfterRandomDelay() throws {
         let repository = AppRepository(seed: Self.makeSeed())
         let giftedAt = Self.date(hour: 12)
 
@@ -173,11 +174,17 @@ final class AppRepositoryTripTests: XCTestCase {
 
         XCTAssertNil(repository.currentCabinAnimal)
         XCTAssertTrue(repository.isCabinEmpty)
+        XCTAssertTrue(repository.isNextAnimalApproaching)
 
-        repository.refreshCabinLodging(on: giftedAt.addingTimeInterval(60 * 60 + 1))
+        let emptyUntil = try XCTUnwrap(repository.cabinLodging.emptyUntil)
+        XCTAssertGreaterThanOrEqual(emptyUntil.timeIntervalSince(giftedAt), 10 * 60)
+        XCTAssertLessThanOrEqual(emptyUntil.timeIntervalSince(giftedAt), 30 * 60)
+
+        repository.refreshCabinLodging(on: emptyUntil.addingTimeInterval(1))
 
         XCTAssertEqual(repository.currentCabinAnimal?.id, "cat")
         XCTAssertFalse(repository.isCabinEmpty)
+        XCTAssertFalse(repository.isNextAnimalApproaching)
     }
 
     func testCabinLodgingRotatesToNextTravelAnimal() {
@@ -190,7 +197,8 @@ final class AppRepositoryTripTests: XCTestCase {
             date: giftedAt,
             destinations: SeedData.preview.destinations
         )
-        repository.refreshCabinLodging(on: giftedAt.addingTimeInterval(60 * 60 + 1))
+        let emptyUntil = try! XCTUnwrap(repository.cabinLodging.emptyUntil)
+        repository.refreshCabinLodging(on: emptyUntil.addingTimeInterval(1))
 
         XCTAssertEqual(repository.currentCabinAnimal?.id, "dog")
         XCTAssertFalse(repository.currentCabinAnimal?.isResident ?? true)
@@ -213,6 +221,7 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.tickets.count, 3)
         XCTAssertEqual(repository.trips.map(\.animalId), ["cat", "dog", "rabbit"])
         XCTAssertTrue(repository.hasReachedDailyAnimalLimit)
+        XCTAssertFalse(repository.isNextAnimalApproaching)
 
         repository.refreshCabinLodging(on: Self.date(day: 2, hour: 8))
 
@@ -310,7 +319,8 @@ final class AppRepositoryTripTests: XCTestCase {
         )
 
         XCTAssertTrue(firstReveal)
-        XCTAssertEqual(repository.postcards.count, 1)
+        let firstTravelPostcards = repository.postcards.filter { $0.postcardType != "first_airport_departure" }
+        XCTAssertEqual(firstTravelPostcards.count, 1)
         XCTAssertEqual(repository.trips.first?.status, .traveling)
         XCTAssertEqual(repository.trips.first?.revealedPostcardCount, 1)
 
@@ -321,12 +331,13 @@ final class AppRepositoryTripTests: XCTestCase {
         )
 
         XCTAssertTrue(secondReveal)
-        XCTAssertEqual(repository.postcards.count, 2)
+        let travelPostcards = repository.postcards.filter { $0.postcardType != "first_airport_departure" }
+        XCTAssertEqual(travelPostcards.count, 2)
         XCTAssertEqual(repository.trips.first?.status, .completed)
         XCTAssertEqual(repository.travelWishes.first?.status, .completed)
-        XCTAssertEqual(Set(repository.postcards.map(\.sceneId)).count, 2)
-        XCTAssertEqual(Set(repository.postcards.map(\.postcardType)).count, 2)
-        XCTAssertEqual(Set(repository.postcards.map(\.microArc)).count, 2)
+        XCTAssertEqual(Set(travelPostcards.map(\.sceneId)).count, 2)
+        XCTAssertEqual(Set(travelPostcards.map(\.postcardType)).count, 2)
+        XCTAssertEqual(Set(travelPostcards.map(\.microArc)).count, 2)
     }
 
     func testSwiftDataStorePersistsRepositoryStateAcrossRepositoryInstances() throws {
@@ -388,8 +399,46 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertTrue(didReveal)
         XCTAssertFalse(didRevealAgain)
         XCTAssertNil(repository.activeTrip)
-        XCTAssertEqual(repository.postcards.count, 1)
+        XCTAssertEqual(repository.postcards.filter { $0.postcardType != "first_airport_departure" }.count, 1)
         XCTAssertEqual(repository.trips.first?.status, .completed)
+    }
+
+    func testFirstGiftDeliversAirportPostcardOnlyOnce() throws {
+        let seed = Self.makeSeed()
+        let repository = AppRepository(seed: seed)
+        let firstGiftAt = Self.date(hour: 9)
+
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: firstGiftAt, destinations: seed.destinations)
+
+        let emptyUntil = try XCTUnwrap(repository.cabinLodging.emptyUntil)
+        repository.refreshCabinLodging(on: emptyUntil.addingTimeInterval(1))
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: emptyUntil.addingTimeInterval(2), destinations: seed.destinations)
+
+        let airportPostcards = repository.postcards.filter { $0.postcardType == "first_airport_departure" }
+        XCTAssertEqual(airportPostcards.count, 1)
+        XCTAssertEqual(airportPostcards.first?.title, "小动物寄来的第一张明信片")
+        XCTAssertEqual(airportPostcards.first?.subtitle, "刚到机场")
+        XCTAssertFalse(airportPostcards.first?.isRead ?? true)
+        XCTAssertTrue(repository.userFlags.firstAirportPostcardDelivered)
+    }
+
+    func testFirstImmediateTicketEligibilityRequiresHealthAndNoPriorTickets() {
+        let repository = AppRepository(seed: Self.makeSeed())
+
+        XCTAssertTrue(repository.canUseFirstImmediateTicket(authorizationStatus: .sharingAuthorized))
+        XCTAssertTrue(repository.canUseFirstImmediateTicket(authorizationStatus: .readPermissionRequested))
+        XCTAssertFalse(repository.canUseFirstImmediateTicket(authorizationStatus: .sharingDenied))
+
+        repository.giftTicket(
+            sourceSteps: 400,
+            ticketCount: 1,
+            date: Self.date(hour: 9),
+            destinations: Self.makeSeed().destinations,
+            isFirstImmediateTicket: true
+        )
+
+        XCTAssertFalse(repository.canUseFirstImmediateTicket(authorizationStatus: .sharingAuthorized))
+        XCTAssertTrue(repository.userFlags.firstImmediateTicketGifted)
     }
 
     func testPersistedDestinationIdRehydratesLatestManifestCatalog() throws {

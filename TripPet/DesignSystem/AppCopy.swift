@@ -50,8 +50,11 @@ enum AppCopy {
         static let stepReadFailed = "暂时没有读到今天的脚步。可以稍后再试，或在设置里检查 Health 权限。"
         static let gifted = "机票已经送出。小动物收好地图，准备出发了。"
         static let ruleHint = "达到3000步可赠送1张机票"
+        static let firstTicketRuleHint = "首张机票已准备好"
+        static let firstTicketGiftedSummary = "已使用首张机票"
         static let connectButton = "连接 Apple 健康"
         static let giftButton = "赠送今日脚步，让它出发"
+        static let firstTicketGiftButton = "赠送第一张机票，让它出发"
         static let readingStepsButton = "正在读取今日脚步"
         static let connectingHealthButton = "正在连接健康"
         static let keepLookingButton = "先看看小屋"
@@ -59,6 +62,7 @@ enum AppCopy {
         static let tripStatus = "旅途中"
         static let emptyCabinTitle = "也许会有更多小动物来到小屋..."
         static let emptyCabinBody = ""
+        static let nextAnimalApproaching = "远处好像有新的小动物正在靠近。\n大约 10-30 分钟内会到达小屋。"
         static let dailyLimitReached = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
 
         static func activeTripMessage(animalName: String, destination: String) -> String {
@@ -93,6 +97,7 @@ enum AppCopy {
         static let cancelButton = "再想想"
         static let confirmButton = "确认赠送"
         static let workingButton = "正在赠送"
+        static let firstTicketLine = "首张机票已经准备好"
 
         static func ticketLine(count: Int) -> String {
             "步数已达成赠送机票条件"

@@ -4,6 +4,8 @@ import SwiftData
 struct AppUserFlags: Equatable {
     var onboardingCompleted: Bool = false
     var healthGuideDismissed: Bool = false
+    var firstImmediateTicketGifted: Bool = false
+    var firstAirportPostcardDelivered: Bool = false
 }
 
 struct AppUserState: Equatable {
@@ -388,7 +390,9 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         replace(PersistedAnimalRelationshipMemory.self, with: state.relationshipMemories.map(PersistedAnimalRelationshipMemory.init(memory:)))
         replace(PersistedAppFlag.self, with: [
             PersistedAppFlag(key: AppFlagKey.onboardingCompleted, boolValue: state.flags.onboardingCompleted),
-            PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed)
+            PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed),
+            PersistedAppFlag(key: AppFlagKey.firstImmediateTicketGifted, boolValue: state.flags.firstImmediateTicketGifted),
+            PersistedAppFlag(key: AppFlagKey.firstAirportPostcardDelivered, boolValue: state.flags.firstAirportPostcardDelivered)
         ])
         replace(PersistedCabinLodgingState.self, with: [
             PersistedCabinLodgingState(state: state.cabinLodging)
@@ -400,7 +404,9 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         let flags = (try? context.fetch(FetchDescriptor<PersistedAppFlag>())) ?? []
         return AppUserFlags(
             onboardingCompleted: flags.first { $0.key == AppFlagKey.onboardingCompleted }?.boolValue ?? false,
-            healthGuideDismissed: flags.first { $0.key == AppFlagKey.healthGuideDismissed }?.boolValue ?? false
+            healthGuideDismissed: flags.first { $0.key == AppFlagKey.healthGuideDismissed }?.boolValue ?? false,
+            firstImmediateTicketGifted: flags.first { $0.key == AppFlagKey.firstImmediateTicketGifted }?.boolValue ?? false,
+            firstAirportPostcardDelivered: flags.first { $0.key == AppFlagKey.firstAirportPostcardDelivered }?.boolValue ?? false
         )
     }
 
@@ -471,4 +477,6 @@ private enum JSONCoding {
 private enum AppFlagKey {
     static let onboardingCompleted = "onboardingCompleted"
     static let healthGuideDismissed = "healthGuideDismissed"
+    static let firstImmediateTicketGifted = "firstImmediateTicketGifted"
+    static let firstAirportPostcardDelivered = "firstAirportPostcardDelivered"
 }

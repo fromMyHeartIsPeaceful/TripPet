@@ -15,7 +15,7 @@ final class AppRepository: ObservableObject {
     private let store: AppUserStateStore
     private let calendar: Calendar
     private let maxDailyAnimalDepartures = 3
-    private let emptyCabinDuration: TimeInterval = 60 * 60
+    private let nextAnimalArrivalDelayRange: ClosedRange<TimeInterval> = (10 * 60)...(30 * 60)
 
     init(seed: SeedData, store: AppUserStateStore? = nil, calendar: Calendar = .current) {
         let resolvedStore = store ?? InMemoryUserStateStore()
@@ -44,6 +44,12 @@ final class AppRepository: ObservableObject {
 
     var isCabinEmpty: Bool {
         cabinLodging.currentAnimalId == nil && cabinLodging.dispatchedCount < maxDailyAnimalDepartures
+    }
+
+    var isNextAnimalApproaching: Bool {
+        cabinLodging.currentAnimalId == nil &&
+            cabinLodging.dispatchedCount < maxDailyAnimalDepartures &&
+            cabinLodging.emptyUntil != nil
     }
 
     var hasReachedDailyAnimalLimit: Bool {
@@ -79,6 +85,12 @@ final class AppRepository: ObservableObject {
             }
     }
 
+    func canUseFirstImmediateTicket(authorizationStatus: StepCountAuthorizationStatus) -> Bool {
+        authorizationStatus.canAttemptStepRead &&
+            tickets.isEmpty &&
+            userFlags.firstImmediateTicketGifted == false
+    }
+
     func refreshCabinLodging(on date: Date = Date()) {
         let startOfDay = calendar.startOfDay(for: date)
         if calendar.isDate(cabinLodging.statusDate, inSameDayAs: date) == false {
@@ -106,7 +118,8 @@ final class AppRepository: ObservableObject {
         ticketCount: Int,
         date: Date = Date(),
         destinations: [ManifestDestination] = [],
-        scheduler: PostcardScheduler = PostcardScheduler()
+        scheduler: PostcardScheduler = PostcardScheduler(),
+        isFirstImmediateTicket: Bool = false
     ) -> Trip? {
         refreshCabinLodging(on: date)
         guard cabinLodging.dispatchedCount < maxDailyAnimalDepartures,
@@ -122,6 +135,7 @@ final class AppRepository: ObservableObject {
             return nil
         }
 
+        let isFirstGiftEver = tickets.isEmpty
         let ticket = Ticket(
             id: UUID(),
             date: date,
@@ -158,12 +172,24 @@ final class AppRepository: ObservableObject {
         trips.append(trip)
         markTripStarted(for: animal.id, cityId: destination?.cityId ?? resolvedWish.destinationId)
 
+        if isFirstGiftEver && isFirstImmediateTicket && userFlags.firstImmediateTicketGifted == false {
+            userFlags.firstImmediateTicketGifted = true
+        }
+
+        if isFirstGiftEver && userFlags.firstAirportPostcardDelivered == false {
+            postcards.insert(
+                makeFirstAirportPostcard(for: trip, animal: animal, date: date),
+                at: 0
+            )
+            userFlags.firstAirportPostcardDelivered = true
+        }
+
         cabinLodging.statusDate = calendar.startOfDay(for: date)
         cabinLodging.dispatchedCount += 1
         cabinLodging.currentAnimalId = nil
         cabinLodging.emptyUntil = cabinLodging.dispatchedCount >= maxDailyAnimalDepartures
             ? nil
-            : date.addingTimeInterval(emptyCabinDuration)
+            : date.addingTimeInterval(randomNextAnimalArrivalDelay())
         saveState()
         return trip
     }
@@ -217,7 +243,7 @@ final class AppRepository: ObservableObject {
 
             if trip.postcardPlan.isEmpty {
                 guard scheduler.shouldRevealPostcard(for: trip, on: date),
-                      postcards.contains(where: { $0.tripId == trip.id }) == false else {
+                      postcards.contains(where: { $0.tripId == trip.id && $0.postcardType != "first_airport_departure" }) == false else {
                     continue
                 }
                 let postcard = scheduler.makePostcard(
@@ -333,6 +359,38 @@ final class AppRepository: ObservableObject {
         )
         travelWishes.append(wish)
         return wish
+    }
+
+    private func randomNextAnimalArrivalDelay() -> TimeInterval {
+        TimeInterval.random(in: nextAnimalArrivalDelayRange)
+    }
+
+    private func makeFirstAirportPostcard(for trip: Trip, animal: Animal, date: Date) -> Postcard {
+        Postcard(
+            id: "postcard_first_airport_\(animal.id)_\(Int(date.timeIntervalSince1970))",
+            tripId: trip.id,
+            animalId: animal.id,
+            profileId: animal.profileId,
+            destination: "机场",
+            cityId: "first_airport",
+            sceneId: "airport_departure",
+            postcardType: "first_airport_departure",
+            microArc: "出发型",
+            emotionalWeight: 0,
+            revealBudget: "none",
+            relationshipStageAtSend: relationshipMemory(for: animal.id).relationshipStage,
+            title: "小动物寄来的第一张明信片",
+            body: "我已经出发啦！谢谢你赠送的机票，等我给你寄明信片哦！",
+            imageAssetName: "postcard_airport_first_departure",
+            templateAssetName: "postcard_template_landscape_v102",
+            destinationAssetName: "postcard_airport_first_departure",
+            stampAssetName: "stamp_airport_first_departure",
+            animalAssetName: animal.selfieAssetName,
+            envelopeAssetName: "envelope_unread",
+            sentAt: date,
+            subtitle: "刚到机场",
+            isRead: false
+        )
     }
 
     private func completeTravelingWish(for trip: Trip) {

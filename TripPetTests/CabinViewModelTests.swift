@@ -64,7 +64,7 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.actionMessage.contains("3456 步"))
     }
 
-    func testReadPermissionRequestedPreservesStepReadMessage() async {
+    func testReadPermissionRequestedCanUseFirstImmediateTicketBelowStepGoal() async {
         let environment = AppEnvironment.preview(
             stepStatus: .readPermissionRequested,
             steps: 2_999
@@ -76,6 +76,48 @@ final class CabinViewModelTests: XCTestCase {
         await viewModel.prepareGiftConfirmation()
 
         XCTAssertEqual(viewModel.stepStatusText, "Health 已请求")
-        XCTAssertTrue(viewModel.actionMessage.contains("2999 步"))
+        XCTAssertEqual(viewModel.pendingGiftConfirmation?.isFirstImmediateTicket, true)
+        XCTAssertEqual(viewModel.pendingGiftConfirmation?.steps, 2_999)
+    }
+
+    func testFirstImmediateTicketCanBeGiftedWithAuthorizedHealthBelowStepGoal() async {
+        let environment = AppEnvironment.preview(steps: 1_200)
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await environment.refreshStepsIfPossible()
+        await viewModel.refresh()
+
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 1_200)
+        XCTAssertTrue(viewModel.isFirstImmediateTicketAvailable)
+        XCTAssertTrue(viewModel.canGiftAvailableSteps)
+
+        await viewModel.prepareGiftConfirmation()
+        XCTAssertEqual(viewModel.pendingGiftConfirmation?.isFirstImmediateTicket, true)
+
+        let trip = await viewModel.confirmGiftTodaySteps()
+
+        XCTAssertNotNil(trip)
+        XCTAssertEqual(environment.repository.tickets.count, 1)
+        XCTAssertEqual(environment.repository.cabinLodging.dispatchedCount, 1)
+        XCTAssertTrue(environment.repository.userFlags.firstImmediateTicketGifted)
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 0)
+        XCTAssertEqual(viewModel.giftedStepsSummaryText, AppCopy.Cabin.firstTicketGiftedSummary)
+        XCTAssertEqual(environment.repository.postcards.filter { $0.postcardType == "first_airport_departure" }.count, 1)
+    }
+
+    func testFirstImmediateTicketRequiresHealthConnection() async {
+        let environment = AppEnvironment.preview(
+            stepStatus: .sharingDenied,
+            steps: 1_200
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+
+        XCTAssertTrue(viewModel.requiresHealthConnection)
+        XCTAssertFalse(viewModel.isFirstImmediateTicketAvailable)
+        XCTAssertFalse(viewModel.canGiftAvailableSteps)
     }
 }

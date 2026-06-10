@@ -6,6 +6,7 @@ struct CabinSceneView: View {
 
     var resident: Animal?
     var visitor: Animal?
+    var isApproaching: Bool = false
     var isEmpty: Bool = false
 
     var body: some View {
@@ -21,7 +22,13 @@ struct CabinSceneView: View {
                     .rotationEffect(.degrees(-2))
                     .position(x: size.width * 0.64, y: size.height * 0.69)
 
-                if isEmpty == false {
+                if isApproaching {
+                    ArtImage(name: "cabin_next_animal_approaching")
+                        .frame(width: size.width * 0.78, height: size.height * 0.58)
+                        .opacity(0.94)
+                        .offset(y: reduceMotion ? 0 : (isBreathing ? -2 : 2))
+                        .position(x: size.width * 0.5, y: size.height * 0.58)
+                } else if isEmpty == false {
                     ArtImage(name: resident?.homeAssetName ?? "animal_cat_home")
                         .frame(width: size.width * 0.38, height: size.height * 0.44)
                         .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.018 : 0.994))
