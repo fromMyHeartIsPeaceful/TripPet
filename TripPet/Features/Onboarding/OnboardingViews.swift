@@ -14,10 +14,6 @@ struct AppRootView: View {
                         environment.repository.dismissHealthGuide()
                     }
                 )
-            } else if environment.repository.userFlags.onboardingCompleted == false {
-                OnboardingView {
-                    environment.repository.completeOnboarding()
-                }
             } else {
                 RootTabView()
                     .task {
@@ -38,81 +34,19 @@ struct LoadingStoryView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ArtImage(name: "launch_story_poster", contentMode: .fill)
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .clipped()
+                AppTheme.paperWhite
                     .ignoresSafeArea()
 
-                VStack(spacing: 14) {
-                    Text("步旅小屋")
-                        .font(.system(size: 38, weight: .semibold))
-                        .foregroundStyle(AppTheme.ink)
-
-                    Text("把今天走过的路，折成小动物去远方的小机票。")
-                        .font(AppTheme.body)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineSpacing(4)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    ProgressView()
-                        .tint(AppTheme.deepSage)
-                        .padding(.top, 14)
-                }
-                .padding(.horizontal, 32)
-                .frame(maxWidth: 360)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .shadow(color: AppTheme.paperWhite.opacity(0.6), radius: 8, x: 0, y: 2)
+                ArtImage(name: "launch_story_poster", contentMode: .fill)
+                    .frame(
+                        width: proxy.size.width,
+                        height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+                    )
+                    .clipped()
+                    .ignoresSafeArea()
             }
-        }
-    }
-}
-
-struct OnboardingView: View {
-    var onStart: () -> Void
-
-    var body: some View {
-        ZStack {
-            PaperBackground()
-
-            VStack(spacing: 22) {
-                Spacer(minLength: 10)
-
-                ZStack(alignment: .bottomTrailing) {
-                    ArtImage(name: "onboarding_cabin_path")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 286)
-                        .accessibilityLabel("通往小屋的小路")
-
-                    ArtImage(name: "onboarding_cat_suitcase")
-                        .frame(width: 136, height: 136)
-                        .padding(.trailing, 18)
-                        .padding(.bottom, -10)
-                }
-
-                VStack(spacing: 12) {
-                    Text(AppCopy.Onboarding.title)
-                        .font(AppTheme.pageTitle)
-                        .foregroundStyle(AppTheme.ink)
-                        .multilineTextAlignment(.center)
-
-                    Text(AppCopy.Onboarding.body)
-                        .font(AppTheme.body)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineSpacing(5)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Button(AppCopy.Onboarding.startButton) {
-                    onStart()
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .accessibilityLabel("开始使用步旅小屋")
-
-                Spacer(minLength: 16)
-            }
-            .padding(.horizontal, 24)
+            .accessibilityLabel("步履小屋启动图，小屋前有准备旅行的小动物")
+            .ignoresSafeArea()
         }
     }
 }
@@ -262,10 +196,6 @@ private struct HealthPermissionMessage: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
-}
-
-#Preview("Onboarding") {
-    OnboardingView {}
 }
 
 #Preview("Health Connect") {

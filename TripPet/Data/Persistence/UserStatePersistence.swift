@@ -310,7 +310,7 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         return AppUserState(
             travelWishes: wishes.isEmpty ? seed.travelWishes : rehydrate(wishes: wishes, seed: seed),
             trips: rehydrate(trips: trips, seed: seed),
-            postcards: postcards.isEmpty ? seed.postcards : postcards,
+            postcards: postcards,
             tickets: tickets,
             flags: flags,
             cabinLodging: cabinLodging

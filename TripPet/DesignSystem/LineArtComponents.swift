@@ -83,8 +83,7 @@ struct StepCounterView: View {
     var limit: Int = defaultLimit
 
     static func displayText(value: Int, limit: Int = defaultLimit) -> String {
-        let clampedLimit = max(0, limit)
-        let clampedValue = min(max(value, 0), clampedLimit)
+        let clampedValue = max(value, 0)
         return String(format: "%04d", clampedValue)
     }
 

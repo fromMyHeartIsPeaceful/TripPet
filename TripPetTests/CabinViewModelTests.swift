@@ -3,12 +3,38 @@ import XCTest
 
 @MainActor
 final class CabinViewModelTests: XCTestCase {
-    func testStepCounterDisplayTextClampsAndPads() {
+    func testStepCounterDisplayTextShowsActualStepsAndPadsSmallValues() {
         XCTAssertEqual(StepCounterView.displayText(value: -1), "0000")
         XCTAssertEqual(StepCounterView.displayText(value: 0), "0000")
         XCTAssertEqual(StepCounterView.displayText(value: 42), "0042")
         XCTAssertEqual(StepCounterView.displayText(value: 3_000), "3000")
-        XCTAssertEqual(StepCounterView.displayText(value: 9_999), "3000")
+        XCTAssertEqual(StepCounterView.displayText(value: 5_000), "5000")
+        XCTAssertEqual(StepCounterView.displayText(value: 9_999), "9999")
+    }
+
+    func testAvailableStepsDisplayShowsActualStepsBeforeGift() async {
+        let environment = AppEnvironment.preview(steps: 5_000)
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await environment.refreshStepsIfPossible()
+
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 5_000)
+        XCTAssertTrue(viewModel.canGiftAvailableSteps)
+        XCTAssertNil(viewModel.giftedStepsSummaryText)
+    }
+
+    func testGiftedStepsSummaryKeepsTotalStepsVisibleAfterGift() async {
+        let environment = AppEnvironment.preview(steps: 5_000)
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await environment.refreshStepsIfPossible()
+        environment.repository.giftTicket(sourceSteps: 5_000, ticketCount: 1)
+
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 2_000)
+        XCTAssertFalse(viewModel.canGiftAvailableSteps)
+        XCTAssertEqual(viewModel.giftedStepsSummaryText, "今日总步数 5000，已赠送 3000 步")
     }
 
     func testAvailableStepsDisplayKeepsRemainderAfterGift() async {

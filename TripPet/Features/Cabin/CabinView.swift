@@ -123,6 +123,15 @@ struct CabinView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .frame(maxWidth: .infinity)
 
+            if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
+                Text(giftedStepsSummaryText)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity)
+            }
+
             if isWaitingForAnimal {
                 Text(viewModel.actionMessage)
                     .font(AppTheme.caption)
@@ -172,8 +181,7 @@ struct CabinView: View {
                 } else {
                     GiftTicketButton(
                         isAvailable: canGiftTicket,
-                        isWorking: viewModel.isWorking,
-                        reduceMotion: reduceMotion
+                        isWorking: viewModel.isWorking
                     ) {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         Task {
@@ -228,7 +236,6 @@ struct CabinView: View {
 private struct GiftTicketButton: View {
     var isAvailable: Bool
     var isWorking: Bool
-    var reduceMotion: Bool
     var action: () -> Void
     @State private var isGlowing = false
 
@@ -237,15 +244,34 @@ private struct GiftTicketButton: View {
             ZStack {
                 if isAvailable {
                     TicketEdgeStroke()
-                        .opacity(reduceMotion ? 0.86 : (isGlowing ? 0.96 : 0.62))
-                        .scaleEffect(reduceMotion ? 1 : (isGlowing ? 1.025 : 0.995))
+                        .opacity(isGlowing ? 1 : 0.78)
+                        .scaleEffect(isGlowing ? 1.16 : 0.92)
                 }
 
                 ArtImage(name: "prop_ticket_single")
-                    .frame(width: 164, height: 74)
+                    .frame(width: isAvailable ? 174 : 164, height: isAvailable ? 78 : 74)
+                    .scaleEffect(isAvailable ? (isGlowing ? 1.12 : 0.94) : 1)
+
+                if isAvailable {
+                    Text("点击赠送")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(AppTheme.paperWhite)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(AppTheme.ochre)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(AppTheme.paperWhite.opacity(0.82), lineWidth: AppTheme.hairline)
+                        )
+                        .shadow(color: AppTheme.ochre.opacity(0.4), radius: 5, x: 0, y: 2)
+                        .offset(x: 68, y: -28)
+                        .scaleEffect(isGlowing ? 1.08 : 0.96)
+                        .accessibilityHidden(true)
+                }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 58)
+            .frame(height: 88)
             .contentShape(Rectangle())
         }
         .buttonStyle(TicketGiftButtonStyle(isAvailable: isAvailable))
@@ -261,7 +287,7 @@ private struct GiftTicketButton: View {
 
     private func updateGlow() {
         isGlowing = false
-        guard isAvailable, reduceMotion == false else { return }
+        guard isAvailable else { return }
         withAnimation(.easeInOut(duration: 1.35).repeatForever(autoreverses: true)) {
             isGlowing = true
         }
@@ -293,7 +319,7 @@ private struct TicketEdgeStroke: View {
         }
         .frame(width: 164, height: 74)
         .blur(radius: 0.25)
-        .shadow(color: AppTheme.ochre.opacity(0.48), radius: 8, x: 0, y: 0)
+        .shadow(color: AppTheme.ochre.opacity(0.62), radius: 11, x: 0, y: 0)
         .accessibilityHidden(true)
     }
 }

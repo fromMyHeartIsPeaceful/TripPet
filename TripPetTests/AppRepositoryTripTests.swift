@@ -243,6 +243,15 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertTrue(restoredRepository.postcards.first?.isRead ?? false)
     }
 
+    func testSwiftDataStoreDoesNotHydrateSeedPostcardsForEmptyMailbox() throws {
+        let store = try SwiftDataUserStateStore(inMemory: true)
+        let seed = Self.makeSeed(postcards: SeedData.previewPostcards)
+
+        let repository = AppRepository(seed: seed, store: store)
+
+        XCTAssertTrue(repository.postcards.isEmpty)
+    }
+
     func testEligibleTripRevealsPostcardOnlyOnce() throws {
         let repository = AppRepository(seed: Self.makeSeed())
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
@@ -285,7 +294,8 @@ final class AppRepositoryTripTests: XCTestCase {
 
     private static func makeSeed(
         destinationName: String = "巴黎",
-        destinationAssetName: String = "destination_paris_line"
+        destinationAssetName: String = "destination_paris_line",
+        postcards: [Postcard] = []
     ) -> SeedData {
         SeedData(
             animals: [
@@ -314,7 +324,7 @@ final class AppRepositoryTripTests: XCTestCase {
                 )
             ],
             trips: [],
-            postcards: [],
+            postcards: postcards,
             destinations: [
                 ManifestDestination(
                     id: "paris",

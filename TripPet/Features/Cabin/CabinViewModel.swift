@@ -31,6 +31,21 @@ final class CabinViewModel: ObservableObject {
         return availableSteps(from: environment.stepSnapshot.steps ?? 0)
     }
 
+    var giftedStepsSummaryText: String? {
+        guard let environment,
+              let totalSteps = environment.stepSnapshot.steps else {
+            return nil
+        }
+
+        let giftedSteps = environment.repository.giftedTicketCountToday() * environment.ticketRuleEngine.requiredStepsPerTicket
+        guard giftedSteps > 0 else { return nil }
+
+        return AppCopy.Cabin.giftedStepsSummary(
+            totalSteps: totalSteps,
+            giftedSteps: giftedSteps
+        )
+    }
+
     var canGiftAvailableSteps: Bool {
         guard let environment, requiresHealthConnection == false else { return false }
         let eligibility = environment.ticketRuleEngine.evaluate(

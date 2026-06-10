@@ -7,9 +7,9 @@ enum AppCopy {
     }
 
     enum Onboarding {
-        static let title = "步旅小屋"
-        static let body = "把今天走过的路，轻轻折成一张机票。小动物会带着它去远方，再从路上寄回一张明信片。"
-        static let startButton = "开始布置小屋"
+        static let title = "步履小屋"
+        static let body = "把今天走过的路，变成一张机票，送小动物们去世界各地旅行。"
+        static let startButton = "进入小屋"
     }
 
     enum Health {
@@ -18,7 +18,7 @@ enum AppCopy {
         static let localOnly = "Apple健康的步数数据，只在本地使用。不会发送到外部。"
         static let unavailable = "这台设备暂时不能读取 Health 步数。你仍然可以先进入小屋，等之后可以连接时再回来设置。"
         static let denied = "Health 步数权限还没有开启。你可以稍后在设置里重新连接，小屋会一直等着。"
-        static let authorized = "已经连接好了。今天的脚步可以成为小动物去远方的小机票。"
+        static let authorized = "已经连接好了。今天的脚步可以成为小动物去远方的机票。"
         static let readPermissionRequested = "已经请求过步数读取权限。接下来会直接尝试读取今日步数，如果系统里关闭了权限，可以到 iPhone 设置或健康 App 中重新打开。"
         static let requestFailed = "暂时没有连上。可以先进入小屋，之后在设置里再试一次。"
         static let requestUnchanged = "还没有取得 Health 步数权限。可以先进入小屋，之后在设置里再试一次。"
@@ -40,7 +40,7 @@ enum AppCopy {
     enum Cabin {
         static let title = "小屋"
         static let todayStepsTitle = "今天的步数"
-        static let defaultAction = "把今天走过的路，轻轻折成一张机票。小动物会带着它去远方，并在路上寄回明信片。"
+        static let defaultAction = "把今天走过的路，变成一张机票，送小动物们去世界各地旅行。"
         static let healthUnavailable = "这台设备暂时不能读取 Health 步数。小屋仍然在这里，等可以连接时再把脚步送给小动物。"
         static let healthNotDetermined = "连接健康后，小动物才能收到今日脚步。这里只读取每日步数，用来折成旅行机票。"
         static let healthDenied = "Health 步数权限还没有开启。连接后，小动物才能收到今日脚步。"
@@ -59,7 +59,7 @@ enum AppCopy {
         static let tripStatus = "旅途中"
         static let emptyCabinTitle = "也许会有更多小动物来到小屋..."
         static let emptyCabinBody = ""
-        static let dailyLimitReached = "今天已经送出 3 张小机票。小屋会在明天重新亮起出发灯。"
+        static let dailyLimitReached = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
 
         static func activeTripMessage(animalName: String, destination: String) -> String {
             "\(animalName)已经在去\(destination)的路上。等明信片寄回来，再送出下一张机票吧。"
@@ -69,13 +69,17 @@ enum AppCopy {
             "Apple 健康今天读取到 \(steps) 步。走到 \(requiredSteps) 步后，就可以把脚步折成 1 张机票。"
         }
 
+        static func giftedStepsSummary(totalSteps: Int, giftedSteps: Int) -> String {
+            "今日总步数 \(totalSteps)，已赠送 \(giftedSteps) 步"
+        }
+
         static func tripTitle(animalName: String, destination: String) -> String {
             "\(animalName)正在去\(destination)"
         }
     }
 
     enum TicketRule {
-        static let alreadyGifted = "今天的脚步已经送出去了。等这趟旅行寄回明信片，再准备下一张小机票吧。"
+        static let alreadyGifted = "今天的脚步已经送出去了。等这趟旅行寄回明信片，再准备下一张机票吧。"
         static let eligible = "今天可以赠送 1 张机票"
 
         static func notEnoughSteps(todaySteps: Int, requiredSteps: Int) -> String {
@@ -106,7 +110,7 @@ enum AppCopy {
     enum Mailbox {
         static let title = "邮箱"
         static let emptyTitle = "邮箱还很安静"
-        static let emptyBody = "等小动物从路上寄来明信片，这里会先亮起一封未读来信。"
+        static let emptyBody = "等待小动物从路上寄来明信片..."
     }
 
     enum Settings {
@@ -121,9 +125,9 @@ enum AppCopy {
         static let collectionTitle = "明信片收藏"
         static let collectionDetail = "整理收到的远方来信"
         static let collectionEmpty = "读过的明信片会收进这里。现在收藏夹还空着，等第一封远方来信被打开，它就会留下来。"
-        static let aboutTitle = "关于步旅小屋"
+        static let aboutTitle = "关于步履小屋"
         static let aboutDetail = "版本与说明"
-        static let aboutBody = "步旅小屋把每日脚步变成小动物的旅行机票。它更像一本会慢慢长出来的手帐，而不是一个催促你完成目标的工具。"
+        static let aboutBody = "步履小屋把每日脚步变成小动物的旅行机票。它更像一本会慢慢长出来的手帐，而不是一个催促你完成目标的工具。"
         static let versionTitle = "MVP 版本"
         static let versionBody = "当前包含小屋、邮箱、明信片、Health 步数读取和基础旅行规则。"
 

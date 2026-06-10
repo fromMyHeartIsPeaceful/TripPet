@@ -81,40 +81,7 @@ struct SeedData {
             )
         ],
         trips: [],
-        postcards: [
-            Postcard(
-                id: "postcard_paris_day_2",
-                tripId: "seed_trip_paris",
-                destination: "巴黎",
-                title: "小猫寄来的明信片",
-                body: "清晨的街边很安静。它站在铁塔很远的地方，把自己的影子也拍进了照片里。",
-                imageAssetName: "postcard_paris_day_2",
-                templateAssetName: "postcard_template_classic",
-                destinationAssetName: "destination_paris_line",
-                stampAssetName: "stamp_paris",
-                animalAssetName: "animal_cat_selfie",
-                envelopeAssetName: "envelope_unread",
-                sentAt: Date().addingTimeInterval(-60 * 60 * 8),
-                subtitle: "第 2 天清晨",
-                isRead: false
-            ),
-            Postcard(
-                id: "postcard_iceland_old",
-                tripId: "seed_trip_iceland",
-                destination: "冰岛",
-                title: "云下面的远方",
-                body: "这是一张旧明信片。云压得很低，路边只有风和一盏小小的灯。",
-                imageAssetName: "postcard_iceland_old",
-                templateAssetName: "postcard_template_classic",
-                destinationAssetName: "destination_iceland_line",
-                stampAssetName: "stamp_iceland",
-                animalAssetName: "animal_cat_selfie",
-                envelopeAssetName: "envelope_old",
-                sentAt: Date().addingTimeInterval(-60 * 60 * 24 * 12),
-                subtitle: "旧明信片",
-                isRead: true
-            )
-        ],
+        postcards: [],
         destinations: [
             ManifestDestination(
                 id: "paris",
@@ -140,4 +107,39 @@ struct SeedData {
             )
         ]
     )
+
+    static let previewPostcards = [
+        Postcard(
+            id: "postcard_paris_day_2",
+            tripId: "seed_trip_paris",
+            destination: "巴黎",
+            title: "小猫寄来的明信片",
+            body: "清晨的街边很安静。它站在铁塔很远的地方，把自己的影子也拍进了照片里。",
+            imageAssetName: "postcard_paris_day_2",
+            templateAssetName: "postcard_template_classic",
+            destinationAssetName: "destination_paris_line",
+            stampAssetName: "stamp_paris",
+            animalAssetName: "animal_cat_selfie",
+            envelopeAssetName: "envelope_unread",
+            sentAt: Date().addingTimeInterval(-60 * 60 * 8),
+            subtitle: "第 2 天清晨",
+            isRead: false
+        ),
+        Postcard(
+            id: "postcard_iceland_old",
+            tripId: "seed_trip_iceland",
+            destination: "冰岛",
+            title: "云下面的远方",
+            body: "这是一张旧明信片。云压得很低，路边只有风和一盏小小的灯。",
+            imageAssetName: "postcard_iceland_old",
+            templateAssetName: "postcard_template_classic",
+            destinationAssetName: "destination_iceland_line",
+            stampAssetName: "stamp_iceland",
+            animalAssetName: "animal_cat_selfie",
+            envelopeAssetName: "envelope_old",
+            sentAt: Date().addingTimeInterval(-60 * 60 * 24 * 12),
+            subtitle: "旧明信片",
+            isRead: true
+        )
+    ]
 }

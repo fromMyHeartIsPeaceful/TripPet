@@ -66,38 +66,7 @@
       "postcardBodyTemplate": "冰岛的云压得很低，路边的灯像一粒小小的星。{animal}把围巾裹紧，听见风从黑色海岸跑过去，于是给小屋寄回这一点安静的远方。"
     }
   ],
-  "postcards": [
-    {
-      "id": "postcard_paris_day_2",
-      "tripId": "seed_trip_paris",
-      "destinationId": "paris",
-      "animalId": "cat",
-      "templateAssetName": "postcard_template_classic",
-      "destinationAssetName": "destination_paris_line",
-      "stampAssetName": "stamp_paris",
-      "animalAssetName": "animal_cat_selfie",
-      "envelopeAssetName": "envelope_unread",
-      "title": "小猫寄来的明信片",
-      "subtitle": "第 2 天清晨",
-      "body": "清晨的街边很安静。它站在铁塔很远的地方，把自己的影子也拍进了照片里。",
-      "isRead": false
-    },
-    {
-      "id": "postcard_iceland_old",
-      "tripId": "seed_trip_iceland",
-      "destinationId": "iceland",
-      "animalId": "cat",
-      "templateAssetName": "postcard_template_classic",
-      "destinationAssetName": "destination_iceland_line",
-      "stampAssetName": "stamp_iceland",
-      "animalAssetName": "animal_cat_selfie",
-      "envelopeAssetName": "envelope_old",
-      "title": "云下面的远方",
-      "subtitle": "旧明信片",
-      "body": "这是一张旧明信片。云压得很低，路边只有风和一盏小小的灯。",
-      "isRead": true
-    }
-  ],
+  "postcards": [],
   "rules": {
     "stepsPerTicket": 3000,
     "dailyTicketLimit": 3

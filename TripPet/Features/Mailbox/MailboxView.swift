@@ -160,19 +160,20 @@ private struct MailboxEmptyState: View {
 
 #Preview("Mailbox with letters") {
     MailboxView()
-        .environmentObject(AppEnvironment.preview())
-}
-
-#Preview("Mailbox empty") {
-    MailboxView()
         .environmentObject(
             AppEnvironment.preview(
                 seed: SeedData(
                     animals: SeedData.preview.animals,
                     travelWishes: SeedData.preview.travelWishes,
                     trips: [],
-                    postcards: []
+                    postcards: SeedData.previewPostcards,
+                    destinations: SeedData.preview.destinations
                 )
             )
         )
+}
+
+#Preview("Mailbox empty") {
+    MailboxView()
+        .environmentObject(AppEnvironment.preview())
 }
