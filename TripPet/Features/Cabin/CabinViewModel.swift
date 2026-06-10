@@ -161,7 +161,7 @@ final class CabinViewModel: ObservableObject {
             pendingTicketCount = eligibility.ticketCount
             pendingGiftConfirmation = TicketGiftConfirmation(
                 animalName: environment.repository.currentCabinAnimal?.name ?? "小动物",
-                destination: environment.repository.activeWish?.destination ?? "远方",
+                destination: environment.repository.currentTravelWish?.destination ?? "远方",
                 ticketCount: eligibility.ticketCount,
                 steps: steps
             )
@@ -201,7 +201,9 @@ final class CabinViewModel: ObservableObject {
 
         let trip = environment.repository.giftTicket(
             sourceSteps: steps,
-            ticketCount: ticketCount
+            ticketCount: ticketCount,
+            destinations: environment.destinations,
+            scheduler: environment.postcardScheduler
         )
         lastGiftedTrip = trip
         actionMessage = AppCopy.Cabin.gifted

@@ -11,6 +11,7 @@ struct AppUserState: Equatable {
     var trips: [Trip]
     var postcards: [Postcard]
     var tickets: [Ticket]
+    var relationshipMemories: [AnimalRelationshipMemory]
     var flags: AppUserFlags
     var cabinLodging: CabinLodgingState
 
@@ -19,10 +20,13 @@ struct AppUserState: Equatable {
         trips = seed.trips
         postcards = seed.postcards
         tickets = []
+        relationshipMemories = seed.animals
+            .filter(\.canTravel)
+            .map { AnimalRelationshipMemory(animalId: $0.id, encounterCount: $0.isResident ? 1 : 0) }
         self.flags = flags
         cabinLodging = CabinLodgingState.initial(
             on: Date(),
-            animalId: seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
+            animalId: seed.animals.first(where: \.canTravel)?.id ?? seed.animals.first?.id
         )
     }
 
@@ -31,6 +35,7 @@ struct AppUserState: Equatable {
         trips: [Trip],
         postcards: [Postcard],
         tickets: [Ticket],
+        relationshipMemories: [AnimalRelationshipMemory] = [],
         flags: AppUserFlags,
         cabinLodging: CabinLodgingState
     ) {
@@ -38,6 +43,7 @@ struct AppUserState: Equatable {
         self.trips = trips
         self.postcards = postcards
         self.tickets = tickets
+        self.relationshipMemories = relationshipMemories
         self.flags = flags
         self.cabinLodging = cabinLodging
     }
@@ -122,6 +128,10 @@ final class PersistedTrip {
     var departedAt: Date
     var expectedReturnAt: Date
     var statusRawValue: String
+    var travelKindRawValue: String?
+    var postcardPlanJSON: String?
+    var revealedPostcardCount: Int?
+    var completedAt: Date?
 
     init(trip: Trip) {
         id = trip.id
@@ -131,6 +141,10 @@ final class PersistedTrip {
         departedAt = trip.departedAt
         expectedReturnAt = trip.expectedReturnAt
         statusRawValue = trip.status.rawValue
+        travelKindRawValue = trip.travelKind.rawValue
+        postcardPlanJSON = JSONCoding.encode(trip.postcardPlan)
+        revealedPostcardCount = trip.revealedPostcardCount
+        completedAt = trip.completedAt
     }
 
     var trip: Trip {
@@ -141,7 +155,11 @@ final class PersistedTrip {
             destination: destination,
             departedAt: departedAt,
             expectedReturnAt: expectedReturnAt,
-            status: TripStatus(rawValue: statusRawValue) ?? .traveling
+            status: TripStatus(rawValue: statusRawValue) ?? .traveling,
+            travelKind: TravelKind(rawValue: travelKindRawValue ?? "") ?? .standard,
+            postcardPlan: JSONCoding.decode([TripPostcardPlanItem].self, from: postcardPlanJSON ?? "") ?? [],
+            revealedPostcardCount: revealedPostcardCount ?? 0,
+            completedAt: completedAt
         )
     }
 }
@@ -150,7 +168,16 @@ final class PersistedTrip {
 final class PersistedPostcard {
     @Attribute(.unique) var id: String
     var tripId: String
+    var animalId: String?
+    var profileId: String?
     var destination: String
+    var cityId: String?
+    var sceneId: String?
+    var postcardType: String?
+    var microArc: String?
+    var emotionalWeight: Int?
+    var revealBudget: String?
+    var relationshipStageAtSend: String?
     var title: String
     var body: String
     var imageAssetName: String
@@ -166,7 +193,16 @@ final class PersistedPostcard {
     init(postcard: Postcard) {
         id = postcard.id
         tripId = postcard.tripId
+        animalId = postcard.animalId
+        profileId = postcard.profileId
         destination = postcard.destination
+        cityId = postcard.cityId
+        sceneId = postcard.sceneId
+        postcardType = postcard.postcardType
+        microArc = postcard.microArc
+        emotionalWeight = postcard.emotionalWeight
+        revealBudget = postcard.revealBudget
+        relationshipStageAtSend = postcard.relationshipStageAtSend
         title = postcard.title
         body = postcard.body
         imageAssetName = postcard.imageAssetName
@@ -184,7 +220,16 @@ final class PersistedPostcard {
         Postcard(
             id: id,
             tripId: tripId,
+            animalId: animalId ?? "",
+            profileId: profileId ?? "",
             destination: destination,
+            cityId: cityId ?? "",
+            sceneId: sceneId ?? "",
+            postcardType: postcardType ?? "daily_observation",
+            microArc: microArc ?? "动作型",
+            emotionalWeight: emotionalWeight ?? 0,
+            revealBudget: revealBudget ?? "none",
+            relationshipStageAtSend: relationshipStageAtSend ?? "stranger",
             title: title,
             body: body,
             imageAssetName: imageAssetName,
@@ -273,6 +318,21 @@ final class PersistedCabinLodgingState {
     }
 }
 
+@Model
+final class PersistedAnimalRelationshipMemory {
+    @Attribute(.unique) var animalId: String
+    var memoryJSON: String
+
+    init(memory: AnimalRelationshipMemory) {
+        animalId = memory.animalId
+        memoryJSON = JSONCoding.encode(memory)
+    }
+
+    var memory: AnimalRelationshipMemory? {
+        JSONCoding.decode(AnimalRelationshipMemory.self, from: memoryJSON)
+    }
+}
+
 @MainActor
 final class SwiftDataUserStateStore: AppUserStateStore {
     private let context: ModelContext
@@ -284,7 +344,8 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             PersistedPostcard.self,
             PersistedTravelWishState.self,
             PersistedAppFlag.self,
-            PersistedCabinLodgingState.self
+            PersistedCabinLodgingState.self,
+            PersistedAnimalRelationshipMemory.self
         ])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
         let container = try ModelContainer(for: schema, configurations: [configuration])
@@ -306,12 +367,14 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             .sorted { $0.createdAt < $1.createdAt } ?? []
         let flags = loadFlags()
         let cabinLodging = loadCabinLodging(seed: seed)
+        let relationshipMemories = loadRelationshipMemories(seed: seed)
 
         return AppUserState(
             travelWishes: wishes.isEmpty ? seed.travelWishes : rehydrate(wishes: wishes, seed: seed),
             trips: rehydrate(trips: trips, seed: seed),
             postcards: postcards,
             tickets: tickets,
+            relationshipMemories: relationshipMemories,
             flags: flags,
             cabinLodging: cabinLodging
         )
@@ -322,6 +385,7 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         replace(PersistedTrip.self, with: state.trips.map(PersistedTrip.init(trip:)))
         replace(PersistedPostcard.self, with: state.postcards.map(PersistedPostcard.init(postcard:)))
         replace(PersistedTravelWishState.self, with: state.travelWishes.map(PersistedTravelWishState.init(wish:)))
+        replace(PersistedAnimalRelationshipMemory.self, with: state.relationshipMemories.map(PersistedAnimalRelationshipMemory.init(memory:)))
         replace(PersistedAppFlag.self, with: [
             PersistedAppFlag(key: AppFlagKey.onboardingCompleted, boolValue: state.flags.onboardingCompleted),
             PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed)
@@ -344,8 +408,22 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         let state = try? context.fetch(FetchDescriptor<PersistedCabinLodgingState>()).first?.state
         return state ?? CabinLodgingState.initial(
             on: Date(),
-            animalId: seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
+            animalId: seed.animals.first(where: \.canTravel)?.id ?? seed.animals.first?.id
         )
+    }
+
+    private func loadRelationshipMemories(seed: SeedData) -> [AnimalRelationshipMemory] {
+        let stored = (try? context.fetch(FetchDescriptor<PersistedAnimalRelationshipMemory>()))?
+            .compactMap(\.memory) ?? []
+        let storedByAnimal = Dictionary(uniqueKeysWithValues: stored.map { ($0.animalId, $0) })
+        return seed.animals
+            .filter(\.canTravel)
+            .map { animal in
+                storedByAnimal[animal.id] ?? AnimalRelationshipMemory(
+                    animalId: animal.id,
+                    encounterCount: animal.isResident ? 1 : 0
+                )
+            }
     }
 
     private func replace<T: PersistentModel>(_ type: T.Type, with models: [T]) {
@@ -375,6 +453,18 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             }
             return rehydratedTrip
         }
+    }
+}
+
+private enum JSONCoding {
+    static func encode<T: Encodable>(_ value: T) -> String {
+        guard let data = try? JSONEncoder().encode(value) else { return "" }
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
+    static func decode<T: Decodable>(_ type: T.Type, from json: String) -> T? {
+        guard let data = json.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(type, from: data)
     }
 }
 

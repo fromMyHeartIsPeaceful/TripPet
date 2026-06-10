@@ -55,4 +55,8 @@ enum ContentManifestLoader {
             )
         ]
     }
+
+    static func loadNarrative(bundle: Bundle = .main) -> ManifestNarrative? {
+        load(bundle: bundle)?.narrative
+    }
 }

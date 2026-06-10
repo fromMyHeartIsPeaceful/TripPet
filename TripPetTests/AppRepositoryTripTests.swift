@@ -180,35 +180,153 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertFalse(repository.isCabinEmpty)
     }
 
-    func testCabinLodgingDoesNotPromoteVisitorsToResidents() {
+    func testCabinLodgingRotatesToNextTravelAnimal() {
         let repository = AppRepository(seed: .preview)
         let giftedAt = Self.date(hour: 12)
 
-        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: giftedAt)
+        repository.giftTicket(
+            sourceSteps: 5_500,
+            ticketCount: 1,
+            date: giftedAt,
+            destinations: SeedData.preview.destinations
+        )
         repository.refreshCabinLodging(on: giftedAt.addingTimeInterval(60 * 60 + 1))
 
-        XCTAssertEqual(repository.currentCabinAnimal?.id, "cat")
+        XCTAssertEqual(repository.currentCabinAnimal?.id, "dog")
+        XCTAssertFalse(repository.currentCabinAnimal?.isResident ?? true)
+        XCTAssertTrue(repository.currentCabinAnimal?.canTravel ?? false)
     }
 
     func testCabinStopsAfterThreeDeparturesAndResetsNextDay() {
-        let repository = AppRepository(seed: Self.makeSeed())
+        let seed = SeedData.preview
+        let repository = AppRepository(seed: seed)
         let first = Self.date(hour: 8)
         let second = Self.date(hour: 10)
         let third = Self.date(hour: 12)
 
-        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first, destinations: seed.destinations)
         repository.refreshCabinLodging(on: second)
-        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second, destinations: seed.destinations)
         repository.refreshCabinLodging(on: third)
-        repository.giftTicket(sourceSteps: 7_500, ticketCount: 1, date: third)
+        repository.giftTicket(sourceSteps: 7_500, ticketCount: 1, date: third, destinations: seed.destinations)
 
         XCTAssertEqual(repository.tickets.count, 3)
+        XCTAssertEqual(repository.trips.map(\.animalId), ["cat", "dog", "rabbit"])
         XCTAssertTrue(repository.hasReachedDailyAnimalLimit)
 
         repository.refreshCabinLodging(on: Self.date(day: 2, hour: 8))
 
         XCTAssertEqual(repository.cabinLodging.dispatchedCount, 0)
         XCTAssertEqual(repository.currentCabinAnimal?.id, "cat")
+    }
+
+    func testPreviewAnimalsUseV102TravelProfiles() throws {
+        let animalsById = Dictionary(uniqueKeysWithValues: SeedData.preview.animals.map { ($0.id, $0) })
+
+        XCTAssertEqual(try XCTUnwrap(animalsById["cat"]).profileId, "moji_cat")
+        XCTAssertEqual(try XCTUnwrap(animalsById["dog"]).profileId, "tangyuan_puppy")
+        XCTAssertEqual(try XCTUnwrap(animalsById["dog"]).name, "汤圆")
+        XCTAssertEqual(try XCTUnwrap(animalsById["rabbit"]).profileId, "dengdeng_rabbit")
+        XCTAssertTrue(try XCTUnwrap(animalsById["cat"]).canTravel)
+        XCTAssertTrue(try XCTUnwrap(animalsById["dog"]).canTravel)
+        XCTAssertTrue(try XCTUnwrap(animalsById["rabbit"]).canTravel)
+    }
+
+    func testPostcardPlanCountsByTravelKind() throws {
+        let scheduler = PostcardScheduler()
+        let destinations = Self.makeV102Destinations()
+
+        let lisbon = try XCTUnwrap(destinations.first { $0.id == "pt_lisbon" })
+        let paris = try XCTUnwrap(destinations.first { $0.id == "fr_paris" })
+        let reykjavik = try XCTUnwrap(destinations.first { $0.id == "is_reykjavik" })
+
+        XCTAssertEqual(scheduler.makePostcardPlan(for: lisbon, departedAt: Self.date()).count, 1)
+        XCTAssertEqual(scheduler.makePostcardPlan(for: paris, departedAt: Self.date()).count, 1)
+
+        let longPlan = scheduler.makePostcardPlan(for: reykjavik, departedAt: Self.date())
+        XCTAssertEqual(longPlan.count, 2)
+        XCTAssertNotEqual(longPlan[0].sceneId, longPlan[1].sceneId)
+        XCTAssertNotEqual(longPlan[0].postcardType, longPlan[1].postcardType)
+        XCTAssertNotEqual(longPlan[0].preferredMicroArc, longPlan[1].preferredMicroArc)
+    }
+
+    func testV102GeneratedPostcardUsesLandscapeTemplateWithoutVisualAnimalDependency() throws {
+        let scheduler = PostcardScheduler()
+        let destination = try XCTUnwrap(Self.makeV102Destinations().first { $0.id == "pt_lisbon" })
+        let animal = try XCTUnwrap(SeedData.preview.animals.first { $0.id == "dog" })
+        let trip = Trip(
+            id: "trip_lisbon",
+            animalId: animal.id,
+            destinationId: destination.id,
+            destination: destination.displayName,
+            departedAt: Self.date(day: 1),
+            expectedReturnAt: Self.date(day: 2),
+            status: .traveling,
+            travelKind: .short,
+            postcardPlan: scheduler.makePostcardPlan(for: destination, departedAt: Self.date(day: 1))
+        )
+        let planItem = try XCTUnwrap(trip.postcardPlan.first)
+
+        let postcard = PostcardNarrativeEngine().makePostcard(
+            for: trip,
+            planItem: planItem,
+            animal: animal,
+            destination: destination,
+            narrative: nil,
+            memory: AnimalRelationshipMemory(animalId: animal.id),
+            recentPostcards: [],
+            on: Self.date(day: 2)
+        )
+
+        XCTAssertEqual(postcard.templateAssetName, "postcard_template_landscape_v102")
+        XCTAssertEqual(postcard.destinationAssetName, "destination_lisbon_line")
+        XCTAssertEqual(postcard.stampAssetName, "stamp_lisbon")
+        XCTAssertEqual(postcard.animalId, "dog")
+        XCTAssertEqual(postcard.profileId, "tangyuan_puppy")
+        XCTAssertEqual(postcard.title, "汤圆寄来的里斯本明信片")
+    }
+
+    func testLongTripCompletesOnlyAfterSecondPostcardReveal() throws {
+        let destinations = Self.makeV102Destinations()
+        let seed = Self.makeV102Seed(destinations: destinations)
+        let repository = AppRepository(seed: seed)
+        let departedAt = Self.date(day: 1, hour: 9)
+
+        repository.giftTicket(
+            sourceSteps: 5_200,
+            ticketCount: 1,
+            date: departedAt,
+            destinations: destinations
+        )
+
+        let trip = try XCTUnwrap(repository.activeTrip)
+        XCTAssertEqual(trip.travelKind, .long)
+        XCTAssertEqual(trip.postcardPlan.count, 2)
+
+        let firstReveal = repository.revealEligiblePostcards(
+            scheduler: PostcardScheduler(),
+            destinations: destinations,
+            on: Self.date(day: 3, hour: 9)
+        )
+
+        XCTAssertTrue(firstReveal)
+        XCTAssertEqual(repository.postcards.count, 1)
+        XCTAssertEqual(repository.trips.first?.status, .traveling)
+        XCTAssertEqual(repository.trips.first?.revealedPostcardCount, 1)
+
+        let secondReveal = repository.revealEligiblePostcards(
+            scheduler: PostcardScheduler(),
+            destinations: destinations,
+            on: Self.date(day: 5, hour: 9)
+        )
+
+        XCTAssertTrue(secondReveal)
+        XCTAssertEqual(repository.postcards.count, 2)
+        XCTAssertEqual(repository.trips.first?.status, .completed)
+        XCTAssertEqual(repository.travelWishes.first?.status, .completed)
+        XCTAssertEqual(Set(repository.postcards.map(\.sceneId)).count, 2)
+        XCTAssertEqual(Set(repository.postcards.map(\.postcardType)).count, 2)
+        XCTAssertEqual(Set(repository.postcards.map(\.microArc)).count, 2)
     }
 
     func testSwiftDataStorePersistsRepositoryStateAcrossRepositoryInstances() throws {
@@ -339,6 +457,122 @@ final class AppRepositoryTripTests: XCTestCase {
                 )
             ]
         )
+    }
+
+    private static func makeV102Seed(destinations: [ManifestDestination]) -> SeedData {
+        let destination = destinations.first { $0.id == "is_reykjavik" } ?? destinations[0]
+        return SeedData(
+            animals: [
+                Animal(
+                    id: "cat",
+                    name: "墨迹",
+                    species: "cat",
+                    personality: "安静、好奇、喜欢地图",
+                    profileId: "moji_cat",
+                    canTravel: true,
+                    displayRoleType: "见证者",
+                    homeAssetName: "animal_cat_home",
+                    selfieAssetName: "animal_cat_selfie",
+                    visitorAssetName: "animal_cat_home",
+                    discoveredAt: date(),
+                    isResident: true
+                )
+            ],
+            travelWishes: [
+                TravelWish(
+                    id: "wish_reykjavik_cat",
+                    animalId: "cat",
+                    destinationId: destination.id,
+                    destination: destination.displayName,
+                    destinationAssetName: destination.landmarkAssetName,
+                    requiredTickets: 1,
+                    status: .waiting,
+                    createdAt: date()
+                )
+            ],
+            trips: [],
+            postcards: [],
+            destinations: destinations
+        )
+    }
+
+    private static func makeV102Destinations() -> [ManifestDestination] {
+        [
+            ManifestDestination(
+                id: "fr_paris",
+                cityId: "fr_paris",
+                displayName: "巴黎",
+                landmarkAssetName: "destination_paris_line",
+                stampAssetName: "stamp_paris",
+                routeMapAssetName: "trip_route_map_paris",
+                postcardTemplateAssetName: "postcard_template_landscape_v102",
+                travelKind: "standard",
+                primaryColor: "#D8B36A",
+                postcardTitleTemplate: "{animal}寄来的巴黎明信片",
+                postcardSubtitle: "旅途中寄来",
+                postcardBodyTemplate: "{animal}在{destination}写信。",
+                scenes: Self.makeScenes(prefix: "fr_paris")
+            ),
+            ManifestDestination(
+                id: "is_reykjavik",
+                cityId: "is_reykjavik",
+                displayName: "雷克雅未克",
+                landmarkAssetName: "destination_iceland_line",
+                stampAssetName: "stamp_iceland",
+                routeMapAssetName: "trip_route_map_iceland",
+                postcardTemplateAssetName: "postcard_template_landscape_v102",
+                travelKind: "long",
+                primaryColor: "#A9C9D8",
+                postcardTitleTemplate: "{animal}寄来的雷克雅未克明信片",
+                postcardSubtitle: "旅途中寄来",
+                postcardBodyTemplate: "{animal}在{destination}写信。",
+                scenes: Self.makeScenes(prefix: "is_reykjavik")
+            ),
+            ManifestDestination(
+                id: "pt_lisbon",
+                cityId: "pt_lisbon",
+                displayName: "里斯本",
+                landmarkAssetName: "destination_lisbon_line",
+                stampAssetName: "stamp_lisbon",
+                routeMapAssetName: "trip_route_map_lisbon",
+                postcardTemplateAssetName: "postcard_template_landscape_v102",
+                travelKind: "short",
+                primaryColor: "#C9895F",
+                postcardTitleTemplate: "{animal}寄来的里斯本明信片",
+                postcardSubtitle: "旅途中寄来",
+                postcardBodyTemplate: "{animal}在{destination}写信。",
+                scenes: Self.makeScenes(prefix: "pt_lisbon")
+            )
+        ]
+    }
+
+    private static func makeScenes(prefix: String) -> [ManifestPostcardScene] {
+        [
+            ManifestPostcardScene(
+                sceneId: "\(prefix)_street_01",
+                sceneName: "旧街转角",
+                sceneType: "street_corner",
+                sensoryDetails: ["风擦过门牌", "浅色墙面反光", "脚步声很轻"],
+                localObjects: ["门牌", "票角", "纸袋"],
+                availableActions: ["把门牌上的水擦掉", "把票角压平", "把纸袋扶正"],
+                postcardTypes: ["daily_observation", "personality_reaction"],
+                microArcFits: ["旁观型", "选择型"],
+                animalAffinity: ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
+                avoidWriting: ["景点介绍"]
+            ),
+            ManifestPostcardScene(
+                sceneId: "\(prefix)_pier_02",
+                sceneName: "码头边",
+                sceneType: "pier",
+                sensoryDetails: ["低云贴着栏杆", "海风有盐味", "远处的路发亮"],
+                localObjects: ["围巾角", "旧票根", "小石子"],
+                availableActions: ["等风过去", "把旧票根夹回本子", "把小石子推回边上"],
+                postcardTypes: ["motif_echo", "relationship_card"],
+                microArcFits: ["回声型", "误会型"],
+                animalAffinity: ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
+                avoidWriting: ["强行安慰"]
+            )
+        ]
     }
 
     private static func date(day: Int = 1, hour: Int = 0) -> Date {

@@ -1,0 +1,1143 @@
+TripPet 1.0.2 明信片系统实现上下文摘要
+生成时间：2026-06-10
+项目路径：/Users/edy/Documents/心理/TripPet
+
+============================================================
+一、任务背景
+============================================================
+
+本次任务是在 TripPet 当前 1.0.1 基础上，实现 1.0.2 明信片系统 MVP。
+
+用户给出的最终规划要点：
+
+1. 1.0.2 先做完整闭环，不追求内容规模。
+2. 首发只做 3 只小动物：
+   - cat：墨迹，猫
+   - dog：汤圆，小狗
+   - rabbit：灯灯，兔子
+3. 用户可见文本必须统一为“汤圆”，不能再出现“糖圆”。
+4. 首发目的地为 3 个国外城市：
+   - 巴黎 fr_paris
+   - 雷克雅未克 is_reykjavik
+   - 里斯本 pt_lisbon
+5. 不加入国内城市、美国城市、其他东亚城市。用户特别指出“上海替换为其他国外城市，但是不要美国和其他东亚城市”，最终选择里斯本。
+6. 明信片文字继续由 SwiftUI 渲染，禁止烘焙进图片。
+7. 1.0.2 明信片不展示小动物自拍。
+8. 动物感通过标题、正文、关系记忆体现，不通过明信片视觉自拍体现。
+9. 美术先只做 1 套通用模板，跑通逻辑闭环后再扩展动物姿势、多模板、贴纸等。
+10. 新模板需要扩大地点风景展示区，淡化和地点风景无关的装饰。
+
+核心实现目标：
+
+- 资源层：新增大风景通用明信片模板、里斯本风景、里斯本邮戳、里斯本路线图。
+- 内容层：扩展 manifest，包含动物 profile、目的地 scenes、叙事模板等。
+- 数据层：扩展 Animal、Trip、Postcard，新增 AnimalRelationshipMemory。
+- 逻辑层：送出旅行时创建 postcardPlan，到期按计划投递，长途最多 2 张卡。
+- 叙事层：新增本地确定性 PostcardNarrativeEngine，不联网、不服务端、不临时编造地点事实。
+- UI 层：邮箱投递反馈、未读优先、Root Tab badge、明信片详情大风景布局、打开标记已读、收藏页沿用已读展示。
+- 测试层：补充 1.0.2 核心规则单元测试，保持 iPhoneOS build 和 Simulator tests 通过。
+
+
+============================================================
+二、总体实现思路
+============================================================
+
+本次采用“先闭环、后扩展”的实现策略。
+
+1. 内容范围收窄
+
+只保留 3 只可旅行动物和 3 个目的地，避免一次性做大规模地点库、动物姿势和模板系统。这样可以优先验证：
+
+- 派行动物是否正确轮换。
+- 每只动物是否能拥有自己的 active wish。
+- 旅行是否能提前生成 postcardPlan。
+- 邮箱是否能按到期时间投递明信片。
+- 明信片详情是否能用统一模板和地点风景完成展示。
+- 已读、未读、收藏、关系记忆是否能持久化。
+
+2. 美术资源先通用化
+
+根据用户要求，1.0.2 不再给明信片做动物自拍视觉。因此资源设计变成：
+
+- 通用明信片模板：postcard_template_landscape_v102
+- 地点风景主视觉：destination_*_line
+- 邮戳：stamp_*
+- SwiftUI 渲染标题、subtitle、正文、日期
+
+这样既节省动物姿势资源，又能把明信片第一眼重点转向地点风景。
+
+3. 数据兼容优先
+
+在 domain model 中新增字段时都提供默认值，避免旧初始化点大量破裂。
+SwiftData 持久化模型中，对 1.0.2 新增字段使用 optional 存储和读取兜底，降低从 1.0.1 本地数据库升级时的风险。
+
+4. 叙事引擎本地确定性
+
+PostcardNarrativeEngine 不联网，也不在运行时随意编造事实。它只从 manifest 里预审过的 animal profile、destination scenes、templates 中选择素材。
+
+最开始实现中曾使用 Swift 的 String.hashValue 做稳定选择；后续发现 hashValue 跨进程不保证稳定，于是改成固定 DJB2 风格 stableHash，保证同样输入在不同启动中也能稳定选择。
+
+5. 新旧系统兼容
+
+旧 postcard 仍可展示。
+animalAssetName 字段仍保留，但 1.0.2 明信片详情页不再渲染动物自拍。
+旧 postcard_template_classic 保留为 fallback，不作为 1.0.2 默认体验。
+
+
+============================================================
+三、美术资源实现记录
+============================================================
+
+使用 imagegen 生成并接入了 4 个 PNG 资源。
+
+生成后源图路径：
+
+1. 通用大风景明信片模板
+   - /Users/edy/Documents/心理/TripPet/TripPet/Resources/ArtSourceRaster/Postcards/postcard_template_landscape_v102.png
+   - Asset catalog:
+     /Users/edy/Documents/心理/TripPet/TripPet/Resources/Assets.xcassets/Postcards/postcard_template_landscape_v102.imageset/postcard_template_landscape_v102@3x.png
+
+2. 里斯本风景资源
+   - /Users/edy/Documents/心理/TripPet/TripPet/Resources/ArtSourceRaster/Destinations/destination_lisbon_line.png
+   - Asset catalog:
+     /Users/edy/Documents/心理/TripPet/TripPet/Resources/Assets.xcassets/Destinations/destination_lisbon_line.imageset/destination_lisbon_line@3x.png
+
+3. 里斯本邮戳
+   - /Users/edy/Documents/心理/TripPet/TripPet/Resources/ArtSourceRaster/Stamps/stamp_lisbon.png
+   - Asset catalog:
+     /Users/edy/Documents/心理/TripPet/TripPet/Resources/Assets.xcassets/Stamps/stamp_lisbon.imageset/stamp_lisbon@3x.png
+
+4. 里斯本路线图
+   - /Users/edy/Documents/心理/TripPet/TripPet/Resources/ArtSourceRaster/Destinations/trip_route_map_lisbon.png
+   - Asset catalog:
+     /Users/edy/Documents/心理/TripPet/TripPet/Resources/Assets.xcassets/Destinations/trip_route_map_lisbon.imageset/trip_route_map_lisbon@3x.png
+
+同时新增了对应 imageset 的 Contents.json。
+
+保留并复用的旧资源：
+
+- envelope_unread
+- envelope_read
+- envelope_old
+- destination_paris_line
+- destination_iceland_line
+- stamp_paris
+- stamp_iceland
+- trip_route_map_paris
+- trip_route_map_iceland
+- postcard_template_classic，作为 fallback
+
+未新增的资源：
+
+- 没有新增 animal_*_selfie 明信片姿势。
+- 没有新增多套模板。
+- 没有新增贴纸系统。
+- 没有新增 Lottie 或转场帧。
+
+资源检查结果：
+
+- ContentManifest.json JSON lint 通过。
+- manifest 引用资源检查通过：19 referenced assets found。
+
+
+============================================================
+四、内容 Manifest 实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Resources/ContentManifest.json
+- /Users/edy/Documents/心理/TripPet/TripPet/Data/Manifest/ContentManifest.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Data/Manifest/ContentManifestLoader.swift
+
+ContentManifest.json 已重写为 1.0.2 内容结构。
+
+动物：
+
+1. cat
+   - displayName：墨迹
+   - profileId：moji_cat
+   - canTravel：true
+   - displayRoleType：见证者
+
+2. dog
+   - displayName：汤圆
+   - profileId：tangyuan_puppy
+   - canTravel：true
+   - displayRoleType：荒诞喜剧者
+   - 用户可见文本统一为“汤圆”
+
+3. rabbit
+   - displayName：灯灯
+   - profileId：dengdeng_rabbit
+   - canTravel：true
+   - displayRoleType：归乡者
+
+目的地：
+
+1. fr_paris
+   - displayName：巴黎
+   - landmarkAssetName：destination_paris_line
+   - stampAssetName：stamp_paris
+   - routeMapAssetName：trip_route_map_paris
+   - postcardTemplateAssetName：postcard_template_landscape_v102
+   - travelKind：standard
+   - scenes：6 个
+
+2. is_reykjavik
+   - displayName：雷克雅未克
+   - landmarkAssetName：destination_iceland_line
+   - stampAssetName：stamp_iceland
+   - routeMapAssetName：trip_route_map_iceland
+   - postcardTemplateAssetName：postcard_template_landscape_v102
+   - travelKind：long
+   - scenes：6 个
+
+3. pt_lisbon
+   - displayName：里斯本
+   - landmarkAssetName：destination_lisbon_line
+   - stampAssetName：stamp_lisbon
+   - routeMapAssetName：trip_route_map_lisbon
+   - postcardTemplateAssetName：postcard_template_landscape_v102
+   - travelKind：short
+   - scenes：6 个
+
+narrative：
+
+Manifest 中新增 narrative 区域，包含：
+
+- postcardTypes 权重
+- profiles：三只动物的叙事 profile
+- templates：postcardType + microArc 对应的 revealBudget、maxEmotionalWeight
+
+每个动物 profile 包括：
+
+- motifs
+- reactionLines
+- relationshipLines
+- actionPatterns
+- preferredPostcardTypes
+
+每个 scene 包括：
+
+- sceneId
+- sceneName
+- sceneType
+- sensoryDetails
+- localObjects
+- availableActions
+- postcardTypes
+- microArcFits
+- animalAffinity
+- avoidWriting
+
+ContentManifest.swift 扩展点：
+
+- ContentManifest 新增 narrative: ManifestNarrative?
+- ManifestAnimal 新增 profileId、canTravel、displayRoleType
+- ManifestDestination 新增 cityId、postcardTemplateAssetName、travelKind、scenes
+- ManifestPostcard 新增 animalId、profileId、cityId、sceneId、postcardType、microArc、emotionalWeight、revealBudget、relationshipStageAtSend
+- 新增 ManifestNarrative、ManifestAnimalProfile、ManifestPostcardTemplate、ManifestPostcardScene
+
+ContentManifestLoader.swift：
+
+- 新增 loadNarrative()，从 manifest 中读取 narrative。
+
+
+============================================================
+五、Domain Model 实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Models/Animal.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Models/Trip.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Models/Postcard.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Models/AnimalRelationshipMemory.swift
+
+Animal 新增字段：
+
+- profileId: String = ""
+- canTravel: Bool = true
+- displayRoleType: String = ""
+
+Trip 新增：
+
+- enum TravelKind: short / standard / long
+- struct TripPostcardPlanItem
+  - sequence
+  - dueAt
+  - postcardType
+  - preferredMicroArc
+  - plannedEmotionalWeight
+  - sceneId
+
+Trip 新增字段：
+
+- travelKind: TravelKind = .standard
+- postcardPlan: [TripPostcardPlanItem] = []
+- revealedPostcardCount: Int = 0
+- completedAt: Date?
+
+Postcard 新增字段：
+
+- animalId
+- profileId
+- cityId
+- sceneId
+- postcardType
+- microArc
+- emotionalWeight
+- revealBudget
+- relationshipStageAtSend
+
+新增 AnimalRelationshipMemory：
+
+用于记录每只动物的关系记忆，包括：
+
+- animalId
+- encounterCount
+- tripCount
+- relationshipStage
+- visitedCityIds
+- recentSceneIds
+- sentPostcardIds
+- recentlyUsedMotifs
+- favoritedPostcardIds
+
+设计目的：
+
+- 支持后续关系递进。
+- 支持 scene/motif 冷却。
+- 支持避免同一动物近期重复相似叙事。
+- 支持收藏明信片与关系记忆联动的后续扩展。
+
+
+============================================================
+六、持久化实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Data/Persistence/UserStatePersistence.swift
+
+AppUserState 新增：
+
+- relationshipMemories: [AnimalRelationshipMemory]
+
+SwiftData schema 新增：
+
+- PersistedAnimalRelationshipMemory
+
+PersistedTrip 新增持久化字段：
+
+- travelKindRawValue
+- postcardPlanJSON
+- revealedPostcardCount
+- completedAt
+
+PersistedPostcard 新增持久化字段：
+
+- animalId
+- profileId
+- cityId
+- sceneId
+- postcardType
+- microArc
+- emotionalWeight
+- revealBudget
+- relationshipStageAtSend
+
+兼容处理：
+
+为了降低从 1.0.1 真实设备数据库迁移到 1.0.2 时的风险，新增的 SwiftData 字段最终做成 optional，并在 domain rehydrate 时兜底：
+
+- travelKindRawValue 缺失时默认为 standard
+- postcardPlanJSON 缺失或 decode 失败时默认为 []
+- revealedPostcardCount 缺失时默认为 0
+- postcard 新增 metadata 缺失时使用旧数据兼容默认值
+
+注意：
+
+当前已经通过 in-memory SwiftData 测试和 iPhoneOS build。
+发布前仍建议拿一份真实 1.0.1 设备数据库做升级验证，确认 SwiftData lightweight migration 在真实环境下符合预期。
+
+
+============================================================
+七、Repository 与业务闭环实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Data/Repositories/AppRepository.swift
+
+核心新增状态：
+
+- @Published private(set) var relationshipMemories
+
+新增/调整逻辑：
+
+1. 当前小屋动物派行
+
+旧逻辑更偏向常驻动物。
+1.0.2 改成 canTravel 动物参与派行轮换：
+
+- 第 1 只：cat
+- 第 2 只：dog
+- 第 3 只：rabbit
+
+每日最多派出 3 只动物。
+派出后小屋空 1 小时，再刷新到下一只动物。
+到达每日上限后小屋保持空。
+第二天重置 dispatchedCount，并从 cat 重新开始。
+
+2. active wish
+
+新增 currentTravelWish：
+
+- 当前小屋动物是谁，就优先拿它自己的 waiting/ready wish。
+- 如果没有 active wish，就从 manifest destinations 中为该动物生成下一个等待愿望。
+
+3. giftTicket 扩展
+
+giftTicket 新签名：
+
+func giftTicket(
+    sourceSteps: Int,
+    ticketCount: Int,
+    date: Date = Date(),
+    destinations: [ManifestDestination] = [],
+    scheduler: PostcardScheduler = PostcardScheduler()
+) -> Trip?
+
+新行为：
+
+- 送票时确定当前动物。
+- 获取或创建当前动物的 wish。
+- 查找目的地。
+- 调用 scheduler.makePostcardPlan(for:departedAt:) 创建 postcardPlan。
+- 根据 plan 最后一张 dueAt 设置 expectedReturnAt。
+- 写入 Trip.travelKind、postcardPlan、revealedPostcardCount。
+- 标记 wish traveling。
+- 更新 relationship memory 的 tripCount、visitedCityIds、relationshipStage。
+- 更新小屋派行状态。
+
+4. revealEligiblePostcards
+
+新行为：
+
+- 如果 trip.postcardPlan 为空，沿用旧逻辑：到期生成一张旧式 postcard 并完成 trip。
+- 如果 trip.postcardPlan 非空，按 revealedPostcardCount 取下一张计划。
+- 到期后使用 PostcardNarrativeEngine 生成 postcard。
+- 插入 mailbox。
+- revealedPostcardCount += 1。
+- 更新 AnimalRelationshipMemory。
+- 如果 plan 全部投递完，trip 才 completed，wish 才 completed。
+
+约束：
+
+- 同一 trip 不重复投递同一 sequence。
+- long trip 两张卡由 plan 保证不同 sceneId、postcardType、microArc。
+- 一次旅行最多 2 张明信片。
+
+5. relationship memory
+
+新增 helper：
+
+- relationshipMemory(for:)
+- markTripStarted(for:cityId:)
+- updateRelationshipMemory(afterSending:)
+- upsertRelationshipMemory(...)
+- relationshipStage(encounterCount:tripCount:)
+
+relationshipStage 当前简单规则：
+
+- stranger
+- testing
+- familiar
+- trusted
+- attached
+
+
+============================================================
+八、明信片计划与叙事引擎实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Services/PostcardScheduler.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Domain/Services/PostcardNarrativeEngine.swift
+
+PostcardScheduler 新增 makePostcardPlan(for:departedAt:)。
+
+规则：
+
+1. short
+   - 1 张
+   - dueAt：departedAt + 1 天
+   - postcardType：daily_observation
+   - fallbackArc：动作型
+   - emotionalWeight：0
+
+2. standard
+   - 1 张
+   - dueAt：departedAt + 2 天
+   - postcardType：personality_reaction
+   - fallbackArc：选择型
+   - emotionalWeight：1
+
+3. long
+   - 2 张
+   - 第 1 张：
+     - dueAt：departedAt + 2 天
+     - postcardType：daily_observation
+     - fallbackArc：旁观型
+     - emotionalWeight：0
+   - 第 2 张：
+     - dueAt：departedAt + 4 天
+     - postcardType：motif_echo
+     - fallbackArc：回声型
+     - emotionalWeight：2
+   - 尽量选择不同 sceneId。
+
+PostcardScheduler.makePostcard 兼容旧逻辑，同时现在会填入 1.0.2 metadata 和默认模板：
+
+- templateAssetName 使用 destination.postcardTemplateAssetName ?? postcard_template_landscape_v102
+
+PostcardNarrativeEngine：
+
+输入：
+
+- trip
+- planItem
+- animal
+- destination
+- narrative
+- memory
+- recentPostcards
+- date
+
+输出：
+
+- 完整 Postcard
+
+生成流程：
+
+1. 按 animal.profileId 找 narrative profile。
+2. 按 planItem.sceneId、postcardType、animalAffinity、recentSceneIds 选择 scene。
+3. 按 postcardType 和 microArc 找 narrative template。
+4. 计算 emotionalWeight。
+5. 从 animal motifs 中选择 motif，并避开 recentlyUsedMotifs。
+6. 从 scene 中选择 object/action/sensory。
+7. 从 reactionLines 或 relationshipLines 中选择 reaction。
+8. 根据 microArc 生成 body。
+9. 填入 metadata。
+
+叙事注意点：
+
+- 不联网。
+- 不访问服务端。
+- 不临时编造地点事实。
+- 只使用 manifest 中已整理的 scene、object、action、sensory、animal profile。
+- 使用 stableHash 替代 Swift String.hashValue，避免跨进程不稳定。
+
+当前 bodyText 支持的 microArc：
+
+- 误会型
+- 旁观型
+- 回声型
+- 选择型
+- default 动作型/其他
+
+标题格式：
+
+- "\(animal.name)寄来的\(destination.displayName)明信片"
+
+因此 dog 生成标题会是：
+
+- 汤圆寄来的里斯本明信片
+
+
+============================================================
+九、AppEnvironment 与 ViewModel 接入记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/App/AppEnvironment.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Features/Cabin/CabinViewModel.swift
+
+AppEnvironment：
+
+- 新增 let narrative: ManifestNarrative?
+- live 和 preview 都通过 ContentManifestLoader.loadNarrative() 注入。
+- revealEligiblePostcards 调用时传入 narrative。
+
+CabinViewModel：
+
+- gift confirmation 的 destination 改用 repository.currentTravelWish。
+- confirmGift 调用 repository.giftTicket 时传入 environment.destinations 和 environment.postcardScheduler。
+
+效果：
+
+- 当前小屋展示哪只动物，就给哪只动物送旅行。
+- 旅行动物对应自己的 active wish。
+- 没有 active wish 时，可由 repository 创建下一个目的地 wish。
+
+
+============================================================
+十、Mailbox / Detail / Root Tab UI 实现记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/App/RootTabView.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Features/Mailbox/MailboxView.swift
+- /Users/edy/Documents/心理/TripPet/TripPet/Features/Mailbox/PostcardDetailView.swift
+
+RootTabView：
+
+- 注入 environment object。
+- 邮箱 tab 显示 unread badge。
+
+MailboxView：
+
+- 进入 mailbox 时调用 revealIfNeeded。
+- revealIfNeeded 调 repository.revealEligiblePostcards。
+- 如果有新卡投递，显示轻量 banner：
+  - 新的明信片已经送到邮箱
+- 列表排序改为 unread 优先，再按 sentAt 倒序。
+- 打开明信片后，既有逻辑会 markPostcardRead。
+
+PostcardDetailView：
+
+重点改为大风景明信片布局。
+
+布局：
+
+- 背景：PaperBackground
+- 顶部：返回按钮
+- 主体：PostcardArtwork，16:9 横版
+- templateAssetName 作为底图
+- destinationAssetName 大面积放在上方/中上部
+- stampAssetName 弱化放在角落
+- SwiftUI 渲染：
+  - destination
+  - subtitle
+  - sentAt date
+  - title
+  - body
+
+重要变更：
+
+- 不再渲染 postcard.animalAssetName。
+- 1.0.2 明信片视觉不依赖动物自拍。
+- animalAssetName 字段保留，只用于旧数据兼容。
+
+辅助：
+
+- 对旧 title “小猫寄来的自拍” 做 displayTitle 兼容，显示为“小猫寄来的明信片”。
+- accessibilityLabel 包含 title、destination、subtitle、body。
+
+待真机手工重点验收：
+
+- 小屏幕下 body lineLimit 是否足够。
+- Dynamic Type 放大后是否溢出。
+- VoiceOver 顺序与信息量是否舒服。
+- Reduce Motion 没有明显额外风险，因为没有新增复杂动画。
+
+
+============================================================
+十一、SeedData 与预览数据记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Data/SeedData/SeedData.swift
+
+SeedData.preview 已更新：
+
+动物：
+
+- 墨迹：cat / moji_cat / canTravel true / resident true
+- 汤圆：dog / tangyuan_puppy / canTravel true / resident false
+- 灯灯：rabbit / dengdeng_rabbit / canTravel true / resident false
+- visitor_unknown 保留为不可旅行，用于旧访客视觉兼容
+
+目的地：
+
+- fr_paris
+- is_reykjavik
+- pt_lisbon
+
+preview postcards：
+
+- 使用 postcard_template_landscape_v102
+- 带 1.0.2 metadata
+- animalAssetName 仍有旧兼容值，但详情页不会展示
+
+
+============================================================
+十二、Xcode Project 接入记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet.xcodeproj/project.pbxproj
+
+新增 Swift 文件已加入 Xcode project：
+
+- TripPet/Domain/Models/AnimalRelationshipMemory.swift
+- TripPet/Domain/Services/PostcardNarrativeEngine.swift
+
+校验：
+
+- plutil -lint TripPet/TripPet.xcodeproj/project.pbxproj
+- 结果：OK
+
+
+============================================================
+十三、测试更新记录
+============================================================
+
+主要文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPetTests/AppRepositoryTripTests.swift
+
+旧测试调整：
+
+1. testCabinLodgingDoesNotPromoteVisitorsToResidents
+
+旧假设：
+- 访客不应派行，刷新后仍回到 cat。
+
+1.0.2 新假设：
+- dog/rabbit 虽不是 resident，但 canTravel true，可以派行。
+- 测试改为 testCabinLodgingRotatesToNextTravelAnimal。
+- 断言第一只 cat 派出后，下一只 currentCabinAnimal 是 dog。
+
+2. testCabinStopsAfterThreeDeparturesAndResetsNextDay
+
+旧 seed 只有 cat。
+新测试使用 SeedData.preview，断言一天三次派行顺序：
+
+- cat
+- dog
+- rabbit
+
+并断言 reached daily limit 后第二天重置回 cat。
+
+新增测试：
+
+1. testPreviewAnimalsUseV102TravelProfiles
+
+覆盖：
+
+- cat.profileId == moji_cat
+- dog.profileId == tangyuan_puppy
+- dog.name == 汤圆
+- rabbit.profileId == dengdeng_rabbit
+- 三只 canTravel 都为 true
+
+2. testPostcardPlanCountsByTravelKind
+
+覆盖：
+
+- 里斯本 short 生成 1 张
+- 巴黎 standard 生成 1 张
+- 雷克雅未克 long 生成 2 张
+- long 两张 sceneId 不同
+- long 两张 postcardType 不同
+- long 两张 preferredMicroArc 不同
+
+3. testV102GeneratedPostcardUsesLandscapeTemplateWithoutVisualAnimalDependency
+
+覆盖：
+
+- 生成的 postcard 使用 postcard_template_landscape_v102
+- 使用 destination_lisbon_line
+- 使用 stamp_lisbon
+- animalId == dog
+- profileId == tangyuan_puppy
+- title == 汤圆寄来的里斯本明信片
+
+4. testLongTripCompletesOnlyAfterSecondPostcardReveal
+
+覆盖：
+
+- long trip 生成 2 张 plan
+- 第一次 reveal 后：
+  - postcards.count == 1
+  - trip.status 仍是 traveling
+  - revealedPostcardCount == 1
+- 第二次 reveal 后：
+  - postcards.count == 2
+  - trip.status == completed
+  - wish.status == completed
+  - 两张卡 sceneId/postcardType/microArc 均不重复
+
+已有测试仍通过：
+
+- 旧式 completeTrip
+- 旧式 shouldReveal fallback
+- SwiftData in-memory persistence
+- manifest decode
+- TicketRuleEngine
+- CabinViewModel
+
+
+============================================================
+十四、验证命令与结果
+============================================================
+
+1. JSON lint
+
+命令：
+
+python3 -m json.tool TripPet/TripPet/Resources/ContentManifest.json >/dev/null
+
+结果：
+
+- 通过
+
+2. Xcode project lint
+
+命令：
+
+plutil -lint TripPet/TripPet.xcodeproj/project.pbxproj
+
+结果：
+
+- TripPet/TripPet.xcodeproj/project.pbxproj: OK
+
+3. manifest 资源检查
+
+用 Node 脚本扫描 ContentManifest.json 中引用的 asset name，并在 Assets.xcassets 中查找对应 .imageset。
+
+结果：
+
+- manifest ok: 19 referenced assets found
+
+4. iPhone Simulator tests
+
+命令：
+
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild test -project TripPet/TripPet.xcodeproj -scheme TripPet -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath TripPet/.derivedData CODE_SIGNING_ALLOWED=NO
+
+最终结果：
+
+- TEST SUCCEEDED
+- AppRepositoryTripTests 全部通过
+- CabinViewModelTests 全部通过
+- TicketRuleEngineTests 全部通过
+
+关键通过的新测试：
+
+- testCabinLodgingRotatesToNextTravelAnimal
+- testCabinStopsAfterThreeDeparturesAndResetsNextDay
+- testPreviewAnimalsUseV102TravelProfiles
+- testPostcardPlanCountsByTravelKind
+- testV102GeneratedPostcardUsesLandscapeTemplateWithoutVisualAnimalDependency
+- testLongTripCompletesOnlyAfterSecondPostcardReveal
+
+5. iPhoneOS Debug build
+
+命令：
+
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project TripPet/TripPet.xcodeproj -scheme TripPet -configuration Debug -sdk iphoneos -derivedDataPath TripPet/.derivedData CODE_SIGNING_ALLOWED=NO build
+
+最终结果：
+
+- BUILD SUCCEEDED
+
+
+============================================================
+十五、当前变更文件清单
+============================================================
+
+修改文件：
+
+- TripPet.xcodeproj/project.pbxproj
+- TripPet/App/AppEnvironment.swift
+- TripPet/App/RootTabView.swift
+- TripPet/Data/Manifest/ContentManifest.swift
+- TripPet/Data/Manifest/ContentManifestLoader.swift
+- TripPet/Data/Persistence/UserStatePersistence.swift
+- TripPet/Data/Repositories/AppRepository.swift
+- TripPet/Data/SeedData/SeedData.swift
+- TripPet/Domain/Models/Animal.swift
+- TripPet/Domain/Models/Postcard.swift
+- TripPet/Domain/Models/Trip.swift
+- TripPet/Domain/Services/PostcardScheduler.swift
+- TripPet/Features/Cabin/CabinViewModel.swift
+- TripPet/Features/Mailbox/MailboxView.swift
+- TripPet/Features/Mailbox/PostcardDetailView.swift
+- TripPet/Resources/ContentManifest.json
+- TripPetTests/AppRepositoryTripTests.swift
+
+新增代码文件：
+
+- TripPet/Domain/Models/AnimalRelationshipMemory.swift
+- TripPet/Domain/Services/PostcardNarrativeEngine.swift
+
+新增资源文件：
+
+- TripPet/Resources/ArtSourceRaster/Destinations/destination_lisbon_line.png
+- TripPet/Resources/ArtSourceRaster/Destinations/trip_route_map_lisbon.png
+- TripPet/Resources/ArtSourceRaster/Postcards/postcard_template_landscape_v102.png
+- TripPet/Resources/ArtSourceRaster/Stamps/stamp_lisbon.png
+- TripPet/Resources/Assets.xcassets/Destinations/destination_lisbon_line.imageset/
+- TripPet/Resources/Assets.xcassets/Destinations/trip_route_map_lisbon.imageset/
+- TripPet/Resources/Assets.xcassets/Postcards/postcard_template_landscape_v102.imageset/
+- TripPet/Resources/Assets.xcassets/Stamps/stamp_lisbon.imageset/
+
+
+============================================================
+十六、重要设计取舍
+============================================================
+
+1. animalAssetName 没有删除
+
+原因：
+
+- 兼容旧 postcard 数据。
+- 避免持久化和旧 UI 初始化点破坏。
+
+但 1.0.2 明信片详情页不再展示 animalAssetName。
+
+2. 只做 1 套模板
+
+原因：
+
+- 用户明确要求先通用模板，节省美术资源。
+- 当前重点是验证闭环。
+
+后续可按地点/动物/关系阶段拓展多模板。
+
+3. 里斯本作为第三目的地
+
+原因：
+
+- 替代上海。
+- 非中国、非美国、非其他东亚。
+- 视觉上可与巴黎、雷克雅未克形成差异：坡道、旧街、白墙、浅陶土、海风。
+
+4. 长途两张卡只给雷克雅未克
+
+原因：
+
+- 计划中要求：
+  - 里斯本 short：1-2 天，1 张
+  - 巴黎 standard：2-3 天，1 张
+  - 雷克雅未克 long：3-5 天，2 张
+
+5. 叙事引擎暂不做复杂自然语言生成
+
+原因：
+
+- MVP 阶段稳定性优先。
+- 避免联网和临时编造地点事实。
+- 文案由 manifest 中预审素材组合，便于人工终审和后续调优。
+
+6. recentlyUsedMotifs 当前更新为 postcard.microArc
+
+现状：
+
+- updateRelationshipMemory(afterSending:) 当前把 postcard.microArc append 到 recentlyUsedMotifs。
+
+注意：
+
+- 这能起到部分“近期叙事机制冷却”的效果，但严格来说不是 motif 本身。
+- 后续如果要更精确，应把 selected motif 写入 Postcard metadata，或新增 motif 字段，再更新 memory.recentlyUsedMotifs。
+
+
+============================================================
+十七、已知风险与建议继续检查项
+============================================================
+
+1. SwiftData 真实迁移仍需设备级验证
+
+当前已做：
+
+- 新增持久化字段 optional。
+- 读取时兜底。
+- in-memory persistence 测试通过。
+- iPhoneOS build 通过。
+
+仍建议：
+
+- 拿一份真实 1.0.1 设备数据库升级到 1.0.2。
+- 检查旧 tickets/trips/postcards/wishes 是否能加载。
+- 检查旧 postcard 是否还能展示。
+
+2. Dynamic Type 手工验收
+
+PostcardDetailView 使用 16:9 大卡布局，body lineLimit 5，minimumScaleFactor 0.86。
+
+建议真机检查：
+
+- iPhone SE 或小屏设备。
+- 较大 Dynamic Type。
+- 长正文是否截断过多。
+- 邮戳是否压正文。
+- 风景是否仍占第一视觉。
+
+3. VoiceOver 手工验收
+
+当前 accessibilityLabel 已整合 title/destination/subtitle/body。
+
+建议检查：
+
+- 邮箱列表读法。
+- 详情页读法。
+- 返回按钮读法。
+- 未读状态是否需要更明确读出。
+
+4. 内容人工终审
+
+当前 manifest 已包含每城 6 个 scenes 和三动物 profile，但仍建议按规划做：
+
+- 15 张样张矩阵。
+- 每只动物 5 张。
+- 每城市至少覆盖 3 张。
+- 微型关联机制至少覆盖 2 张。
+- 人工标注核心物件、核心动作、结尾来源。
+
+5. 情绪重量与意象冷却仍是 MVP 简化版
+
+当前实现：
+
+- planItem 决定 plannedEmotionalWeight。
+- template 决定 maxEmotionalWeight。
+- recentSceneIds 有冷却。
+- motif 选择会避开 memory.recentlyUsedMotifs。
+
+但如上所述，recentlyUsedMotifs 目前写入的是 microArc，不是真正 motif。
+
+后续建议：
+
+- Postcard 新增 motif/object/action metadata。
+- updateRelationshipMemory 使用真正 motif。
+- 增加测试覆盖连续 5 张文案的 motif 冷却。
+
+6. UI 未做截图自动化
+
+本次已通过 build 和 unit tests，但没有用 Playwright/截图工具验 iOS UI。
+
+建议新任务窗口：
+
+- 用 Xcode Preview 或 Simulator 手工跑完整路径。
+- 必要时加 UI test 或 snapshot test。
+
+
+============================================================
+十八、建议新任务窗口检查顺序
+============================================================
+
+建议你在新任务窗口按下面顺序检查，效率比较高：
+
+1. 先看内容 manifest
+
+文件：
+
+- /Users/edy/Documents/心理/TripPet/TripPet/Resources/ContentManifest.json
+
+重点：
+
+- 动物是否为墨迹/汤圆/灯灯。
+- 目的地是否只有巴黎/雷克雅未克/里斯本。
+- 是否无“糖圆”“上海”。
+- 每城 scenes 是否足够。
+- 文案是否符合“地点风景 + 小事件文字”。
+
+2. 看数据模型和持久化
+
+文件：
+
+- Animal.swift
+- Trip.swift
+- Postcard.swift
+- AnimalRelationshipMemory.swift
+- UserStatePersistence.swift
+
+重点：
+
+- 新字段默认值。
+- SwiftData optional 迁移兜底。
+- 旧 postcard 兼容。
+
+3. 看业务闭环
+
+文件：
+
+- AppRepository.swift
+- PostcardScheduler.swift
+- PostcardNarrativeEngine.swift
+
+重点：
+
+- giftTicket 是否在送出时生成 postcardPlan。
+- revealEligiblePostcards 是否按 sequence 投递。
+- long trip 是否第二张后才 complete。
+- wish 是否最后一张后才 complete。
+- 同 trip 是否避免重复投递同 sequence。
+
+4. 看 UI
+
+文件：
+
+- CabinViewModel.swift
+- MailboxView.swift
+- PostcardDetailView.swift
+- RootTabView.swift
+
+重点：
+
+- 当前小屋动物是谁就送谁。
+- 邮箱进入时是否扫描投递。
+- 未读排序和 tab badge。
+- 明信片详情是否不渲染动物自拍。
+- 大风景区域是否足够明显。
+
+5. 跑验证
+
+推荐命令：
+
+cd /Users/edy/Documents/心理
+
+python3 -m json.tool TripPet/TripPet/Resources/ContentManifest.json >/dev/null
+
+plutil -lint TripPet/TripPet.xcodeproj/project.pbxproj
+
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild test -project TripPet/TripPet.xcodeproj -scheme TripPet -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath TripPet/.derivedData CODE_SIGNING_ALLOWED=NO
+
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project TripPet/TripPet.xcodeproj -scheme TripPet -configuration Debug -sdk iphoneos -derivedDataPath TripPet/.derivedData CODE_SIGNING_ALLOWED=NO build
+
+
+============================================================
+十九、最终状态
+============================================================
+
+当前实现状态：
+
+- 1.0.2 明信片 MVP 代码闭环已完成。
+- 新资源已接入。
+- ContentManifest 已更新。
+- 小屋三动物派行已实现。
+- trip postcardPlan 已实现。
+- 本地确定性叙事引擎已实现。
+- 邮箱投递反馈和未读排序已实现。
+- Root Tab 未读 badge 已实现。
+- 明信片详情大风景布局已实现。
+- 动物自拍不再作为明信片详情视觉依赖。
+- SwiftData 新增字段已做兼容兜底。
+- 单元测试和 iPhoneOS build 已通过。
+
+仍建议在发布前人工执行：
+
+- 真实 1.0.1 数据升级测试。
+- 真机完整路径测试：小屋 -> 赠送 -> 旅途中 -> 邮箱投递 -> 详情 -> 已读 -> 收藏。
+- 小屏 + Dynamic Type 验收。
+- VoiceOver 验收。
+- 15 张内容样张人工终审。
+

@@ -51,50 +51,50 @@ private struct PostcardArtwork: View {
                     .frame(width: size.width, height: size.height)
 
                 ArtImage(name: postcard.destinationAssetName)
-                    .frame(width: size.width * 0.42, height: size.height * 0.18)
-                    .position(x: size.width * 0.31, y: size.height * 0.19)
-
-                ArtImage(name: postcard.animalAssetName)
-                    .frame(width: size.width * 0.25, height: size.height * 0.18)
-                    .rotationEffect(.degrees(3))
-                    .position(x: size.width * 0.46, y: size.height * 0.25)
+                    .frame(width: size.width * 0.86, height: size.height * 0.53)
+                    .position(x: size.width * 0.5, y: size.height * 0.31)
 
                 ArtImage(name: postcard.stampAssetName)
-                    .frame(width: size.width * 0.18, height: size.width * 0.18)
+                    .frame(width: size.width * 0.15, height: size.width * 0.15)
                     .rotationEffect(.degrees(-12))
-                    .opacity(0.78)
-                    .position(x: size.width * 0.81, y: size.height * 0.14)
+                    .opacity(0.58)
+                    .position(x: size.width * 0.82, y: size.height * 0.73)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(postcard.destination)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(AppTheme.ink)
-                    Text(postcard.subtitle)
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                }
-                .frame(width: size.width * 0.24, alignment: .leading)
-                .position(x: size.width * 0.73, y: size.height * 0.25)
-
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(postcard.destination)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(AppTheme.ink)
+                            Text(postcard.subtitle)
+                                .font(AppTheme.caption)
+                                .foregroundStyle(AppTheme.secondaryInk)
+                        }
+                        Spacer(minLength: 10)
+                        Text(postcard.sentAt, style: .date)
+                            .font(AppTheme.caption)
+                            .foregroundStyle(AppTheme.secondaryInk)
+                    }
                     Text(displayTitle)
-                        .font(.system(size: 21, weight: .semibold))
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(AppTheme.ink)
                         .lineLimit(1)
                         .minimumScaleFactor(0.82)
                     Text(postcard.body)
-                        .font(.system(size: 17, weight: .regular))
+                        .font(.system(size: 16, weight: .regular))
                         .foregroundStyle(AppTheme.ink)
-                        .lineSpacing(6)
+                        .lineSpacing(5)
+                        .lineLimit(5)
+                        .minimumScaleFactor(0.86)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .frame(width: size.width * 0.72, alignment: .leading)
-                .position(x: size.width * 0.52, y: size.height * 0.61)
+                .frame(width: size.width * 0.78, height: size.height * 0.28, alignment: .topLeading)
+                .position(x: size.width * 0.45, y: size.height * 0.79)
             }
         }
-        .aspectRatio(971.0 / 1619.0, contentMode: .fit)
+        .aspectRatio(16.0 / 9.0, contentMode: .fit)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(postcard.destination)明信片，\(postcard.subtitle)")
+        .accessibilityLabel("\(displayTitle)，来自\(postcard.destination)，\(postcard.subtitle)，\(postcard.body)")
     }
 
     private var displayTitle: String {
@@ -104,9 +104,9 @@ private struct PostcardArtwork: View {
 }
 
 #Preview("Postcard Paris") {
-    PostcardDetailView(postcard: SeedData.preview.postcards[0])
+    PostcardDetailView(postcard: SeedData.previewPostcards[0])
 }
 
 #Preview("Postcard Iceland") {
-    PostcardDetailView(postcard: SeedData.preview.postcards[1])
+    PostcardDetailView(postcard: SeedData.previewPostcards[1])
 }

@@ -16,6 +16,7 @@ final class AppEnvironment: ObservableObject {
     let animalVisitService: AnimalVisitService
     let postcardScheduler: PostcardScheduler
     let destinations: [ManifestDestination]
+    let narrative: ManifestNarrative?
     @Published private(set) var stepSnapshot: StepCountSnapshot
     private var cancellables: Set<AnyCancellable> = []
     private var isRefreshingSteps = false
@@ -27,7 +28,8 @@ final class AppEnvironment: ObservableObject {
         ticketRuleEngine: TicketRuleEngine,
         animalVisitService: AnimalVisitService,
         postcardScheduler: PostcardScheduler,
-        destinations: [ManifestDestination]
+        destinations: [ManifestDestination],
+        narrative: ManifestNarrative? = nil
     ) {
         self.repository = repository
         self.stepCountProvider = stepCountProvider
@@ -35,6 +37,7 @@ final class AppEnvironment: ObservableObject {
         self.animalVisitService = animalVisitService
         self.postcardScheduler = postcardScheduler
         self.destinations = destinations
+        self.narrative = narrative
         self.stepSnapshot = StepCountSnapshot(
             status: stepCountProvider.authorizationStatus(),
             steps: nil,
@@ -64,7 +67,8 @@ final class AppEnvironment: ObservableObject {
             ticketRuleEngine: ContentManifestLoader.loadTicketRuleEngine(),
             animalVisitService: AnimalVisitService(),
             postcardScheduler: PostcardScheduler(),
-            destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations
+            destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations,
+            narrative: ContentManifestLoader.loadNarrative()
         )
     }
 
@@ -82,7 +86,8 @@ final class AppEnvironment: ObservableObject {
             ticketRuleEngine: TicketRuleEngine(),
             animalVisitService: AnimalVisitService(),
             postcardScheduler: PostcardScheduler(),
-            destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations
+            destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations,
+            narrative: ContentManifestLoader.loadNarrative()
         )
     }
 
@@ -176,6 +181,7 @@ final class AppEnvironment: ObservableObject {
         repository.revealEligiblePostcards(
             scheduler: postcardScheduler,
             destinations: destinations,
+            narrative: narrative,
             on: date
         )
     }
