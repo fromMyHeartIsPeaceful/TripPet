@@ -28,7 +28,7 @@ struct PostcardNarrativeEngine {
         )
         let motif = selectedMotif(profile: profile, memory: memory, date: date)
         let object = pick(scene?.localObjects, fallback: "票角", salt: trip.id + "object")
-        let action = pick(scene?.availableActions, fallback: "把它放回原位", salt: trip.id + "action")
+        let action = pick(scene?.availableActions, fallback: "把那件东西放回原位", salt: trip.id + "action")
         let sensory = pick(scene?.sensoryDetails, fallback: "风从纸边擦过去", salt: trip.id + "sense")
         let reaction = selectedReaction(
             profile: profile,
@@ -37,7 +37,6 @@ struct PostcardNarrativeEngine {
             salt: trip.id + "\(planItem.sequence)"
         )
         let body = bodyText(
-            animalName: animal.name,
             destinationName: destination.displayName,
             scene: scene,
             sensory: sensory,
@@ -114,11 +113,10 @@ struct PostcardNarrativeEngine {
         let lines = type == "relationship_card"
             ? (profile?.relationshipLines ?? [])
             : (profile?.reactionLines ?? [])
-        return pick(lines, fallback: "\(animal.name)把这件事记在明信片背面。", salt: salt)
+        return pick(lines, fallback: "我把这件事记在明信片背面。", salt: salt)
     }
 
     private func bodyText(
-        animalName: String,
         destinationName: String,
         scene: ManifestPostcardScene?,
         sensory: String,
@@ -132,15 +130,15 @@ struct PostcardNarrativeEngine {
         let place = scene?.sceneType.displayName ?? "街角"
         switch microArc {
         case "误会型":
-            return "\(destinationName)的\(place)边，\(sensory)，\(object)看起来像被谁弄丢了。\(animalName)\(action)，后来发现只是放错了位置。\(reaction)"
+            return "\(destinationName)的\(place)边，\(sensory)。\(object)看起来像被谁弄丢了。我\(action)，后来发现只是放错了位置。\(reaction)"
         case "旁观型":
-            return "\(destinationName)的\(place)很安静，\(sensory)挨着\(object)。\(animalName)没有急着走，只看见有人把它重新放好。\(reaction)"
+            return "\(destinationName)的\(place)很安静，\(sensory)。\(object)就放在旁边，我没有急着走，只看见有人把那件东西重新放好。\(reaction)"
         case "回声型":
-            return "\(destinationName)的\(place)有一点风，\(object)压住了\(motif)一样的影子。\(animalName)\(action)，没有解释，只把这件小事寄回来。\(reaction)"
+            return "\(destinationName)的\(place)有一点风，\(object)压住了\(motif)一样的影子。我\(action)，没有解释，只把这件小事寄回来。\(reaction)"
         case "选择型":
-            return "\(destinationName)的\(place)旁，\(sensory)把\(object)吹到边上。\(animalName)想了一会儿，还是\(action)。\(reaction)"
+            return "\(destinationName)的\(place)旁，\(sensory)。\(object)被挪到边上，我想了一会儿，还是\(action)。\(reaction)"
         default:
-            return "\(destinationName)的\(place)里，\(sensory)贴着\(object)。\(animalName)\(action)，事情就小小地停在那里。\(reaction)"
+            return "\(destinationName)的\(place)里，\(sensory)。\(object)就在旁边，我\(action)，事情就小小地停在那里。\(reaction)"
         }
     }
 

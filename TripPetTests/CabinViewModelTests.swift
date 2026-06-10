@@ -64,6 +64,23 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.actionMessage.contains("3456 步"))
     }
 
+    func testConnectHealthKeepsAuthorizationWhenInitialStepReadFails() async {
+        let environment = AppEnvironment.preview(
+            stepStatus: .notDetermined,
+            steps: 0,
+            throwsOnStepRead: true
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.connectHealth()
+
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
+        XCTAssertEqual(environment.stepSnapshot.errorMessage, StepCountProviderError.unableToReadSteps.errorDescription)
+    }
+
     func testReadPermissionRequestedCanUseFirstImmediateTicketBelowStepGoal() async {
         let environment = AppEnvironment.preview(
             stepStatus: .readPermissionRequested,
@@ -104,6 +121,25 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.availableStepsForDisplay, 0)
         XCTAssertEqual(viewModel.giftedStepsSummaryText, AppCopy.Cabin.firstTicketGiftedSummary)
         XCTAssertEqual(environment.repository.postcards.filter { $0.postcardType == "first_airport_departure" }.count, 1)
+    }
+
+    func testFirstImmediateTicketConfirmationDoesNotRequireFreshStepRead() async {
+        let environment = AppEnvironment.preview(
+            steps: 0,
+            throwsOnStepRead: true
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+
+        XCTAssertTrue(viewModel.isFirstImmediateTicketAvailable)
+        XCTAssertTrue(viewModel.canGiftAvailableSteps)
+
+        await viewModel.prepareGiftConfirmation()
+
+        XCTAssertEqual(viewModel.pendingGiftConfirmation?.isFirstImmediateTicket, true)
+        XCTAssertEqual(viewModel.pendingGiftConfirmation?.steps, 0)
     }
 
     func testFirstImmediateTicketRequiresHealthConnection() async {

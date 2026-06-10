@@ -75,7 +75,7 @@ struct PostcardScheduler {
             .replacingOccurrences(of: "{animal}", with: animal.name)
             .replacingOccurrences(of: "{destination}", with: destination.displayName)
         let body = destination.postcardBodyTemplate
-            .replacingOccurrences(of: "{animal}", with: animal.name)
+            .replacingOccurrences(of: "{animal}", with: "我")
             .replacingOccurrences(of: "{destination}", with: destination.displayName)
 
         return Postcard(

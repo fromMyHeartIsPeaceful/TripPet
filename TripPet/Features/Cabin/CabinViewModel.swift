@@ -76,7 +76,7 @@ final class CabinViewModel: ObservableObject {
 
     func refresh() async {
         guard let environment else { return }
-        environment.repository.refreshCabinLodging()
+        environment.repository.refreshCabinLodging(on: environment.currentDate)
 
         healthAuthorizationStatus = environment.stepSnapshot.status
 
@@ -152,11 +152,15 @@ final class CabinViewModel: ObservableObject {
             return
         }
 
-        environment.repository.refreshCabinLodging()
+        environment.repository.refreshCabinLodging(on: environment.currentDate)
         guard environment.repository.currentCabinAnimal != nil else {
             await refresh()
             return
         }
+
+        let canUseFirstImmediateTicket = environment.repository.canUseFirstImmediateTicket(
+            authorizationStatus: status
+        )
 
         isWorking = true
         defer { isWorking = false }
@@ -167,9 +171,6 @@ final class CabinViewModel: ObservableObject {
                 todaySteps: steps,
                 giftedCountToday: environment.repository.giftedTicketCountToday()
             )
-            let canUseFirstImmediateTicket = environment.repository.canUseFirstImmediateTicket(
-                authorizationStatus: status
-            )
 
             guard eligibility.isEligible || canUseFirstImmediateTicket else {
                 actionMessage = eligibility.message
@@ -177,17 +178,20 @@ final class CabinViewModel: ObservableObject {
                 return
             }
 
-            pendingSteps = steps
-            pendingTicketCount = eligibility.isEligible ? eligibility.ticketCount : 1
-            pendingIsFirstImmediateTicket = canUseFirstImmediateTicket && eligibility.isEligible == false
-            pendingGiftConfirmation = TicketGiftConfirmation(
-                animalName: environment.repository.currentCabinAnimal?.name ?? "小动物",
-                destination: environment.repository.currentTravelWish?.destination ?? "远方",
-                ticketCount: pendingTicketCount ?? 1,
+            preparePendingGiftConfirmation(
                 steps: steps,
-                isFirstImmediateTicket: pendingIsFirstImmediateTicket
+                ticketCount: eligibility.isEligible ? eligibility.ticketCount : 1,
+                isFirstImmediateTicket: canUseFirstImmediateTicket && eligibility.isEligible == false
             )
         } catch {
+            if canUseFirstImmediateTicket {
+                preparePendingGiftConfirmation(
+                    steps: environment.stepSnapshot.steps ?? 0,
+                    ticketCount: 1,
+                    isFirstImmediateTicket: true
+                )
+                return
+            }
             actionMessage = AppCopy.Cabin.stepReadFailed
             await refresh()
         }
@@ -229,6 +233,7 @@ final class CabinViewModel: ObservableObject {
         let trip = environment.repository.giftTicket(
             sourceSteps: steps,
             ticketCount: eligibility.isEligible ? ticketCount : 1,
+            date: environment.currentDate,
             destinations: environment.destinations,
             scheduler: environment.postcardScheduler,
             isFirstImmediateTicket: canUsePendingFirstImmediateTicket
@@ -251,6 +256,25 @@ final class CabinViewModel: ObservableObject {
         return environment.ticketRuleEngine.remainingSteps(
             todaySteps: steps,
             giftedCountToday: environment.repository.giftedTicketCountToday()
+        )
+    }
+
+    private func preparePendingGiftConfirmation(
+        steps: Int,
+        ticketCount: Int,
+        isFirstImmediateTicket: Bool
+    ) {
+        guard let environment else { return }
+
+        pendingSteps = steps
+        pendingTicketCount = ticketCount
+        pendingIsFirstImmediateTicket = isFirstImmediateTicket
+        pendingGiftConfirmation = TicketGiftConfirmation(
+            animalName: environment.repository.currentCabinAnimal?.name ?? "小动物",
+            destination: environment.repository.currentTravelWish?.destination ?? "远方",
+            ticketCount: ticketCount,
+            steps: steps,
+            isFirstImmediateTicket: isFirstImmediateTicket
         )
     }
 

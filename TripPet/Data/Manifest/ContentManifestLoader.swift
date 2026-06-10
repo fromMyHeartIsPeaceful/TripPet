@@ -40,7 +40,7 @@ enum ContentManifestLoader {
                 primaryColor: "#D8B36A",
                 postcardTitleTemplate: "{animal}寄来的巴黎早安",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "清晨的巴黎还没有完全醒来。{animal}在远远能看见铁塔的街角停了一会儿，把面包香、石板路上的光和一点点风，都轻轻收进了这张明信片。"
+                postcardBodyTemplate: "清晨的巴黎还没有完全醒来。我在远远能看见铁塔的街角停了一会儿，把面包香、石板路上的光和一点点风，都轻轻收进了这张明信片。"
             ),
             ManifestDestination(
                 id: "iceland",
@@ -51,7 +51,7 @@ enum ContentManifestLoader {
                 primaryColor: "#A9C9D8",
                 postcardTitleTemplate: "{animal}寄来的风声",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "冰岛的云压得很低，路边的灯像一粒小小的星。{animal}把围巾裹紧，听见风从黑色海岸跑过去，于是给小屋寄回这一点安静的远方。"
+                postcardBodyTemplate: "冰岛的云压得很低，路边的灯像一粒小小的星。我把围巾裹紧，听见风从黑色海岸跑过去，于是给小屋寄回这一点安静的远方。"
             )
         ]
     }

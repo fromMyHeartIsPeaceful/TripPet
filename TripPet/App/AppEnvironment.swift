@@ -18,6 +18,7 @@ final class AppEnvironment: ObservableObject {
     let destinations: [ManifestDestination]
     let narrative: ManifestNarrative?
     @Published private(set) var stepSnapshot: StepCountSnapshot
+    @Published private(set) var testingTimeOffset: TimeInterval = 0
     private var cancellables: Set<AnyCancellable> = []
     private var isRefreshingSteps = false
     private var isObservingStepChanges = false
@@ -76,13 +77,18 @@ final class AppEnvironment: ObservableObject {
         seed: SeedData = .preview,
         flags: AppUserFlags = AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true),
         stepStatus: StepCountAuthorizationStatus = .sharingAuthorized,
-        steps: Int = 4_200
+        steps: Int = 4_200,
+        throwsOnStepRead: Bool = false
     ) -> AppEnvironment {
         let state = AppUserState(seed: seed, flags: flags)
         let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: state))
         return AppEnvironment(
             repository: repository,
-            stepCountProvider: FakeStepCountProvider(status: stepStatus, steps: steps),
+            stepCountProvider: FakeStepCountProvider(
+                status: stepStatus,
+                steps: steps,
+                throwsOnStepRead: throwsOnStepRead
+            ),
             ticketRuleEngine: TicketRuleEngine(),
             animalVisitService: AnimalVisitService(),
             postcardScheduler: PostcardScheduler(),
@@ -95,20 +101,33 @@ final class AppEnvironment: ObservableObject {
         destinations.first { $0.id == trip.destinationId || $0.displayName == trip.destination }
     }
 
+    var currentDate: Date {
+        Date().addingTimeInterval(testingTimeOffset)
+    }
+
     @discardableResult
     func requestStepAuthorizationAndRefresh() async throws -> Bool {
         let didRequest = try await stepCountProvider.requestAuthorization()
         updateStepStatus()
 
         if didRequest, stepSnapshot.status.canAttemptStepRead {
-            _ = try await readTodaySteps()
+            do {
+                _ = try await readTodaySteps()
+            } catch {
+                stepSnapshot = StepCountSnapshot(
+                    status: stepCountProvider.authorizationStatus(),
+                    steps: stepSnapshot.steps,
+                    readAt: stepSnapshot.readAt,
+                    errorMessage: error.localizedDescription
+                )
+            }
         }
 
         return didRequest
     }
 
     func refreshStepsIfPossible() async {
-        repository.refreshCabinLodging()
+        repository.refreshCabinLodging(on: currentDate)
         updateStepStatus()
         guard stepSnapshot.status.canAttemptStepRead else { return }
         guard isRefreshingSteps == false else { return }
@@ -177,12 +196,18 @@ final class AppEnvironment: ObservableObject {
     }
 
     @discardableResult
-    func revealEligiblePostcards(on date: Date = Date()) -> Bool {
+    func revealEligiblePostcards(on date: Date? = nil) -> Bool {
         repository.revealEligiblePostcards(
             scheduler: postcardScheduler,
             destinations: destinations,
             narrative: narrative,
-            on: date
+            on: date ?? currentDate
         )
+    }
+
+    func advanceTestingTime(by interval: TimeInterval) {
+        testingTimeOffset += interval
+        repository.refreshCabinLodging(on: currentDate)
+        revealEligiblePostcards(on: currentDate)
     }
 }

@@ -22,6 +22,7 @@ struct CabinView: View {
                         isApproaching: environment.repository.isNextAnimalApproaching,
                         isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
                     )
+                    timeAdvanceButton
 
                     Spacer(minLength: 138)
                 }
@@ -107,31 +108,49 @@ struct CabinView: View {
         }
     }
 
+    private var timeAdvanceButton: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            environment.advanceTestingTime(by: 60 * 60 * 24)
+            Task {
+                await viewModel.refresh()
+            }
+        } label: {
+            Label("时间 +1 天", systemImage: "clock.arrow.circlepath")
+                .font(.system(size: 14, weight: .semibold))
+                .lineLimit(1)
+        }
+        .buttonStyle(OutlineButtonStyle())
+        .accessibilityLabel("测试时间增加一天")
+    }
+
     private var actionCard: some View {
         let isWaitingForAnimal = environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
         let canGiftTicket = viewModel.canGiftAvailableSteps
         let isFirstImmediateTicketAvailable = viewModel.isFirstImmediateTicketAvailable
 
         return VStack(alignment: .center, spacing: 14) {
-            Text(AppCopy.Cabin.todayStepsTitle)
-                .font(AppTheme.cardTitle)
-                .foregroundStyle(AppTheme.ink)
-                .lineLimit(1)
-
-            StepCounterView(
-                value: viewModel.availableStepsForDisplay,
-                limit: environment.ticketRuleEngine.requiredStepsPerTicket
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
-            .frame(maxWidth: .infinity)
-
-            if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
-                Text(giftedStepsSummaryText)
-                    .font(AppTheme.caption)
-                    .foregroundStyle(AppTheme.secondaryInk)
+            if isFirstImmediateTicketAvailable == false {
+                Text(AppCopy.Cabin.todayStepsTitle)
+                    .font(AppTheme.cardTitle)
+                    .foregroundStyle(AppTheme.ink)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-                    .frame(maxWidth: .infinity)
+
+                StepCounterView(
+                    value: viewModel.availableStepsForDisplay,
+                    limit: environment.ticketRuleEngine.requiredStepsPerTicket
+                )
+                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity)
+
+                if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
+                    Text(giftedStepsSummaryText)
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                        .frame(maxWidth: .infinity)
+                }
             }
 
             if isWaitingForAnimal {
@@ -146,17 +165,19 @@ struct CabinView: View {
             }
 
             if isWaitingForAnimal == false {
-                Label {
-                    Text(isFirstImmediateTicketAvailable ? AppCopy.Cabin.firstTicketRuleHint : AppCopy.Cabin.ruleHint)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.88)
-                } icon: {
-                    ArtImage(name: "icon_steps")
-                        .frame(width: 16, height: 16)
-                        .foregroundStyle(AppTheme.ochre)
+                if isFirstImmediateTicketAvailable == false {
+                    Label {
+                        Text(AppCopy.Cabin.ruleHint)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.88)
+                    } icon: {
+                        ArtImage(name: "icon_steps")
+                            .frame(width: 16, height: 16)
+                            .foregroundStyle(AppTheme.ochre)
+                    }
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
                 }
-                .font(AppTheme.caption)
-                .foregroundStyle(AppTheme.secondaryInk)
 
                 if viewModel.requiresHealthConnection {
                     Text(viewModel.actionMessage)

@@ -14,21 +14,22 @@ struct CabinSceneView: View {
             let size = geometry.size
 
             ZStack {
-                ArtImage(name: "cabin_room_base", contentMode: .fill, cornerRadius: 28, showsShadow: true)
+                ArtImage(
+                    name: isApproaching ? "cabin_next_animal_approaching" : "cabin_room_base",
+                    contentMode: .fill,
+                    cornerRadius: 28,
+                    showsShadow: true
+                )
                     .frame(width: size.width, height: size.height)
 
-                ArtImage(name: "prop_map_table")
-                    .frame(width: size.width * 0.58, height: size.height * 0.38)
-                    .rotationEffect(.degrees(-2))
-                    .position(x: size.width * 0.64, y: size.height * 0.69)
+                if isApproaching == false {
+                    ArtImage(name: "prop_map_table")
+                        .frame(width: size.width * 0.58, height: size.height * 0.38)
+                        .rotationEffect(.degrees(-2))
+                        .position(x: size.width * 0.64, y: size.height * 0.69)
+                }
 
-                if isApproaching {
-                    ArtImage(name: "cabin_next_animal_approaching")
-                        .frame(width: size.width * 0.78, height: size.height * 0.58)
-                        .opacity(0.94)
-                        .offset(y: reduceMotion ? 0 : (isBreathing ? -2 : 2))
-                        .position(x: size.width * 0.5, y: size.height * 0.58)
-                } else if isEmpty == false {
+                if isApproaching == false && isEmpty == false {
                     ArtImage(name: resident?.homeAssetName ?? "animal_cat_home")
                         .frame(width: size.width * 0.38, height: size.height * 0.44)
                         .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.018 : 0.994))

@@ -38,7 +38,7 @@ final class AppRepositoryTripTests: XCTestCase {
             primaryColor: "#7AA7B8",
             postcardTitleTemplate: "{animal}寄来的巴黎早安",
             postcardSubtitle: "旅途中寄来",
-            postcardBodyTemplate: "{animal}在{destination}的街角停了一会儿。"
+            postcardBodyTemplate: "我在{destination}的街角停了一会儿。"
         )
 
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(hour: 11))
@@ -87,7 +87,7 @@ final class AppRepositoryTripTests: XCTestCase {
             primaryColor: "#A9C9D8",
             postcardTitleTemplate: "{animal}寄来的风声",
             postcardSubtitle: "第 1 封来信",
-            postcardBodyTemplate: "{animal}在{destination}听见风从海边跑过去。"
+            postcardBodyTemplate: "我在{destination}听见风从海边跑过去。"
         )
         let trip = Trip(
             id: "trip_iceland",
@@ -108,7 +108,7 @@ final class AppRepositoryTripTests: XCTestCase {
 
         XCTAssertEqual(postcard.title, "小猫寄来的风声")
         XCTAssertEqual(postcard.subtitle, "第 1 封来信")
-        XCTAssertEqual(postcard.body, "小猫在冰岛听见风从海边跑过去。")
+        XCTAssertEqual(postcard.body, "我在冰岛听见风从海边跑过去。")
         XCTAssertEqual(postcard.destinationAssetName, "destination_iceland_line")
         XCTAssertEqual(postcard.stampAssetName, "stamp_iceland")
     }
@@ -128,7 +128,7 @@ final class AppRepositoryTripTests: XCTestCase {
               "primaryColor": "#D8B36A",
               "postcardTitleTemplate": "{animal}寄来的巴黎早安",
               "postcardSubtitle": "旅途中寄来",
-              "postcardBodyTemplate": "{animal}在{destination}写信。"
+              "postcardBodyTemplate": "我在{destination}写信。"
             }
           ],
           "postcards": [],
@@ -142,7 +142,7 @@ final class AppRepositoryTripTests: XCTestCase {
         let manifest = try JSONDecoder().decode(ContentManifest.self, from: Data(json.utf8))
 
         XCTAssertEqual(manifest.destinations.first?.postcardTitleTemplate, "{animal}寄来的巴黎早安")
-        XCTAssertEqual(manifest.destinations.first?.postcardBodyTemplate, "{animal}在{destination}写信。")
+        XCTAssertEqual(manifest.destinations.first?.postcardBodyTemplate, "我在{destination}写信。")
     }
 
     func testAnimalVisitServiceUsesStableVisualOnlyRotation() {
@@ -293,6 +293,98 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(postcard.animalId, "dog")
         XCTAssertEqual(postcard.profileId, "tangyuan_puppy")
         XCTAssertEqual(postcard.title, "汤圆寄来的里斯本明信片")
+        XCTAssertTrue(postcard.body.contains("我"))
+        XCTAssertFalse(postcard.body.contains("汤圆"))
+        XCTAssertFalse(postcard.body.contains("它"))
+    }
+
+    func testPostcardNarrativeKeepsSensoryDetailsOutOfActorPosition() throws {
+        let scene = ManifestPostcardScene(
+            sceneId: "test_lobby_notice",
+            sceneName: "旅馆告示旁",
+            sceneType: "lodging",
+            sensoryDetails: ["公告纸边"],
+            localObjects: ["活动海报"],
+            availableActions: ["把活动海报扶正"],
+            postcardTypes: ["personality_reaction"],
+            microArcFits: ["选择型"],
+            animalAffinity: ["moji_cat"],
+            avoidWriting: []
+        )
+        let destination = ManifestDestination(
+            id: "test_city",
+            cityId: "test_city",
+            displayName: "测试城",
+            landmarkAssetName: "destination_test_line",
+            stampAssetName: "stamp_test",
+            routeMapAssetName: "trip_route_map_test",
+            postcardTemplateAssetName: "postcard_template_landscape_v102",
+            travelKind: "standard",
+            primaryColor: "#7AA7B8",
+            postcardTitleTemplate: "{animal}寄来的测试城明信片",
+            postcardSubtitle: "旅途中寄来",
+            postcardBodyTemplate: "我在{destination}写信。",
+            scenes: [scene]
+        )
+        let animal = Animal(
+            id: "cat",
+            name: "墨迹",
+            species: "cat",
+            personality: "安静",
+            profileId: "moji_cat",
+            homeAssetName: "animal_cat_home",
+            selfieAssetName: "animal_cat_selfie",
+            visitorAssetName: "animal_cat_home",
+            discoveredAt: Self.date(),
+            isResident: true
+        )
+        let trip = Trip(
+            id: "trip_semantic_test",
+            animalId: animal.id,
+            destinationId: destination.id,
+            destination: destination.displayName,
+            departedAt: Self.date(day: 1),
+            expectedReturnAt: Self.date(day: 3),
+            status: .traveling
+        )
+        let disallowedFragments = [
+            "公告纸边把活动海报",
+            "公告纸边挨着活动海报",
+            "公告纸边贴着活动海报"
+        ]
+
+        for microArc in ["误会型", "旁观型", "回声型", "选择型", "动作型"] {
+            let planItem = TripPostcardPlanItem(
+                sequence: 1,
+                dueAt: Self.date(day: 2),
+                postcardType: "personality_reaction",
+                preferredMicroArc: microArc,
+                plannedEmotionalWeight: 1,
+                sceneId: scene.sceneId
+            )
+
+            let postcard = PostcardNarrativeEngine().makePostcard(
+                for: trip,
+                planItem: planItem,
+                animal: animal,
+                destination: destination,
+                narrative: nil,
+                memory: AnimalRelationshipMemory(animalId: animal.id),
+                recentPostcards: [],
+                on: Self.date(day: 2)
+            )
+
+            disallowedFragments.forEach { fragment in
+                XCTAssertFalse(postcard.body.contains(fragment), "\(microArc) should not contain \(fragment): \(postcard.body)")
+            }
+            XCTAssertTrue(postcard.body.contains("我"), "\(microArc) should be first-person: \(postcard.body)")
+            XCTAssertFalse(postcard.body.contains("墨迹"), "\(microArc) should not use animal name in body: \(postcard.body)")
+            XCTAssertFalse(postcard.body.contains("它"), "\(microArc) should not use third-person pronoun in body: \(postcard.body)")
+            if microArc == "选择型" {
+                XCTAssertTrue(postcard.body.contains("公告纸边。活动海报被挪到边上"))
+                XCTAssertFalse(postcard.body.contains("公告纸边把活动海报吹到边上"))
+            }
+        }
     }
 
     func testLongTripCompletesOnlyAfterSecondPostcardReveal() throws {
@@ -417,7 +509,9 @@ final class AppRepositoryTripTests: XCTestCase {
         let airportPostcards = repository.postcards.filter { $0.postcardType == "first_airport_departure" }
         XCTAssertEqual(airportPostcards.count, 1)
         XCTAssertEqual(airportPostcards.first?.title, "小动物寄来的第一张明信片")
+        XCTAssertEqual(airportPostcards.first?.body, "我到机场啦！马上要登机了，谢谢你送我的机票，等我给你寄明信片哦！")
         XCTAssertEqual(airportPostcards.first?.subtitle, "刚到机场")
+        XCTAssertEqual(airportPostcards.first?.templateAssetName, "postcard_template_classic")
         XCTAssertFalse(airportPostcards.first?.isRead ?? true)
         XCTAssertTrue(repository.userFlags.firstAirportPostcardDelivered)
     }
@@ -502,7 +596,7 @@ final class AppRepositoryTripTests: XCTestCase {
                     primaryColor: "#D8B36A",
                     postcardTitleTemplate: "{animal}寄来的巴黎早安",
                     postcardSubtitle: "旅途中寄来",
-                    postcardBodyTemplate: "{animal}在{destination}的街角停了一会儿。"
+                    postcardBodyTemplate: "我在{destination}的街角停了一会儿。"
                 )
             ]
         )
@@ -559,7 +653,7 @@ final class AppRepositoryTripTests: XCTestCase {
                 primaryColor: "#D8B36A",
                 postcardTitleTemplate: "{animal}寄来的巴黎明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在{destination}写信。",
+                postcardBodyTemplate: "我在{destination}写信。",
                 scenes: Self.makeScenes(prefix: "fr_paris")
             ),
             ManifestDestination(
@@ -574,7 +668,7 @@ final class AppRepositoryTripTests: XCTestCase {
                 primaryColor: "#A9C9D8",
                 postcardTitleTemplate: "{animal}寄来的雷克雅未克明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在{destination}写信。",
+                postcardBodyTemplate: "我在{destination}写信。",
                 scenes: Self.makeScenes(prefix: "is_reykjavik")
             ),
             ManifestDestination(
@@ -589,7 +683,7 @@ final class AppRepositoryTripTests: XCTestCase {
                 primaryColor: "#C9895F",
                 postcardTitleTemplate: "{animal}寄来的里斯本明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在{destination}写信。",
+                postcardBodyTemplate: "我在{destination}写信。",
                 scenes: Self.makeScenes(prefix: "pt_lisbon")
             )
         ]

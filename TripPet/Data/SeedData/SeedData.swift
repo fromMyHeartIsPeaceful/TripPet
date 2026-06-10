@@ -107,7 +107,7 @@ struct SeedData {
                 primaryColor: "#D8B36A",
                 postcardTitleTemplate: "{animal}寄来的巴黎明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在巴黎的街角停了一会儿，把一件小事寄回小屋。",
+                postcardBodyTemplate: "我在巴黎的街角停了一会儿，把一件小事寄回小屋。",
                 scenes: []
             ),
             ManifestDestination(
@@ -122,7 +122,7 @@ struct SeedData {
                 primaryColor: "#A9C9D8",
                 postcardTitleTemplate: "{animal}寄来的雷克雅未克明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在雷克雅未克听见风从纸边跑过去。",
+                postcardBodyTemplate: "我在雷克雅未克听见风从纸边跑过去。",
                 scenes: []
             ),
             ManifestDestination(
@@ -137,7 +137,7 @@ struct SeedData {
                 primaryColor: "#C9895F",
                 postcardTitleTemplate: "{animal}寄来的里斯本明信片",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在里斯本的坡道边停了一会儿。",
+                postcardBodyTemplate: "我在里斯本的坡道边停了一会儿。",
                 scenes: []
             )
         ]
@@ -158,7 +158,7 @@ struct SeedData {
             revealBudget: "tiny",
             relationshipStageAtSend: "testing",
             title: "墨迹寄来的巴黎明信片",
-            body: "巴黎的旧街转角很安静，楼道灯挨着门牌。墨迹没有急着走，只把数字慢慢抄下来。",
+            body: "巴黎的旧街转角很安静，楼道灯挨着门牌。我没有急着走，只把数字慢慢抄下来。",
             imageAssetName: "postcard_paris_day_2",
             templateAssetName: "postcard_template_landscape_v102",
             destinationAssetName: "destination_paris_line",
@@ -183,7 +183,7 @@ struct SeedData {
             revealBudget: "small",
             relationshipStageAtSend: "familiar",
             title: "灯灯寄来的雷克雅未克明信片",
-            body: "雷克雅未克港边有低云，围巾角被风按在栏杆上。灯灯等风过去，才把这点光写下来。",
+            body: "雷克雅未克港边有低云，围巾角被风按在栏杆上。我等风过去，才把这点光写下来。",
             imageAssetName: "postcard_iceland_old",
             templateAssetName: "postcard_template_landscape_v102",
             destinationAssetName: "destination_iceland_line",
