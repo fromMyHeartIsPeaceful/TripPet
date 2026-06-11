@@ -23,7 +23,7 @@ final class HealthKitStepCountProvider: StepCountProvider {
     func authorizationStatus() -> StepCountAuthorizationStatus {
         #if canImport(HealthKit)
         guard isHealthDataAvailable,
-              let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+              HKObjectType.quantityType(forIdentifier: .stepCount) != nil else {
             return .unavailable
         }
 
@@ -31,16 +31,7 @@ final class HealthKitStepCountProvider: StepCountProvider {
             return .readPermissionRequested
         }
 
-        switch healthStore.authorizationStatus(for: stepType) {
-        case .notDetermined:
-            return .notDetermined
-        case .sharingDenied:
-            return .sharingDenied
-        case .sharingAuthorized:
-            return .sharingAuthorized
-        @unknown default:
-            return .notDetermined
-        }
+        return .notDetermined
         #else
         return .unavailable
         #endif
@@ -95,8 +86,8 @@ final class HealthKitStepCountProvider: StepCountProvider {
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
             ) { _, result, error in
-                if let error {
-                    continuation.resume(throwing: error)
+                if error != nil {
+                    continuation.resume(throwing: StepCountProviderError.unableToReadSteps)
                     return
                 }
 

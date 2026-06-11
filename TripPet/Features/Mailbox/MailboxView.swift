@@ -4,7 +4,6 @@ struct MailboxView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var viewModel = MailboxViewModel()
-    @State private var didRevealPostcard = false
 
     var body: some View {
         NavigationStack {
@@ -26,22 +25,12 @@ struct MailboxView: View {
                         .multilineTextAlignment(.center)
                         .padding(.top, -4)
 
-                    if didRevealPostcard {
-                        Text("新的明信片已经送到邮箱")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(AppTheme.deepSage)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .paperCard(cornerRadius: 16)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
-
                     if environment.repository.postcards.isEmpty {
                         MailboxEmptyState()
                     } else {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 14) {
-                                ForEach(sortedPostcards) { postcard in
+                                ForEach(environment.repository.postcards) { postcard in
                                     EnvelopeRow(postcard: postcard, reduceMotion: reduceMotion) {
                                         viewModel.open(postcard, repository: environment.repository)
                                     }
@@ -58,28 +47,11 @@ struct MailboxView: View {
             }
             .navigationBarHidden(true)
             .task {
-                revealIfNeeded()
+                environment.revealEligiblePostcards()
             }
             .fullScreenCover(item: $viewModel.selectedPostcard) { postcard in
                 PostcardDetailView(postcard: postcard)
             }
-        }
-    }
-
-    private var sortedPostcards: [Postcard] {
-        environment.repository.postcards.sorted {
-            if $0.isRead != $1.isRead {
-                return $0.isRead == false
-            }
-            return $0.sentAt > $1.sentAt
-        }
-    }
-
-    private func revealIfNeeded() {
-        let revealed = environment.revealEligiblePostcards()
-        guard revealed else { return }
-        withAnimation(.easeOut(duration: 0.22)) {
-            didRevealPostcard = true
         }
     }
 

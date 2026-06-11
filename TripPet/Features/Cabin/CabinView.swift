@@ -19,10 +19,8 @@ struct CabinView: View {
                     CabinSceneView(
                         resident: environment.repository.currentCabinAnimal,
                         visitor: nil,
-                        isApproaching: environment.repository.isNextAnimalApproaching,
                         isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
                     )
-                    timeAdvanceButton
 
                     Spacer(minLength: 138)
                 }
@@ -108,49 +106,30 @@ struct CabinView: View {
         }
     }
 
-    private var timeAdvanceButton: some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            environment.advanceTestingTime(by: 60 * 60 * 24)
-            Task {
-                await viewModel.refresh()
-            }
-        } label: {
-            Label("时间 +1 天", systemImage: "clock.arrow.circlepath")
-                .font(.system(size: 14, weight: .semibold))
-                .lineLimit(1)
-        }
-        .buttonStyle(OutlineButtonStyle())
-        .accessibilityLabel("测试时间增加一天")
-    }
-
     private var actionCard: some View {
         let isWaitingForAnimal = environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
         let canGiftTicket = viewModel.canGiftAvailableSteps
-        let isFirstImmediateTicketAvailable = viewModel.isFirstImmediateTicketAvailable
 
         return VStack(alignment: .center, spacing: 14) {
-            if isFirstImmediateTicketAvailable == false {
-                Text(AppCopy.Cabin.todayStepsTitle)
-                    .font(AppTheme.cardTitle)
-                    .foregroundStyle(AppTheme.ink)
+            Text(AppCopy.Cabin.todayStepsTitle)
+                .font(AppTheme.cardTitle)
+                .foregroundStyle(AppTheme.ink)
+                .lineLimit(1)
+
+            StepCounterView(
+                value: viewModel.availableStepsForDisplay,
+                limit: environment.ticketRuleEngine.requiredStepsPerTicket
+            )
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity)
+
+            if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
+                Text(giftedStepsSummaryText)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
                     .lineLimit(1)
-
-                StepCounterView(
-                    value: viewModel.availableStepsForDisplay,
-                    limit: environment.ticketRuleEngine.requiredStepsPerTicket
-                )
-                .frame(maxWidth: .infinity, alignment: .center)
-                .frame(maxWidth: .infinity)
-
-                if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
-                    Text(giftedStepsSummaryText)
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.82)
-                        .frame(maxWidth: .infinity)
-                }
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity)
             }
 
             if isWaitingForAnimal {
@@ -158,26 +137,23 @@ struct CabinView: View {
                     .font(AppTheme.caption)
                     .foregroundStyle(AppTheme.secondaryInk)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .lineSpacing(3)
-                    .minimumScaleFactor(0.82)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity)
             }
 
             if isWaitingForAnimal == false {
-                if isFirstImmediateTicketAvailable == false {
-                    Label {
-                        Text(AppCopy.Cabin.ruleHint)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.88)
-                    } icon: {
-                        ArtImage(name: "icon_steps")
-                            .frame(width: 16, height: 16)
-                            .foregroundStyle(AppTheme.ochre)
-                    }
-                    .font(AppTheme.caption)
-                    .foregroundStyle(AppTheme.secondaryInk)
+                Label {
+                    Text(AppCopy.Cabin.ruleHint)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.88)
+                } icon: {
+                    ArtImage(name: "icon_steps")
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(AppTheme.ochre)
                 }
+                .font(AppTheme.caption)
+                .foregroundStyle(AppTheme.secondaryInk)
 
                 if viewModel.requiresHealthConnection {
                     Text(viewModel.actionMessage)
@@ -205,19 +181,14 @@ struct CabinView: View {
                 } else {
                     GiftTicketButton(
                         isAvailable: canGiftTicket,
-                        isWorking: viewModel.isWorking,
-                        badgeText: isFirstImmediateTicketAvailable ? "赠送首张" : "点击赠送"
+                        isWorking: viewModel.isWorking
                     ) {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         Task {
                             await viewModel.prepareGiftConfirmation()
                         }
                     }
-                    .accessibilityLabel(
-                        isFirstImmediateTicketAvailable
-                            ? AppCopy.Cabin.firstTicketGiftButton
-                            : (canGiftTicket ? "赠送一张脚步机票" : "达到3000步后可赠送一张机票")
-                    )
+                    .accessibilityLabel(canGiftTicket ? "赠送一张脚步机票" : "达到3000步后可赠送一张机票")
                 }
 
                 if viewModel.requiresHealthConnection {
@@ -265,7 +236,6 @@ struct CabinView: View {
 private struct GiftTicketButton: View {
     var isAvailable: Bool
     var isWorking: Bool
-    var badgeText: String = "点击赠送"
     var action: () -> Void
     @State private var isGlowing = false
 
@@ -283,7 +253,7 @@ private struct GiftTicketButton: View {
                     .scaleEffect(isAvailable ? (isGlowing ? 1.12 : 0.94) : 1)
 
                 if isAvailable {
-                    Text(badgeText)
+                    Text("点击赠送")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(AppTheme.paperWhite)
                         .padding(.horizontal, 10)
@@ -392,12 +362,7 @@ private struct TicketGiftConfirmationView: View {
                     .padding(.top, 8)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    confirmationLine(
-                        iconName: "icon_ticket",
-                        text: confirmation.isFirstImmediateTicket
-                            ? AppCopy.GiftConfirmation.firstTicketLine
-                            : AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount)
-                    )
+                    confirmationLine(iconName: "icon_ticket", text: AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount))
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(14)

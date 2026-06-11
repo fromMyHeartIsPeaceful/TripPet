@@ -80,7 +80,7 @@ enum StepCountProviderError: LocalizedError {
         case .authorizationDenied:
             "尚未获得 Apple 健康步数读取权限。"
         case .unableToReadSteps:
-            "暂时没有读到今天的脚步。"
+            "暂时没有读到今天的脚步。可以稍后再试，或在设置里检查 Health 权限。"
         }
     }
 }

@@ -1,27 +1,31 @@
 {
-  "version": 2,
+  "version": 1,
   "animals": [
     {
       "id": "cat",
-      "displayName": "墨迹",
+      "displayName": "小猫",
       "species": "cat",
-      "personality": "安静、机敏、记性好，喜欢把小事准确记下来",
-      "profileId": "moji_cat",
-      "canTravel": true,
-      "displayRoleType": "见证者",
+      "personality": "安静、好奇、喜欢地图",
       "homeAssetName": "animal_cat_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_cat_home",
       "isResident": true
     },
     {
+      "id": "visitor_unknown",
+      "displayName": "新伙伴",
+      "species": "unknown",
+      "personality": "偶尔从门边探头",
+      "homeAssetName": "animal_visitor_unknown",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_visitor_unknown",
+      "isResident": false
+    },
+    {
       "id": "dog",
-      "displayName": "汤圆",
+      "displayName": "小狗",
       "species": "dog",
-      "personality": "热闹、反应快，常把尴尬讲成一场小事故",
-      "profileId": "tangyuan_puppy",
-      "canTravel": true,
-      "displayRoleType": "荒诞喜剧者",
+      "personality": "喜欢沿着邮路闻风",
       "homeAssetName": "animal_dog_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_dog_visitor",
@@ -29,12 +33,9 @@
     },
     {
       "id": "rabbit",
-      "displayName": "灯灯",
+      "displayName": "小兔",
       "species": "rabbit",
-      "personality": "温和、容易停步，常被一盏灯或一扇窗牵住",
-      "profileId": "dengdeng_rabbit",
-      "canTravel": true,
-      "displayRoleType": "归乡者",
+      "personality": "会把地图角折得很整齐",
       "homeAssetName": "animal_rabbit_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_rabbit_visitor",
@@ -43,385 +44,29 @@
   ],
   "destinations": [
     {
-      "id": "fr_paris",
-      "cityId": "fr_paris",
+      "id": "paris",
       "displayName": "巴黎",
       "landmarkAssetName": "destination_paris_line",
       "stampAssetName": "stamp_paris",
       "routeMapAssetName": "trip_route_map_paris",
-      "postcardTemplateAssetName": "postcard_template_landscape_v102",
-      "travelKind": "standard",
       "primaryColor": "#D8B36A",
-      "postcardTitleTemplate": "{animal}寄来的巴黎明信片",
+      "postcardTitleTemplate": "{animal}寄来的巴黎早安",
       "postcardSubtitle": "旅途中寄来",
-      "postcardBodyTemplate": "我在{destination}的街角停了一会儿，把一件小事寄回小屋。",
-      "scenes": [
-        {
-          "sceneId": "fr_paris_library_bookshop_edge_01",
-          "sceneName": "巴黎旧书店门口",
-          "sceneType": "bookish_place",
-          "sensoryDetails": ["木门铃", "书脊磨痕", "纸页味"],
-          "localObjects": ["书签", "借阅条", "铅笔"],
-          "availableActions": ["把书签夹回去", "捡起铅笔", "把便签贴正"],
-          "postcardTypes": ["daily_observation", "motif_echo", "value_choice"],
-          "microArcFits": ["旁观型", "选择型", "回声型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成景点介绍", "不要把巴黎写成只有浪漫"]
-        },
-        {
-          "sceneId": "fr_paris_old_street_doorplate_02",
-          "sceneName": "巴黎旧街门牌墙角",
-          "sceneType": "street_corner",
-          "sensoryDetails": ["旧门铃声", "楼道灯", "墙角水痕"],
-          "localObjects": ["门牌", "信封", "胶带角"],
-          "availableActions": ["描下号码", "把信封放回包里", "把胶带角按平"],
-          "postcardTypes": ["daily_observation", "relationship_card", "motif_echo"],
-          "microArcFits": ["动作型", "旁观型", "回声型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要让门牌变成悬疑符号", "不要直接解释心理原因"]
-        },
-        {
-          "sceneId": "fr_paris_museum_side_entrance_03",
-          "sceneName": "巴黎展馆侧门",
-          "sceneType": "museum_edge",
-          "sensoryDetails": ["寄存柜轻响", "公告纸边", "鞋底回声"],
-          "localObjects": ["寄存牌", "活动海报", "纸袋"],
-          "availableActions": ["把寄存牌递回去", "压住公告纸边", "让开门口"],
-          "postcardTypes": ["personality_reaction", "daily_observation", "value_choice"],
-          "microArcFits": ["选择型", "误会型", "动作型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy"],
-          "avoidWriting": ["不要描述展品事实", "不要写成打卡"]
-        },
-        {
-          "sceneId": "fr_paris_laundry_lodging_04",
-          "sceneName": "巴黎旅馆洗衣房",
-          "sceneType": "lodging",
-          "sensoryDetails": ["烘干机低响", "洗衣粉味", "硬币滚声"],
-          "localObjects": ["衣夹", "硬币", "号码纸"],
-          "availableActions": ["捡起硬币", "把衣夹夹回袋口", "把号码纸压平"],
-          "postcardTypes": ["daily_observation", "personality_reaction"],
-          "microArcFits": ["误会型", "动作型", "反转型"],
-          "animalAffinity": ["tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成孤独旅馆散文"]
-        },
-        {
-          "sceneId": "fr_paris_small_food_counter_05",
-          "sceneName": "巴黎外带窗口",
-          "sceneType": "food_counter",
-          "sensoryDetails": ["纸袋热气", "找零声", "咖啡杯盖"],
-          "localObjects": ["杯套", "收据", "油纸袋"],
-          "availableActions": ["转动杯套", "把收据折好", "把油纸袋递回去"],
-          "postcardTypes": ["daily_observation", "relationship_card"],
-          "microArcFits": ["反转型", "动作型", "选择型"],
-          "animalAffinity": ["tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要使用法式浪漫套话"]
-        },
-        {
-          "sceneId": "fr_paris_bus_stop_notice_06",
-          "sceneName": "巴黎改线公告旁",
-          "sceneType": "bus_stop",
-          "sensoryDetails": ["候车栏影子", "纸边轻响", "车轮水声"],
-          "localObjects": ["票根", "改线公告", "雨伞"],
-          "availableActions": ["压住公告纸边", "把票根夹进本子", "让出候车栏"],
-          "postcardTypes": ["personality_reaction", "value_choice", "motif_echo"],
-          "microArcFits": ["选择型", "旁观型", "回声型"],
-          "animalAffinity": ["moji_cat", "dengdeng_rabbit"],
-          "avoidWriting": ["不要把改线写成命运隐喻"]
-        }
-      ]
+      "postcardBodyTemplate": "清晨的巴黎还没有完全醒来。{animal}在远远能看见铁塔的街角停了一会儿，把面包香、石板路上的光和一点点风，都轻轻收进了这张明信片。"
     },
     {
-      "id": "is_reykjavik",
-      "cityId": "is_reykjavik",
-      "displayName": "雷克雅未克",
+      "id": "iceland",
+      "displayName": "冰岛",
       "landmarkAssetName": "destination_iceland_line",
       "stampAssetName": "stamp_iceland",
       "routeMapAssetName": "trip_route_map_iceland",
-      "postcardTemplateAssetName": "postcard_template_landscape_v102",
-      "travelKind": "long",
       "primaryColor": "#A9C9D8",
-      "postcardTitleTemplate": "{animal}寄来的雷克雅未克明信片",
+      "postcardTitleTemplate": "{animal}寄来的风声",
       "postcardSubtitle": "旅途中寄来",
-      "postcardBodyTemplate": "我在{destination}听见风从纸边跑过去，于是寄回这一点安静。",
-      "scenes": [
-        {
-          "sceneId": "is_reykjavik_library_bookshop_edge_01",
-          "sceneName": "雷克雅未克阅览室窗外",
-          "sceneType": "bookish_place",
-          "sensoryDetails": ["窗边灰尘", "还书口轻响", "纸页味"],
-          "localObjects": ["旧书腰封", "铅笔", "借阅条"],
-          "availableActions": ["压住纸箱盖", "捡起铅笔", "把书签夹回去"],
-          "postcardTypes": ["daily_observation", "relationship_card", "personality_reaction"],
-          "microArcFits": ["选择型", "旁观型", "缺席型"],
-          "animalAffinity": ["moji_cat", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成冰雪奇观", "不要写未确认地点事实"]
-        },
-        {
-          "sceneId": "is_reykjavik_old_street_doorplate_02",
-          "sceneName": "雷克雅未克旧街门牌下",
-          "sceneType": "street_corner",
-          "sensoryDetails": ["门牌掉漆", "墙角水痕", "楼道灯"],
-          "localObjects": ["信封", "门牌", "胶带角"],
-          "availableActions": ["描下号码", "没有敲门", "把胶带角按平"],
-          "postcardTypes": ["personality_reaction", "relationship_card", "motif_echo"],
-          "microArcFits": ["选择型", "回声型", "缺席型"],
-          "animalAffinity": ["moji_cat", "dengdeng_rabbit"],
-          "avoidWriting": ["不要把旧街写成只有荒凉"]
-        },
-        {
-          "sceneId": "is_reykjavik_harbor_wait_03",
-          "sceneName": "雷克雅未克港边候风处",
-          "sceneType": "pier",
-          "sensoryDetails": ["低云", "绳索轻响", "海风贴着围栏"],
-          "localObjects": ["船票", "围巾角", "纸杯"],
-          "availableActions": ["按住围巾角", "把船票夹进本子", "扶正纸杯"],
-          "postcardTypes": ["daily_observation", "motif_echo", "value_choice"],
-          "microArcFits": ["动作型", "旁观型", "回声型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要夸大危险", "不要写成旅游宣传"]
-        },
-        {
-          "sceneId": "is_reykjavik_small_food_counter_04",
-          "sceneName": "雷克雅未克外带窗口",
-          "sceneType": "food_counter",
-          "sensoryDetails": ["热气贴着玻璃", "菜单灯", "纸袋声"],
-          "localObjects": ["杯套", "餐巾纸", "号码夹"],
-          "availableActions": ["把餐巾纸压住", "把号码夹递回去", "转动杯套"],
-          "postcardTypes": ["daily_observation", "personality_reaction"],
-          "microArcFits": ["误会型", "动作型", "反转型"],
-          "animalAffinity": ["tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成寒冷励志句"]
-        },
-        {
-          "sceneId": "is_reykjavik_bus_stop_notice_05",
-          "sceneName": "雷克雅未克候车公告旁",
-          "sceneType": "bus_stop",
-          "sensoryDetails": ["时刻牌反光", "候车亭风声", "湿鞋印"],
-          "localObjects": ["时刻表", "票角", "雨伞"],
-          "availableActions": ["把时刻表按平", "把票角夹好", "让开亭口"],
-          "postcardTypes": ["personality_reaction", "value_choice"],
-          "microArcFits": ["选择型", "动作型", "旁观型"],
-          "animalAffinity": ["moji_cat", "dengdeng_rabbit"],
-          "avoidWriting": ["不要把等待写成抽象孤独"]
-        },
-        {
-          "sceneId": "is_reykjavik_laundry_lodging_06",
-          "sceneName": "雷克雅未克旅馆洗衣房",
-          "sceneType": "lodging",
-          "sensoryDetails": ["烘干机热气", "衣夹碰声", "夜灯"],
-          "localObjects": ["衣夹", "备用手套", "号码纸"],
-          "availableActions": ["把衣夹夹回袋口", "把备用手套收好", "压平号码纸"],
-          "postcardTypes": ["relationship_card", "motif_echo", "daily_observation"],
-          "microArcFits": ["缺席型", "回声型", "动作型"],
-          "animalAffinity": ["dengdeng_rabbit", "tangyuan_puppy"],
-          "avoidWriting": ["不要过度忧郁"]
-        }
-      ]
-    },
-    {
-      "id": "pt_lisbon",
-      "cityId": "pt_lisbon",
-      "displayName": "里斯本",
-      "landmarkAssetName": "destination_lisbon_line",
-      "stampAssetName": "stamp_lisbon",
-      "routeMapAssetName": "trip_route_map_lisbon",
-      "postcardTemplateAssetName": "postcard_template_landscape_v102",
-      "travelKind": "short",
-      "primaryColor": "#C9895F",
-      "postcardTitleTemplate": "{animal}寄来的里斯本明信片",
-      "postcardSubtitle": "旅途中寄来",
-      "postcardBodyTemplate": "我在{destination}的坡道边停了一会儿，把风和纸边的小事寄回小屋。",
-      "scenes": [
-        {
-          "sceneId": "pt_lisbon_library_bookshop_edge_01",
-          "sceneName": "里斯本旧书店门口",
-          "sceneType": "bookish_place",
-          "sensoryDetails": ["书箱纸味", "门口日光", "窗边灰尘"],
-          "localObjects": ["旧书腰封", "书签", "铅笔"],
-          "availableActions": ["把书签夹回去", "压住纸箱盖", "捡起铅笔"],
-          "postcardTypes": ["daily_observation", "motif_echo", "value_choice"],
-          "microArcFits": ["旁观型", "选择型", "回声型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy"],
-          "avoidWriting": ["不要写成旅游明信片口号"]
-        },
-        {
-          "sceneId": "pt_lisbon_old_street_doorplate_02",
-          "sceneName": "里斯本巷口墙角",
-          "sceneType": "street_corner",
-          "sensoryDetails": ["坡道风", "旧门牌", "墙角纸箱"],
-          "localObjects": ["门牌", "纸箱", "信封"],
-          "availableActions": ["把纸箱推到墙边", "描下号码", "把信封放回包里"],
-          "postcardTypes": ["daily_observation", "relationship_card", "motif_echo"],
-          "microArcFits": ["动作型", "旁观型", "回声型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要把坡道写成命运隐喻"]
-        },
-        {
-          "sceneId": "pt_lisbon_museum_side_entrance_03",
-          "sceneName": "里斯本展馆侧门",
-          "sceneType": "museum_edge",
-          "sensoryDetails": ["寄存柜轻响", "公告纸边", "台阶阴影"],
-          "localObjects": ["寄存牌", "活动海报", "纸袋"],
-          "availableActions": ["把寄存牌递回去", "压住公告纸边", "把纸袋扶正"],
-          "postcardTypes": ["personality_reaction", "daily_observation"],
-          "microArcFits": ["选择型", "误会型", "动作型"],
-          "animalAffinity": ["moji_cat", "tangyuan_puppy"],
-          "avoidWriting": ["不要写展品细节"]
-        },
-        {
-          "sceneId": "pt_lisbon_laundry_lodging_04",
-          "sceneName": "里斯本旅馆洗衣房",
-          "sceneType": "lodging",
-          "sensoryDetails": ["洗衣房热气", "衣夹碰声", "窗外坡道光"],
-          "localObjects": ["衣夹", "号码纸", "硬币"],
-          "availableActions": ["把衣夹夹回袋口", "把号码纸压平", "捡起硬币"],
-          "postcardTypes": ["daily_observation", "relationship_card"],
-          "microArcFits": ["动作型", "缺席型", "误会型"],
-          "animalAffinity": ["dengdeng_rabbit", "tangyuan_puppy"],
-          "avoidWriting": ["不要过度念旧"]
-        },
-        {
-          "sceneId": "pt_lisbon_small_food_counter_05",
-          "sceneName": "里斯本外带窗口",
-          "sceneType": "food_counter",
-          "sensoryDetails": ["纸袋热气", "找零声", "菜单灯"],
-          "localObjects": ["杯套", "收据", "号码夹"],
-          "availableActions": ["转动杯套", "把收据折好", "把号码夹递回去"],
-          "postcardTypes": ["daily_observation", "personality_reaction"],
-          "microArcFits": ["反转型", "动作型", "选择型"],
-          "animalAffinity": ["tangyuan_puppy", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成美食攻略"]
-        },
-        {
-          "sceneId": "pt_lisbon_tram_stop_edge_06",
-          "sceneName": "里斯本轨道边候车处",
-          "sceneType": "bus_stop",
-          "sensoryDetails": ["轨道旁风声", "车轮远响", "栏杆温热"],
-          "localObjects": ["票角", "路线图", "伞套"],
-          "availableActions": ["把票角夹进本子", "把路线图折回去", "擦掉伞套水痕"],
-          "postcardTypes": ["personality_reaction", "value_choice", "motif_echo"],
-          "microArcFits": ["选择型", "动作型", "回声型"],
-          "animalAffinity": ["moji_cat", "dengdeng_rabbit"],
-          "avoidWriting": ["不要写成城市宣传"]
-        }
-      ]
+      "postcardBodyTemplate": "冰岛的云压得很低，路边的灯像一粒小小的星。{animal}把围巾裹紧，听见风从黑色海岸跑过去，于是给小屋寄回这一点安静的远方。"
     }
   ],
   "postcards": [],
-  "narrative": {
-    "postcardTypes": {
-      "daily_observation": 55,
-      "personality_reaction": 22,
-      "relationship_card": 8,
-      "memory_fragment": 6,
-      "value_choice": 4,
-      "motif_echo": 3
-    },
-    "profiles": [
-      {
-        "id": "moji_cat",
-        "displayName": "墨迹",
-        "motifs": ["黑色纽扣", "旧门牌", "陌生人的名字", "小本子", "雨后脚印", "空长椅"],
-        "reactionLines": [
-          "我把位置记下来，没有评价。",
-          "我看见那枚小东西停在第三格台阶。",
-          "我在本子上留了一行空白。",
-          "准确地说，这里不是安静，是声音都压低了。",
-          "我没有跟过去，因为有些距离也是事实。",
-          "我把门牌数字抄得很慢。",
-          "我看见有人把票折成四折。",
-          "我今天试着开口提醒别人，声音比想的轻。",
-          "陌生的名字写下来以后，就不完全陌生了。",
-          "我把黑色纽扣留在原地，像把句号放回句子里。",
-          "我没有动那张照片，只记住了方向。",
-          "我把小本子的边角压平了。"
-        ],
-        "relationshipLines": [
-          "这张卡没有漂亮结尾，但我想寄给你。",
-          "我不会替你解释，只把细节放在这里。",
-          "你读到这里，就已经比路过多一点。",
-          "我今天没有只旁观。",
-          "如果我沉默，是在确认字有没有写对。",
-          "我把那张空长椅画给你，少画了一点风。",
-          "有些名字还不能写，但我想让你知道这些名字存在。",
-          "这次我没有把最后一句删掉。"
-        ],
-        "actionPatterns": ["记录名字或门牌", "旁观一件小事但不评价", "把小物推到更容易被找到的位置"],
-        "preferredPostcardTypes": ["daily_observation", "personality_reaction", "motif_echo"]
-      },
-      {
-        "id": "tangyuan_puppy",
-        "displayName": "汤圆",
-        "motifs": ["漏水杯子", "滑倒", "歪围巾", "错拿的面包", "半块饼干", "笑到停住"],
-        "reactionLines": [
-          "我本来想把这件事讲成笑话，结果先把票角捡起来。",
-          "我郑重宣布自己没有摔倒，只是和地面交换了意见。",
-          "我把杯套转了三圈，假装这是一个重要仪式。",
-          "我准备开口夸张描述，最后只说了谢谢。",
-          "我把错拿的东西还回去，尾巴比声音诚实。",
-          "我笑了一下，发现这次不用先把自己讲得很好笑。",
-          "我把收据折成很小一块，像藏起一场失败。",
-          "我说这不是迷路，是路线在练习幽默感。",
-          "我把歪围巾拉正，又马上弄歪了一点。",
-          "我把半块饼干让出去，说自己已经和饼干告别过。",
-          "我没有抢先道歉，只把东西递回原处。",
-          "我笑到一半停住，然后认真看了看门口。"
-        ],
-        "relationshipLines": [
-          "我把这件小失败寄给你，先给你笑的部分。",
-          "我今天没有把不好笑的地方藏得太快。",
-          "我想了想，觉得你也许会看见笑话后面的那一小块。",
-          "我说如果你笑了也没关系，我本来就是这么写的。",
-          "我把失败收进明信片里，没有急着涂漂亮。",
-          "这次我没有抢先讲完。",
-          "我把那句谢谢留给你看。",
-          "我说下次会准备一个更短的笑话。"
-        ],
-        "actionPatterns": ["自嘲但完成动作", "把尴尬讲轻一点", "把失败交还给现实"],
-        "preferredPostcardTypes": ["daily_observation", "personality_reaction", "relationship_card"]
-      },
-      {
-        "id": "dengdeng_rabbit",
-        "displayName": "灯灯",
-        "motifs": ["旧铃铛", "窗台灯", "不会寄出的信", "旧钥匙", "软围巾", "晚饭香"],
-        "reactionLines": [
-          "我在亮着的窗边停了一会儿，没有敲门。",
-          "我把信封放回包里，像把一句话先收好。",
-          "我闻到一点热气，脚步慢下来。",
-          "我把旧钥匙的影子看了很久。",
-          "我把围巾角按住，等风过去。",
-          "我没有问这里像不像家，只把灯光记下来。",
-          "我在门外站了一小会儿，然后把纸袋扶正。",
-          "我把不会寄出的信换了一个更平的角度。",
-          "我听见楼道灯响了一下，就没有再往前。",
-          "我把路线图折好，像折一个临时的方向。",
-          "我没有急着离开，因为有人把灯留着。",
-          "我把门牌上的灰擦掉一点。"
-        ],
-        "relationshipLines": [
-          "我想把这盏灯寄给你，不问这盏灯像不像哪里。",
-          "我今天没有把想回去说成只是看看。",
-          "如果你也刚好路过，我会把位置留给你。",
-          "我把这封没有地址的心情折小了一点。",
-          "我说这里不是家，但可以先记住。",
-          "我把晚一点的光留在明信片里。",
-          "我没有等到灯灭才走。",
-          "这次我把门外的风也写给你。"
-        ],
-        "actionPatterns": ["停在门外", "把想说的话收进物件", "记住灯和窗"],
-        "preferredPostcardTypes": ["daily_observation", "relationship_card", "motif_echo"]
-      }
-    ],
-    "templates": [
-      { "id": "daily_action", "postcardType": "daily_observation", "microArc": "动作型", "maxEmotionalWeight": 1, "revealBudget": "none" },
-      { "id": "daily_witness", "postcardType": "daily_observation", "microArc": "旁观型", "maxEmotionalWeight": 1, "revealBudget": "none" },
-      { "id": "personality_choice", "postcardType": "personality_reaction", "microArc": "选择型", "maxEmotionalWeight": 2, "revealBudget": "tiny" },
-      { "id": "personality_misread", "postcardType": "personality_reaction", "microArc": "误会型", "maxEmotionalWeight": 2, "revealBudget": "tiny" },
-      { "id": "relationship_absence", "postcardType": "relationship_card", "microArc": "缺席型", "maxEmotionalWeight": 2, "revealBudget": "small" },
-      { "id": "motif_echo", "postcardType": "motif_echo", "microArc": "回声型", "maxEmotionalWeight": 2, "revealBudget": "small" },
-      { "id": "value_choice", "postcardType": "value_choice", "microArc": "选择型", "maxEmotionalWeight": 2, "revealBudget": "tiny" }
-    ]
-  },
   "rules": {
     "stepsPerTicket": 3000,
     "dailyTicketLimit": 3

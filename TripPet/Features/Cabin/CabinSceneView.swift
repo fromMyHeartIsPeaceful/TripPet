@@ -6,7 +6,6 @@ struct CabinSceneView: View {
 
     var resident: Animal?
     var visitor: Animal?
-    var isApproaching: Bool = false
     var isEmpty: Bool = false
 
     var body: some View {
@@ -14,22 +13,15 @@ struct CabinSceneView: View {
             let size = geometry.size
 
             ZStack {
-                ArtImage(
-                    name: isApproaching ? "cabin_next_animal_approaching" : "cabin_room_base",
-                    contentMode: .fill,
-                    cornerRadius: 28,
-                    showsShadow: true
-                )
+                ArtImage(name: "cabin_room_base", contentMode: .fill, cornerRadius: 28, showsShadow: true)
                     .frame(width: size.width, height: size.height)
 
-                if isApproaching == false {
-                    ArtImage(name: "prop_map_table")
-                        .frame(width: size.width * 0.58, height: size.height * 0.38)
-                        .rotationEffect(.degrees(-2))
-                        .position(x: size.width * 0.64, y: size.height * 0.69)
-                }
+                ArtImage(name: "prop_map_table")
+                    .frame(width: size.width * 0.58, height: size.height * 0.38)
+                    .rotationEffect(.degrees(-2))
+                    .position(x: size.width * 0.64, y: size.height * 0.69)
 
-                if isApproaching == false && isEmpty == false {
+                if isEmpty == false {
                     ArtImage(name: resident?.homeAssetName ?? "animal_cat_home")
                         .frame(width: size.width * 0.38, height: size.height * 0.44)
                         .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.018 : 0.994))

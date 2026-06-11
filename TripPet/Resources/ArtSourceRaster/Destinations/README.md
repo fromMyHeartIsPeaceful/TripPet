@@ -10,3 +10,9 @@ Destination landmarks and route maps used in postcards, stamps, and travel state
 - Do not include readable labels unless the specific asset is a decorative stamp
   or map mark approved for that destination.
 
+## Postcard Overlay Slot
+
+- Destination overlays use a transparent `940 x 560` PNG slot.
+- Postcard destination art must fill this full slot; do not export a small centered watercolor sticker with excessive blank space.
+- Current slot assets: `postcard_destination_airport`, `postcard_destination_paris`,
+  `postcard_destination_reykjavik`, and `postcard_destination_lisbon`.

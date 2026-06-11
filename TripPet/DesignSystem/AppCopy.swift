@@ -24,6 +24,7 @@ enum AppCopy {
         static let requestUnchanged = "还没有取得 Health 步数权限。可以先进入小屋，之后在设置里再试一次。"
         static let laterButton = "稍后再说"
         static let enterCabinButton = "进入小屋"
+        static let retryReadButton = "重试读取今日步数"
         static let connectingButton = "正在连接"
         static let settingsUnavailable = "当前设备不可读取 Health 步数"
         static let settingsNotDetermined = "还没有请求 Health 步数权限"
@@ -62,7 +63,6 @@ enum AppCopy {
         static let tripStatus = "旅途中"
         static let emptyCabinTitle = "也许会有更多小动物来到小屋..."
         static let emptyCabinBody = ""
-        static let nextAnimalApproaching = "远处好像有新的小动物正在靠近。\n大约 10-30 分钟内会到达小屋。"
         static let dailyLimitReached = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
 
         static func activeTripMessage(animalName: String, destination: String) -> String {

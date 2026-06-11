@@ -42,8 +42,6 @@
 		B00000000000000000000021 /* OnboardingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000024 /* OnboardingViews.swift */; };
 		B00000000000000000000022 /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000025 /* AppCopy.swift */; };
 		B00000000000000000000023 /* CabinViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000026 /* CabinViewModelTests.swift */; };
-		B00000000000000000000024 /* AnimalRelationshipMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000027 /* AnimalRelationshipMemory.swift */; };
-		B00000000000000000000025 /* PostcardNarrativeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* PostcardNarrativeEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,8 +93,6 @@
 		F00000000000000000000024 /* OnboardingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding/OnboardingViews.swift; sourceTree = "<group>"; };
 		F00000000000000000000025 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
 		F00000000000000000000026 /* CabinViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CabinViewModelTests.swift; sourceTree = "<group>"; };
-		F00000000000000000000027 /* AnimalRelationshipMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AnimalRelationshipMemory.swift; sourceTree = "<group>"; };
-		F00000000000000000000028 /* PostcardNarrativeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PostcardNarrativeEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,13 +163,11 @@
 				F00000000000000000000006 /* Ticket.swift */,
 				F00000000000000000000007 /* Trip.swift */,
 				F00000000000000000000008 /* Postcard.swift */,
-				F00000000000000000000027 /* AnimalRelationshipMemory.swift */,
 				F00000000000000000000009 /* StepCountProvider.swift */,
 				F0000000000000000000000A /* HealthKitStepCountProvider.swift */,
 				F0000000000000000000000B /* TicketRuleEngine.swift */,
 				F0000000000000000000000C /* AnimalVisitService.swift */,
 				F0000000000000000000000D /* PostcardScheduler.swift */,
-				F00000000000000000000028 /* PostcardNarrativeEngine.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -364,13 +358,11 @@
 				B00000000000000000000006 /* Ticket.swift in Sources */,
 				B00000000000000000000007 /* Trip.swift in Sources */,
 				B00000000000000000000008 /* Postcard.swift in Sources */,
-				B00000000000000000000024 /* AnimalRelationshipMemory.swift in Sources */,
 				B00000000000000000000009 /* StepCountProvider.swift in Sources */,
 				B0000000000000000000000A /* HealthKitStepCountProvider.swift in Sources */,
 				B0000000000000000000000B /* TicketRuleEngine.swift in Sources */,
 				B0000000000000000000000C /* AnimalVisitService.swift in Sources */,
 				B0000000000000000000000D /* PostcardScheduler.swift in Sources */,
-				B00000000000000000000025 /* PostcardNarrativeEngine.swift in Sources */,
 				B0000000000000000000000E /* AppRepository.swift in Sources */,
 				B0000000000000000000000F /* SeedData.swift in Sources */,
 				B0000000000000000000001D /* ContentManifest.swift in Sources */,
@@ -551,7 +543,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -585,7 +577,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -611,7 +603,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -638,7 +630,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

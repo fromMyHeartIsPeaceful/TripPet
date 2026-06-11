@@ -149,13 +149,17 @@ struct SettingsView: View {
         case .sharingDenied:
             healthStatus = AppCopy.Health.settingsDenied
         case .sharingAuthorized:
-            if let steps = environment.stepSnapshot.steps {
+            if let errorMessage = environment.stepSnapshot.errorMessage {
+                healthStatus = errorMessage
+            } else if let steps = environment.stepSnapshot.steps {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
                 healthStatus = AppCopy.Health.settingsAuthorized
             }
         case .readPermissionRequested:
-            if let steps = environment.stepSnapshot.steps {
+            if let errorMessage = environment.stepSnapshot.errorMessage {
+                healthStatus = errorMessage
+            } else if let steps = environment.stepSnapshot.steps {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
                 healthStatus = AppCopy.Health.settingsReadPermissionRequested
