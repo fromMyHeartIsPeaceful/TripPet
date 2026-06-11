@@ -64,6 +64,8 @@ enum AppCopy {
         static let emptyCabinTitle = "也许会有更多小动物来到小屋..."
         static let emptyCabinBody = ""
         static let dailyLimitReached = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
+        static let debugAddStepsButton = "+1000步"
+        static let debugAddHoursButton = "+6小时"
 
         static func activeTripMessage(animalName: String, destination: String) -> String {
             "\(animalName)已经在去\(destination)的路上。等明信片寄回来，再送出下一张机票吧。"
@@ -83,7 +85,7 @@ enum AppCopy {
     }
 
     enum TicketRule {
-        static let alreadyGifted = "今天的脚步已经送出去了。等这趟旅行寄回明信片，再准备下一张机票吧。"
+        static let alreadyGifted = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
         static let eligible = "今天可以赠送 1 张机票"
 
         static func notEnoughSteps(todaySteps: Int, requiredSteps: Int) -> String {
@@ -94,6 +96,7 @@ enum AppCopy {
     enum GiftConfirmation {
         static let title = "确认赠送"
         static let subtitle = "把今天的脚步折成一张机票"
+        static let chooseAnimalTitle = "选择一只小动物"
         static let cancelButton = "再想想"
         static let confirmButton = "确认赠送"
         static let workingButton = "正在赠送"

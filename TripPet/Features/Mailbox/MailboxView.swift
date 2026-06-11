@@ -31,7 +31,11 @@ struct MailboxView: View {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 14) {
                                 ForEach(environment.repository.postcards) { postcard in
-                                    EnvelopeRow(postcard: postcard, reduceMotion: reduceMotion) {
+                                    EnvelopeRow(
+                                        postcard: postcard,
+                                        senderName: senderName(for: postcard),
+                                        reduceMotion: reduceMotion
+                                    ) {
                                         viewModel.open(postcard, repository: environment.repository)
                                     }
                                 }
@@ -55,6 +59,13 @@ struct MailboxView: View {
         }
     }
 
+    private func senderName(for postcard: Postcard) -> String {
+        if let trip = environment.repository.trips.first(where: { $0.id == postcard.tripId }) {
+            return environment.repository.animalName(for: trip.animalId)
+        }
+        return postcard.senderNameFallback
+    }
+
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(AppCopy.Mailbox.title)
@@ -68,6 +79,7 @@ private struct EnvelopeRow: View {
     private static let envelopeHeight: CGFloat = 150
 
     let postcard: Postcard
+    let senderName: String
     let reduceMotion: Bool
     let action: () -> Void
     @State private var isHovering = false
@@ -99,7 +111,7 @@ private struct EnvelopeRow: View {
     }
 
     private var envelopeTitle: some View {
-        Text("\(postcard.senderName)寄来的明信片")
+        Text("\(senderName)寄来的明信片")
             .font(.system(size: 21, weight: .semibold))
             .foregroundStyle(AppTheme.ink)
             .lineLimit(1)
@@ -113,7 +125,7 @@ private struct EnvelopeRow: View {
 }
 
 private extension Postcard {
-    var senderName: String {
+    var senderNameFallback: String {
         if let range = title.range(of: "寄来的明信片") {
             let name = title[..<range.lowerBound]
             if name.isEmpty == false {

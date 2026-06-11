@@ -1,14 +1,45 @@
 import Foundation
 
 struct PostcardScheduler {
+    static let tripDuration: TimeInterval = 60 * 60 * 36
+
+    var randomOffset: (ClosedRange<TimeInterval>) -> TimeInterval
+
+    init(randomOffset: @escaping (ClosedRange<TimeInterval>) -> TimeInterval = { Double.random(in: $0) }) {
+        self.randomOffset = randomOffset
+    }
+
+    func makePostcardPlan(departedAt: Date) -> [TripPostcardPlanItem] {
+        [
+            TripPostcardPlanItem(
+                sequence: 1,
+                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 5...60 * 60 * 8)),
+                revealedAt: nil
+            ),
+            TripPostcardPlanItem(
+                sequence: 2,
+                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 16...60 * 60 * 24)),
+                revealedAt: nil
+            )
+        ]
+    }
+
+    func shouldRevealPostcard(for planItem: TripPostcardPlanItem, on date: Date = Date()) -> Bool {
+        planItem.revealedAt == nil && date >= planItem.dueAt
+    }
+
     func shouldRevealPostcard(for trip: Trip, on date: Date = Date()) -> Bool {
-        date >= trip.departedAt.addingTimeInterval(60 * 60 * 24)
+        if trip.postcardPlan.isEmpty {
+            return date >= trip.departedAt.addingTimeInterval(60 * 60 * 24)
+        }
+        return trip.postcardPlan.contains { shouldRevealPostcard(for: $0, on: date) }
     }
 
     func makePostcard(
         for trip: Trip,
         animal: Animal,
         destination: ManifestDestination,
+        sequence: Int = 1,
         on date: Date = Date()
     ) -> Postcard {
         let title = destination.postcardTitleTemplate
@@ -19,7 +50,7 @@ struct PostcardScheduler {
             .replacingOccurrences(of: "{destination}", with: destination.displayName)
 
         return Postcard(
-            id: "postcard_\(destination.id)_\(animal.id)_\(Int(date.timeIntervalSince1970))",
+            id: "postcard_\(trip.id)_\(sequence)",
             tripId: trip.id,
             destination: destination.displayName,
             title: title,

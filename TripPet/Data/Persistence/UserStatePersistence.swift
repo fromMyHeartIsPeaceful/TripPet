@@ -4,6 +4,8 @@ import SwiftData
 struct AppUserFlags: Equatable {
     var onboardingCompleted: Bool = false
     var healthGuideDismissed: Bool = false
+    var firstImmediateTicketGifted: Bool = false
+    var firstAirportPostcardDelivered: Bool = false
 }
 
 struct AppUserState: Equatable {
@@ -46,18 +48,43 @@ struct AppUserState: Equatable {
 struct CabinLodgingState: Equatable {
     var statusDate: Date
     var dispatchedCount: Int
-    var currentAnimalId: String?
+    var presentAnimalIds: [String]
     var emptyUntil: Date?
+
+    var currentAnimalId: String? {
+        get { presentAnimalIds.first }
+        set { presentAnimalIds = newValue.map { [$0] } ?? [] }
+    }
+
+    init(
+        statusDate: Date,
+        dispatchedCount: Int,
+        presentAnimalIds: [String],
+        emptyUntil: Date?
+    ) {
+        self.statusDate = statusDate
+        self.dispatchedCount = dispatchedCount
+        self.presentAnimalIds = presentAnimalIds
+        self.emptyUntil = emptyUntil
+    }
 
     static func initial(
         on date: Date,
         animalId: String?,
         calendar: Calendar = .current
     ) -> CabinLodgingState {
+        initial(on: date, animalIds: animalId.map { [$0] } ?? [], calendar: calendar)
+    }
+
+    static func initial(
+        on date: Date,
+        animalIds: [String],
+        calendar: Calendar = .current
+    ) -> CabinLodgingState {
         CabinLodgingState(
             statusDate: calendar.startOfDay(for: date),
             dispatchedCount: 0,
-            currentAnimalId: animalId,
+            presentAnimalIds: animalIds,
             emptyUntil: nil
         )
     }
@@ -122,6 +149,8 @@ final class PersistedTrip {
     var departedAt: Date
     var expectedReturnAt: Date
     var statusRawValue: String
+    var postcardPlanJSON: String?
+    var completedAt: Date?
 
     init(trip: Trip) {
         id = trip.id
@@ -131,6 +160,8 @@ final class PersistedTrip {
         departedAt = trip.departedAt
         expectedReturnAt = trip.expectedReturnAt
         statusRawValue = trip.status.rawValue
+        postcardPlanJSON = Self.encodePostcardPlan(trip.postcardPlan)
+        completedAt = trip.completedAt
     }
 
     var trip: Trip {
@@ -141,8 +172,27 @@ final class PersistedTrip {
             destination: destination,
             departedAt: departedAt,
             expectedReturnAt: expectedReturnAt,
-            status: TripStatus(rawValue: statusRawValue) ?? .traveling
+            status: TripStatus(rawValue: statusRawValue) ?? .traveling,
+            postcardPlan: Self.decodePostcardPlan(postcardPlanJSON),
+            completedAt: completedAt
         )
+    }
+
+    private static func encodePostcardPlan(_ plan: [TripPostcardPlanItem]) -> String? {
+        guard plan.isEmpty == false,
+              let data = try? JSONEncoder().encode(plan) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private static func decodePostcardPlan(_ json: String?) -> [TripPostcardPlanItem] {
+        guard let json,
+              let data = json.data(using: .utf8),
+              let plan = try? JSONDecoder().decode([TripPostcardPlanItem].self, from: data) else {
+            return []
+        }
+        return plan
     }
 }
 
@@ -253,6 +303,7 @@ final class PersistedCabinLodgingState {
     var statusDate: Date
     var dispatchedCount: Int
     var currentAnimalId: String?
+    var presentAnimalIdsJSON: String?
     var emptyUntil: Date?
 
     init(state: CabinLodgingState) {
@@ -260,6 +311,7 @@ final class PersistedCabinLodgingState {
         statusDate = state.statusDate
         dispatchedCount = state.dispatchedCount
         currentAnimalId = state.currentAnimalId
+        presentAnimalIdsJSON = Self.encodeAnimalIds(state.presentAnimalIds)
         emptyUntil = state.emptyUntil
     }
 
@@ -267,9 +319,26 @@ final class PersistedCabinLodgingState {
         CabinLodgingState(
             statusDate: statusDate,
             dispatchedCount: dispatchedCount,
-            currentAnimalId: currentAnimalId,
+            presentAnimalIds: Self.decodeAnimalIds(presentAnimalIdsJSON, fallback: currentAnimalId),
             emptyUntil: emptyUntil
         )
+    }
+
+    private static func encodeAnimalIds(_ animalIds: [String]) -> String? {
+        guard animalIds.isEmpty == false,
+              let data = try? JSONEncoder().encode(animalIds) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private static func decodeAnimalIds(_ json: String?, fallback: String?) -> [String] {
+        if let json,
+           let data = json.data(using: .utf8),
+           let animalIds = try? JSONDecoder().decode([String].self, from: data) {
+            return animalIds
+        }
+        return fallback.map { [$0] } ?? []
     }
 }
 
@@ -324,7 +393,9 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         replace(PersistedTravelWishState.self, with: state.travelWishes.map(PersistedTravelWishState.init(wish:)))
         replace(PersistedAppFlag.self, with: [
             PersistedAppFlag(key: AppFlagKey.onboardingCompleted, boolValue: state.flags.onboardingCompleted),
-            PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed)
+            PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed),
+            PersistedAppFlag(key: AppFlagKey.firstImmediateTicketGifted, boolValue: state.flags.firstImmediateTicketGifted),
+            PersistedAppFlag(key: AppFlagKey.firstAirportPostcardDelivered, boolValue: state.flags.firstAirportPostcardDelivered)
         ])
         replace(PersistedCabinLodgingState.self, with: [
             PersistedCabinLodgingState(state: state.cabinLodging)
@@ -336,7 +407,9 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         let flags = (try? context.fetch(FetchDescriptor<PersistedAppFlag>())) ?? []
         return AppUserFlags(
             onboardingCompleted: flags.first { $0.key == AppFlagKey.onboardingCompleted }?.boolValue ?? false,
-            healthGuideDismissed: flags.first { $0.key == AppFlagKey.healthGuideDismissed }?.boolValue ?? false
+            healthGuideDismissed: flags.first { $0.key == AppFlagKey.healthGuideDismissed }?.boolValue ?? false,
+            firstImmediateTicketGifted: flags.first { $0.key == AppFlagKey.firstImmediateTicketGifted }?.boolValue ?? false,
+            firstAirportPostcardDelivered: flags.first { $0.key == AppFlagKey.firstAirportPostcardDelivered }?.boolValue ?? false
         )
     }
 
@@ -381,4 +454,6 @@ final class SwiftDataUserStateStore: AppUserStateStore {
 private enum AppFlagKey {
     static let onboardingCompleted = "onboardingCompleted"
     static let healthGuideDismissed = "healthGuideDismissed"
+    static let firstImmediateTicketGifted = "firstImmediateTicketGifted"
+    static let firstAirportPostcardDelivered = "firstAirportPostcardDelivered"
 }

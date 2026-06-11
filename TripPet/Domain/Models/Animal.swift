@@ -1,5 +1,10 @@
 import Foundation
 
+enum AnimalPool: String, Equatable, Codable {
+    case primary
+    case backup
+}
+
 struct Animal: Identifiable, Equatable {
     let id: String
     var name: String
@@ -10,4 +15,5 @@ struct Animal: Identifiable, Equatable {
     var visitorAssetName: String
     var discoveredAt: Date?
     var isResident: Bool
+    var pool: AnimalPool = .primary
 }

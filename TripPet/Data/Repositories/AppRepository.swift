@@ -13,13 +13,22 @@ final class AppRepository: ObservableObject {
 
     private let store: AppUserStateStore
     private let calendar: Calendar
+    private let destinations: [ManifestDestination]
+    private let postcardScheduler: PostcardScheduler
     private let maxDailyAnimalDepartures = 3
-    private let emptyCabinDuration: TimeInterval = 60 * 60
+    private let maxCabinAnimals = 9
 
-    init(seed: SeedData, store: AppUserStateStore? = nil, calendar: Calendar = .current) {
+    init(
+        seed: SeedData,
+        store: AppUserStateStore? = nil,
+        calendar: Calendar = .current,
+        postcardScheduler: PostcardScheduler = PostcardScheduler()
+    ) {
         let resolvedStore = store ?? InMemoryUserStateStore()
         self.store = resolvedStore
         self.calendar = calendar
+        self.postcardScheduler = postcardScheduler
+        destinations = seed.destinations
         let userState = resolvedStore.load(seed: seed)
         animals = seed.animals
         travelWishes = userState.travelWishes
@@ -28,6 +37,8 @@ final class AppRepository: ObservableObject {
         tickets = userState.tickets
         userFlags = userState.flags
         cabinLodging = userState.cabinLodging
+        ensureOpenWishes(on: Date())
+        ensureFirstAirportPostcardIfNeeded()
         refreshCabinLodging()
     }
 
@@ -35,21 +46,27 @@ final class AppRepository: ObservableObject {
         animals.first(where: \.isResident)
     }
 
+    var cabinAnimals: [Animal] {
+        cabinLodging.presentAnimalIds.compactMap { animalId in
+            animals.first { $0.id == animalId }
+        }
+    }
+
     var currentCabinAnimal: Animal? {
-        guard let id = cabinLodging.currentAnimalId else { return nil }
-        return animals.first { $0.id == id }
+        cabinAnimals.first
     }
 
     var isCabinEmpty: Bool {
-        cabinLodging.currentAnimalId == nil && cabinLodging.dispatchedCount < maxDailyAnimalDepartures
+        cabinAnimals.isEmpty && cabinLodging.dispatchedCount < maxDailyAnimalDepartures
     }
 
     var hasReachedDailyAnimalLimit: Bool {
-        cabinLodging.currentAnimalId == nil && cabinLodging.dispatchedCount >= maxDailyAnimalDepartures
+        cabinAnimals.isEmpty && cabinLodging.dispatchedCount >= maxDailyAnimalDepartures
     }
 
     var activeWish: TravelWish? {
-        travelWishes.first { $0.status == .waiting || $0.status == .ready }
+        currentCabinAnimal.flatMap { activeWish(for: $0.id) } ??
+            travelWishes.first { $0.status == .waiting || $0.status == .ready }
     }
 
     var activeTrip: Trip? {
@@ -58,6 +75,13 @@ final class AppRepository: ObservableObject {
 
     func animalName(for animalId: String) -> String {
         animals.first { $0.id == animalId }?.name ?? "小动物"
+    }
+
+    func activeWish(for animalId: String) -> TravelWish? {
+        travelWishes.first {
+            $0.animalId == animalId &&
+                ($0.status == .waiting || $0.status == .ready)
+        }
     }
 
     func hasGiftedTicketToday(calendar: Calendar = .current) -> Bool {
@@ -72,37 +96,58 @@ final class AppRepository: ObservableObject {
             }
     }
 
+    func stepFundedTicketCountToday(on date: Date = Date(), calendar: Calendar = .current) -> Int {
+        tickets
+            .filter { calendar.isDate($0.giftedAt, inSameDayAs: date) && $0.sourceSteps > 0 }
+            .reduce(0) { total, ticket in
+                total + max(1, ticket.ticketCount)
+            }
+    }
+
+    func canUseFirstImmediateTicket() -> Bool {
+        tickets.isEmpty && userFlags.firstImmediateTicketGifted == false
+    }
+
     func refreshCabinLodging(on date: Date = Date()) {
-        let startOfDay = calendar.startOfDay(for: date)
-        if calendar.isDate(cabinLodging.statusDate, inSameDayAs: date) == false {
-            cabinLodging = CabinLodgingState.initial(
-                on: date,
-                animalId: firstCabinAnimalId(forDispatchIndex: 0)
-            )
-            saveState()
-            return
+        let originalState = cabinLodging
+        cabinLodging.statusDate = calendar.startOfDay(for: date)
+        cabinLodging.dispatchedCount = giftedTicketCountToday(on: date, calendar: calendar)
+        cabinLodging.emptyUntil = nil
+        cabinLodging.presentAnimalIds = uniqueValidPresentAnimalIds(on: date)
+
+        if cabinLodging.presentAnimalIds.isEmpty,
+           cabinLodging.dispatchedCount < maxDailyAnimalDepartures {
+            appendNextCabinAnimal(on: date)
         }
 
-        if let emptyUntil = cabinLodging.emptyUntil,
-           emptyUntil <= date,
-           cabinLodging.dispatchedCount < maxDailyAnimalDepartures {
-            cabinLodging.statusDate = startOfDay
-            cabinLodging.currentAnimalId = firstCabinAnimalId(forDispatchIndex: cabinLodging.dispatchedCount)
-            cabinLodging.emptyUntil = nil
+        if cabinLodging != originalState {
             saveState()
         }
     }
 
     @discardableResult
-    func giftTicket(sourceSteps: Int, ticketCount: Int, date: Date = Date()) -> Trip? {
+    func giftTicket(
+        sourceSteps: Int,
+        ticketCount: Int,
+        animalId: String? = nil,
+        date: Date = Date(),
+        isFirstImmediateTicket: Bool = false
+    ) -> Trip? {
         refreshCabinLodging(on: date)
-        guard cabinLodging.dispatchedCount < maxDailyAnimalDepartures,
-              let animal = currentCabinAnimal else {
+        guard cabinLodging.dispatchedCount < maxDailyAnimalDepartures else {
             return nil
         }
 
-        let wish = activeWish ?? travelWishes.first
-        guard let resolvedWish = wish else { return nil }
+        let resolvedAnimalId = animalId ?? cabinLodging.presentAnimalIds.first
+        guard let resolvedAnimalId,
+              cabinLodging.presentAnimalIds.contains(resolvedAnimalId),
+              let animal = animals.first(where: { $0.id == resolvedAnimalId }) else {
+            return nil
+        }
+        let isFirstGiftEver = tickets.isEmpty
+
+        ensureOpenWish(for: animal.id, on: date)
+        guard let resolvedWish = activeWish(for: animal.id) else { return nil }
 
         let ticket = Ticket(
             id: UUID(),
@@ -112,6 +157,10 @@ final class AppRepository: ObservableObject {
             giftedAt: date
         )
         tickets.append(ticket)
+
+        if isFirstImmediateTicket {
+            userFlags.firstImmediateTicketGifted = true
+        }
 
         if let index = travelWishes.firstIndex(where: { $0.id == resolvedWish.id }),
            travelWishes[index].status == .waiting || travelWishes[index].status == .ready {
@@ -124,17 +173,29 @@ final class AppRepository: ObservableObject {
             destinationId: resolvedWish.destinationId,
             destination: resolvedWish.destination,
             departedAt: date,
-            expectedReturnAt: date.addingTimeInterval(60 * 60 * 24),
-            status: .traveling
+            expectedReturnAt: date.addingTimeInterval(PostcardScheduler.tripDuration),
+            status: .traveling,
+            postcardPlan: postcardScheduler.makePostcardPlan(departedAt: date),
+            completedAt: nil
         )
         trips.append(trip)
 
+        if isFirstGiftEver,
+           isFirstImmediateTicket,
+           userFlags.firstAirportPostcardDelivered == false {
+            postcards.insert(
+                makeFirstAirportPostcard(for: trip, animal: animal, date: date),
+                at: 0
+            )
+            userFlags.firstAirportPostcardDelivered = true
+        }
+
         cabinLodging.statusDate = calendar.startOfDay(for: date)
-        cabinLodging.dispatchedCount += 1
-        cabinLodging.currentAnimalId = nil
-        cabinLodging.emptyUntil = cabinLodging.dispatchedCount >= maxDailyAnimalDepartures
-            ? nil
-            : date.addingTimeInterval(emptyCabinDuration)
+        cabinLodging.dispatchedCount += max(1, ticketCount)
+        cabinLodging.presentAnimalIds.removeAll { $0 == animal.id }
+        if cabinLodging.dispatchedCount < maxDailyAnimalDepartures {
+            appendNextCabinAnimal(on: date)
+        }
         saveState()
         return trip
     }
@@ -145,20 +206,11 @@ final class AppRepository: ObservableObject {
             return false
         }
 
-        trips[tripIndex].status = .completed
-
-        if let wishIndex = travelWishes.firstIndex(where: {
-            $0.animalId == trip.animalId &&
-            $0.destination == trip.destination &&
-            $0.status == .traveling
-        }) {
-            travelWishes[wishIndex].status = .completed
-        }
-
         if let postcard, !postcards.contains(where: { $0.id == postcard.id }) {
             postcards.insert(postcard, at: 0)
         }
 
+        finishTrip(at: tripIndex, on: postcard?.sentAt ?? Date())
         saveState()
         return true
     }
@@ -169,32 +221,97 @@ final class AppRepository: ObservableObject {
         saveState()
     }
 
+    private func ensureFirstAirportPostcardIfNeeded() {
+        guard userFlags.firstAirportPostcardDelivered == false else { return }
+
+        if postcards.contains(where: { Self.isFirstAirportPostcard($0) }) {
+            userFlags.firstAirportPostcardDelivered = true
+            saveState()
+            return
+        }
+
+        guard userFlags.firstImmediateTicketGifted,
+              let firstTrip = trips.sorted(by: { $0.departedAt < $1.departedAt }).first,
+              let animal = animals.first(where: { $0.id == firstTrip.animalId }) else {
+            return
+        }
+
+        postcards.insert(
+            makeFirstAirportPostcard(for: firstTrip, animal: animal, date: firstTrip.departedAt),
+            at: 0
+        )
+        userFlags.firstAirportPostcardDelivered = true
+        saveState()
+    }
+
+    private static func isFirstAirportPostcard(_ postcard: Postcard) -> Bool {
+        postcard.id.hasPrefix("postcard_first_airport_") ||
+            postcard.destinationAssetName == "postcard_destination_airport" ||
+            postcard.destinationAssetName == "postcard_airport_first_departure"
+    }
+
     @discardableResult
     func revealEligiblePostcards(
         scheduler: PostcardScheduler,
         destinations: [ManifestDestination],
         on date: Date = Date()
     ) -> Bool {
-        var didReveal = false
+        var didChange = false
 
-        for trip in trips where trip.status == .traveling {
-            guard scheduler.shouldRevealPostcard(for: trip, on: date),
-                  postcards.contains(where: { $0.tripId == trip.id }) == false,
-                  let animal = animals.first(where: { $0.id == trip.animalId }),
+        for index in trips.indices where trips[index].status == .traveling {
+            let trip = trips[index]
+            guard let animal = animals.first(where: { $0.id == trip.animalId }),
                   let destination = destinations.first(where: { $0.id == trip.destinationId || $0.displayName == trip.destination }) else {
                 continue
             }
 
-            let postcard = scheduler.makePostcard(
-                for: trip,
-                animal: animal,
-                destination: destination,
-                on: date
-            )
-            didReveal = completeTrip(trip, postcard: postcard) || didReveal
+            if trip.postcardPlan.isEmpty {
+                if scheduler.shouldRevealPostcard(for: trip, on: date),
+                   postcards.contains(where: { $0.tripId == trip.id }) == false {
+                    let postcard = scheduler.makePostcard(
+                        for: trip,
+                        animal: animal,
+                        destination: destination,
+                        on: date
+                    )
+                    postcards.insert(postcard, at: 0)
+                    finishTrip(at: index, on: date)
+                    didChange = true
+                }
+                continue
+            }
+
+            for planIndex in trips[index].postcardPlan.indices {
+                let planItem = trips[index].postcardPlan[planIndex]
+                guard scheduler.shouldRevealPostcard(for: planItem, on: date) else {
+                    continue
+                }
+
+                let postcard = scheduler.makePostcard(
+                    for: trips[index],
+                    animal: animal,
+                    destination: destination,
+                    sequence: planItem.sequence,
+                    on: date
+                )
+                if postcards.contains(where: { $0.id == postcard.id }) == false {
+                    postcards.insert(postcard, at: 0)
+                }
+                trips[index].postcardPlan[planIndex].revealedAt = date
+                didChange = true
+            }
+
+            if date >= trips[index].expectedReturnAt,
+               trips[index].postcardPlan.allSatisfy({ $0.revealedAt != nil }) {
+                finishTrip(at: index, on: date)
+                didChange = true
+            }
         }
 
-        return didReveal
+        if didChange {
+            saveState()
+        }
+        return didChange
     }
 
     func completeOnboarding() {
@@ -225,10 +342,138 @@ final class AppRepository: ObservableObject {
         )
     }
 
-    private func firstCabinAnimalId(forDispatchIndex dispatchIndex: Int) -> String? {
-        let residentAnimals = animals.filter(\.isResident)
-        let orderedAnimals = residentAnimals.isEmpty ? animals : residentAnimals
-        guard orderedAnimals.isEmpty == false else { return nil }
-        return orderedAnimals[min(dispatchIndex, orderedAnimals.count - 1)].id
+    private func finishTrip(at index: Int, on date: Date) {
+        guard trips.indices.contains(index), trips[index].status != .completed else {
+            return
+        }
+
+        let trip = trips[index]
+        trips[index].status = .completed
+        trips[index].completedAt = date
+
+        if let wishIndex = travelWishes.firstIndex(where: {
+            $0.animalId == trip.animalId &&
+                $0.destinationId == trip.destinationId &&
+                $0.status == .traveling
+        }) {
+            travelWishes[wishIndex].status = .completed
+        }
+
+        ensureOpenWish(for: trip.animalId, on: date)
+        appendReturnedAnimalIfNeeded(trip.animalId, on: date)
+    }
+
+    private func makeFirstAirportPostcard(for trip: Trip, animal: Animal, date: Date) -> Postcard {
+        Postcard(
+            id: "postcard_first_airport_\(trip.id)",
+            tripId: trip.id,
+            destination: "机场",
+            title: "\(animal.name)寄来的第一张明信片",
+            body: "我到机场啦！谢谢你送我的机票。登机前先把第一张明信片寄回小屋，等我到了远方，再继续给你写信。",
+            imageAssetName: "postcard_destination_airport",
+            templateAssetName: "postcard_base_portrait",
+            destinationAssetName: "postcard_destination_airport",
+            stampAssetName: "postcard_stamp_airport",
+            animalAssetName: animal.selfieAssetName,
+            envelopeAssetName: "envelope_unread",
+            sentAt: date,
+            subtitle: "刚到机场",
+            isRead: false
+        )
+    }
+
+    private func ensureOpenWishes(on date: Date) {
+        for animal in animals {
+            ensureOpenWish(for: animal.id, on: date)
+        }
+    }
+
+    private func ensureOpenWish(for animalId: String, on date: Date) {
+        guard travelWishes.contains(where: {
+            $0.animalId == animalId &&
+                ($0.status == .waiting || $0.status == .ready || $0.status == .traveling)
+        }) == false,
+            let destination = nextDestination(for: animalId) else {
+            return
+        }
+
+        travelWishes.append(
+            TravelWish(
+                id: "wish_\(destination.id)_\(animalId)_\(UUID().uuidString)",
+                animalId: animalId,
+                destinationId: destination.id,
+                destination: destination.displayName,
+                destinationAssetName: destination.landmarkAssetName,
+                requiredTickets: 1,
+                status: .waiting,
+                createdAt: date
+            )
+        )
+    }
+
+    private func nextDestination(for animalId: String) -> ManifestDestination? {
+        guard destinations.isEmpty == false else { return nil }
+        let completedTrips = trips.filter {
+            $0.animalId == animalId && $0.status == .completed
+        }.count
+        return destinations[completedTrips % destinations.count]
+    }
+
+    private func appendReturnedAnimalIfNeeded(_ animalId: String, on date: Date) {
+        cabinLodging.statusDate = calendar.startOfDay(for: date)
+        cabinLodging.dispatchedCount = giftedTicketCountToday(on: date, calendar: calendar)
+        cabinLodging.presentAnimalIds = uniqueValidPresentAnimalIds(on: date)
+        guard cabinLodging.presentAnimalIds.contains(animalId) == false,
+              cabinLodging.presentAnimalIds.count < maxCabinAnimals else {
+            return
+        }
+        cabinLodging.presentAnimalIds.append(animalId)
+    }
+
+    private func appendNextCabinAnimal(on date: Date) {
+        guard cabinLodging.presentAnimalIds.count < maxCabinAnimals,
+              let animal = nextAvailableCabinAnimal(on: date) else {
+            return
+        }
+        cabinLodging.presentAnimalIds.append(animal.id)
+    }
+
+    private func nextAvailableCabinAnimal(on date: Date) -> Animal? {
+        let primaryAnimals = animals.filter { $0.pool == .primary }
+        if let animal = primaryAnimals.first(where: { isAvailableForCabin($0, on: date) }) {
+            return animal
+        }
+        return animals.first { $0.pool == .backup && isAvailableForCabin($0, on: date) }
+    }
+
+    private func isAvailableForCabin(_ animal: Animal, on date: Date) -> Bool {
+        cabinLodging.presentAnimalIds.contains(animal.id) == false &&
+            isAnimalTraveling(animal.id) == false &&
+            wasAnimalDispatched(animal.id, on: date) == false
+    }
+
+    private func isAnimalTraveling(_ animalId: String) -> Bool {
+        trips.contains {
+            $0.animalId == animalId && ($0.status == .preparing || $0.status == .traveling)
+        }
+    }
+
+    private func wasAnimalDispatched(_ animalId: String, on date: Date) -> Bool {
+        trips.contains {
+            $0.animalId == animalId && calendar.isDate($0.departedAt, inSameDayAs: date)
+        }
+    }
+
+    private func uniqueValidPresentAnimalIds(on date: Date) -> [String] {
+        var seen: Set<String> = []
+        return cabinLodging.presentAnimalIds.filter { animalId in
+            guard seen.contains(animalId) == false,
+                  animals.contains(where: { $0.id == animalId }),
+                  isAnimalTraveling(animalId) == false else {
+                return false
+            }
+            seen.insert(animalId)
+            return true
+        }
     }
 }

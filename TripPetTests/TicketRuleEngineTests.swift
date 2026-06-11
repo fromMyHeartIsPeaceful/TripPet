@@ -43,6 +43,25 @@ final class TicketRuleEngineTests: XCTestCase {
         XCTAssertEqual(readyAgain.ticketCount, 1)
     }
 
+    func testFreeTicketCountsTowardLimitButDoesNotDeductSteps() {
+        let engine = TicketRuleEngine(dailyTicketLimit: 3)
+
+        let secondGiftEligibility = engine.evaluate(
+            todaySteps: 3_000,
+            giftedCountToday: 1,
+            stepFundedTicketCountToday: 0
+        )
+        let limitEligibility = engine.evaluate(
+            todaySteps: 9_000,
+            giftedCountToday: 3,
+            stepFundedTicketCountToday: 0
+        )
+
+        XCTAssertTrue(secondGiftEligibility.isEligible)
+        XCTAssertEqual(secondGiftEligibility.ticketCount, 1)
+        XCTAssertFalse(limitEligibility.isEligible)
+    }
+
     func testDailyGiftLimitBlocksSecondGift() {
         let engine = TicketRuleEngine(dailyTicketLimit: 1)
 

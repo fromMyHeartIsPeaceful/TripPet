@@ -42,6 +42,7 @@
 		B00000000000000000000021 /* OnboardingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000024 /* OnboardingViews.swift */; };
 		B00000000000000000000022 /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000025 /* AppCopy.swift */; };
 		B00000000000000000000023 /* CabinViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000026 /* CabinViewModelTests.swift */; };
+		B00000000000000000000024 /* RootTabViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000027 /* RootTabViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		F00000000000000000000024 /* OnboardingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding/OnboardingViews.swift; sourceTree = "<group>"; };
 		F00000000000000000000025 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
 		F00000000000000000000026 /* CabinViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CabinViewModelTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000027 /* RootTabViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +243,7 @@
 				F0000000000000000000001F /* TicketRuleEngineTests.swift */,
 				F00000000000000000000022 /* AppRepositoryTripTests.swift */,
 				F00000000000000000000026 /* CabinViewModelTests.swift */,
+				F00000000000000000000027 /* RootTabViewTests.swift */,
 			);
 			path = TripPetTests;
 			sourceTree = "<group>";
@@ -390,6 +393,7 @@
 				B0000000000000000000001C /* TicketRuleEngineTests.swift in Sources */,
 				B0000000000000000000001F /* AppRepositoryTripTests.swift in Sources */,
 				B00000000000000000000023 /* CabinViewModelTests.swift in Sources */,
+				B00000000000000000000024 /* RootTabViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

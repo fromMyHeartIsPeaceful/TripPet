@@ -32,18 +32,8 @@ struct SeedData {
                 selfieAssetName: "animal_cat_selfie",
                 visitorAssetName: "animal_cat_home",
                 discoveredAt: Date(),
-                isResident: true
-            ),
-            Animal(
-                id: "visitor_unknown",
-                name: "新伙伴",
-                species: "unknown",
-                personality: "偶尔从门边探头",
-                homeAssetName: "animal_visitor_unknown",
-                selfieAssetName: "animal_cat_selfie",
-                visitorAssetName: "animal_visitor_unknown",
-                discoveredAt: nil,
-                isResident: false
+                isResident: true,
+                pool: .primary
             ),
             Animal(
                 id: "dog",
@@ -54,7 +44,8 @@ struct SeedData {
                 selfieAssetName: "animal_cat_selfie",
                 visitorAssetName: "animal_dog_visitor",
                 discoveredAt: nil,
-                isResident: false
+                isResident: false,
+                pool: .primary
             ),
             Animal(
                 id: "rabbit",
@@ -65,7 +56,80 @@ struct SeedData {
                 selfieAssetName: "animal_cat_selfie",
                 visitorAssetName: "animal_rabbit_visitor",
                 discoveredAt: nil,
-                isResident: false
+                isResident: false,
+                pool: .primary
+            ),
+            Animal(
+                id: "map_cat",
+                name: "地图小猫",
+                species: "cat",
+                personality: "总会把车票夹进地图里",
+                homeAssetName: "animal_cat_home",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_cat_home",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .primary
+            ),
+            Animal(
+                id: "post_dog",
+                name: "邮路小狗",
+                species: "dog",
+                personality: "喜欢把风声当成路标",
+                homeAssetName: "animal_dog_home",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_dog_visitor",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .primary
+            ),
+            Animal(
+                id: "fold_rabbit",
+                name: "折角小兔",
+                species: "rabbit",
+                personality: "会认真整理每一张小纸条",
+                homeAssetName: "animal_rabbit_home",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_rabbit_visitor",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .primary
+            ),
+            Animal(
+                id: "visitor_unknown",
+                name: "新伙伴",
+                species: "unknown",
+                personality: "偶尔从门边探头",
+                homeAssetName: "animal_visitor_unknown",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_visitor_unknown",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .backup
+            ),
+            Animal(
+                id: "quiet_cat",
+                name: "安静小猫",
+                species: "cat",
+                personality: "喜欢在出发前多看一眼窗边",
+                homeAssetName: "animal_cat_home",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_cat_home",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .backup
+            ),
+            Animal(
+                id: "trail_dog",
+                name: "小路小狗",
+                species: "dog",
+                personality: "会沿着小路慢慢走到远方",
+                homeAssetName: "animal_dog_home",
+                selfieAssetName: "animal_cat_selfie",
+                visitorAssetName: "animal_dog_visitor",
+                discoveredAt: nil,
+                isResident: false,
+                pool: .backup
             )
         ],
         travelWishes: [
@@ -86,8 +150,8 @@ struct SeedData {
             ManifestDestination(
                 id: "paris",
                 displayName: "巴黎",
-                landmarkAssetName: "destination_paris_line",
-                stampAssetName: "stamp_paris",
+                landmarkAssetName: "postcard_destination_paris",
+                stampAssetName: "postcard_stamp_paris",
                 routeMapAssetName: "trip_route_map_paris",
                 primaryColor: "#D8B36A",
                 postcardTitleTemplate: "{animal}寄来的巴黎早安",
@@ -97,8 +161,8 @@ struct SeedData {
             ManifestDestination(
                 id: "iceland",
                 displayName: "冰岛",
-                landmarkAssetName: "destination_iceland_line",
-                stampAssetName: "stamp_iceland",
+                landmarkAssetName: "postcard_destination_reykjavik",
+                stampAssetName: "postcard_stamp_reykjavik",
                 routeMapAssetName: "trip_route_map_iceland",
                 primaryColor: "#A9C9D8",
                 postcardTitleTemplate: "{animal}寄来的风声",
@@ -117,8 +181,8 @@ struct SeedData {
             body: "清晨的街边很安静。它站在铁塔很远的地方，把自己的影子也拍进了照片里。",
             imageAssetName: "postcard_paris_day_2",
             templateAssetName: "postcard_template_classic",
-            destinationAssetName: "destination_paris_line",
-            stampAssetName: "stamp_paris",
+            destinationAssetName: "postcard_destination_paris",
+            stampAssetName: "postcard_stamp_paris",
             animalAssetName: "animal_cat_selfie",
             envelopeAssetName: "envelope_unread",
             sentAt: Date().addingTimeInterval(-60 * 60 * 8),
@@ -133,8 +197,8 @@ struct SeedData {
             body: "这是一张旧明信片。云压得很低，路边只有风和一盏小小的灯。",
             imageAssetName: "postcard_iceland_old",
             templateAssetName: "postcard_template_classic",
-            destinationAssetName: "destination_iceland_line",
-            stampAssetName: "stamp_iceland",
+            destinationAssetName: "postcard_destination_reykjavik",
+            stampAssetName: "postcard_stamp_reykjavik",
             animalAssetName: "animal_cat_selfie",
             envelopeAssetName: "envelope_old",
             sentAt: Date().addingTimeInterval(-60 * 60 * 24 * 12),

@@ -9,17 +9,8 @@
       "homeAssetName": "animal_cat_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_cat_home",
-      "isResident": true
-    },
-    {
-      "id": "visitor_unknown",
-      "displayName": "新伙伴",
-      "species": "unknown",
-      "personality": "偶尔从门边探头",
-      "homeAssetName": "animal_visitor_unknown",
-      "selfieAssetName": "animal_cat_selfie",
-      "visitorAssetName": "animal_visitor_unknown",
-      "isResident": false
+      "isResident": true,
+      "pool": "primary"
     },
     {
       "id": "dog",
@@ -29,7 +20,8 @@
       "homeAssetName": "animal_dog_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_dog_visitor",
-      "isResident": false
+      "isResident": false,
+      "pool": "primary"
     },
     {
       "id": "rabbit",
@@ -39,15 +31,82 @@
       "homeAssetName": "animal_rabbit_home",
       "selfieAssetName": "animal_cat_selfie",
       "visitorAssetName": "animal_rabbit_visitor",
-      "isResident": false
+      "isResident": false,
+      "pool": "primary"
+    },
+    {
+      "id": "map_cat",
+      "displayName": "地图小猫",
+      "species": "cat",
+      "personality": "总会把车票夹进地图里",
+      "homeAssetName": "animal_cat_home",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_cat_home",
+      "isResident": false,
+      "pool": "primary"
+    },
+    {
+      "id": "post_dog",
+      "displayName": "邮路小狗",
+      "species": "dog",
+      "personality": "喜欢把风声当成路标",
+      "homeAssetName": "animal_dog_home",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_dog_visitor",
+      "isResident": false,
+      "pool": "primary"
+    },
+    {
+      "id": "fold_rabbit",
+      "displayName": "折角小兔",
+      "species": "rabbit",
+      "personality": "会认真整理每一张小纸条",
+      "homeAssetName": "animal_rabbit_home",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_rabbit_visitor",
+      "isResident": false,
+      "pool": "primary"
+    },
+    {
+      "id": "visitor_unknown",
+      "displayName": "新伙伴",
+      "species": "unknown",
+      "personality": "偶尔从门边探头",
+      "homeAssetName": "animal_visitor_unknown",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_visitor_unknown",
+      "isResident": false,
+      "pool": "backup"
+    },
+    {
+      "id": "quiet_cat",
+      "displayName": "安静小猫",
+      "species": "cat",
+      "personality": "喜欢在出发前多看一眼窗边",
+      "homeAssetName": "animal_cat_home",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_cat_home",
+      "isResident": false,
+      "pool": "backup"
+    },
+    {
+      "id": "trail_dog",
+      "displayName": "小路小狗",
+      "species": "dog",
+      "personality": "会沿着小路慢慢走到远方",
+      "homeAssetName": "animal_dog_home",
+      "selfieAssetName": "animal_cat_selfie",
+      "visitorAssetName": "animal_dog_visitor",
+      "isResident": false,
+      "pool": "backup"
     }
   ],
   "destinations": [
     {
       "id": "paris",
       "displayName": "巴黎",
-      "landmarkAssetName": "destination_paris_line",
-      "stampAssetName": "stamp_paris",
+      "landmarkAssetName": "postcard_destination_paris",
+      "stampAssetName": "postcard_stamp_paris",
       "routeMapAssetName": "trip_route_map_paris",
       "primaryColor": "#D8B36A",
       "postcardTitleTemplate": "{animal}寄来的巴黎早安",
@@ -57,8 +116,8 @@
     {
       "id": "iceland",
       "displayName": "冰岛",
-      "landmarkAssetName": "destination_iceland_line",
-      "stampAssetName": "stamp_iceland",
+      "landmarkAssetName": "postcard_destination_reykjavik",
+      "stampAssetName": "postcard_stamp_reykjavik",
       "routeMapAssetName": "trip_route_map_iceland",
       "primaryColor": "#A9C9D8",
       "postcardTitleTemplate": "{animal}寄来的风声",

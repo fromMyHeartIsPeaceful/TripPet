@@ -47,37 +47,23 @@ private struct PostcardArtwork: View {
             let size = geometry.size
 
             ZStack {
-                ArtImage(name: postcard.templateAssetName, cornerRadius: 24, showsShadow: true)
+                ArtImage(name: "postcard_base_portrait", contentMode: .fill, cornerRadius: 24, showsShadow: true)
                     .frame(width: size.width, height: size.height)
+                    .clipped()
 
-                ArtImage(name: postcard.destinationAssetName)
-                    .frame(width: size.width * 0.42, height: size.height * 0.18)
-                    .position(x: size.width * 0.31, y: size.height * 0.19)
+                ArtImage(name: destinationArtworkName, contentMode: .fill, cornerRadius: 14)
+                    .frame(width: size.width * 0.870, height: size.height * 0.292)
+                    .clipped()
+                    .position(x: size.width * 0.5, y: size.height * 0.302)
 
-                ArtImage(name: postcard.animalAssetName)
-                    .frame(width: size.width * 0.25, height: size.height * 0.18)
-                    .rotationEffect(.degrees(3))
-                    .position(x: size.width * 0.46, y: size.height * 0.25)
-
-                ArtImage(name: postcard.stampAssetName)
-                    .frame(width: size.width * 0.18, height: size.width * 0.18)
+                ArtImage(name: stampArtworkName)
+                    .frame(width: size.width * 0.167, height: size.width * 0.167)
                     .rotationEffect(.degrees(-12))
                     .opacity(0.78)
-                    .position(x: size.width * 0.81, y: size.height * 0.14)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(postcard.destination)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(AppTheme.ink)
-                    Text(postcard.subtitle)
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                }
-                .frame(width: size.width * 0.24, alignment: .leading)
-                .position(x: size.width * 0.73, y: size.height * 0.25)
+                    .position(x: size.width * 0.843, y: size.height * 0.109)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text(displayTitle)
+                    Text(senderLine)
                         .font(.system(size: 21, weight: .semibold))
                         .foregroundStyle(AppTheme.ink)
                         .lineLimit(1)
@@ -88,17 +74,55 @@ private struct PostcardArtwork: View {
                         .lineSpacing(6)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .frame(width: size.width * 0.72, alignment: .leading)
-                .position(x: size.width * 0.52, y: size.height * 0.61)
+                .frame(width: size.width * 0.778, alignment: .leading)
+                .position(x: size.width * 0.5, y: size.height * 0.647)
             }
         }
-        .aspectRatio(971.0 / 1619.0, contentMode: .fit)
+        .aspectRatio(9.0 / 16.0, contentMode: .fit)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(postcard.destination)明信片，\(postcard.subtitle)")
     }
 
-    private var displayTitle: String {
-        postcard.title == "小猫寄来的自拍" ? "小猫寄来的明信片" : postcard.title
+    private var senderLine: String {
+        "\(senderName)从\(postcard.destination)寄来"
+    }
+
+    private var senderName: String {
+        guard let range = postcard.title.range(of: "寄来") else {
+            return "小动物"
+        }
+        let name = postcard.title[..<range.lowerBound]
+        return name.isEmpty ? "小动物" : String(name)
+    }
+
+    private var destinationArtworkName: String {
+        switch postcard.destinationAssetName {
+        case "destination_paris_line", "postcard_portrait_destination_paris":
+            return "postcard_destination_paris"
+        case "destination_iceland_line", "postcard_portrait_destination_reykjavik":
+            return "postcard_destination_reykjavik"
+        case "destination_lisbon_line", "postcard_portrait_destination_lisbon":
+            return "postcard_destination_lisbon"
+        case "postcard_airport_first_departure", "postcard_portrait_destination_airport":
+            return "postcard_destination_airport"
+        default:
+            return postcard.destinationAssetName
+        }
+    }
+
+    private var stampArtworkName: String {
+        switch postcard.stampAssetName {
+        case "stamp_paris", "postcard_portrait_stamp_paris":
+            return "postcard_stamp_paris"
+        case "stamp_iceland", "postcard_portrait_stamp_reykjavik":
+            return "postcard_stamp_reykjavik"
+        case "stamp_lisbon", "postcard_portrait_stamp_lisbon":
+            return "postcard_stamp_lisbon"
+        case "stamp_airport_first_departure", "postcard_portrait_stamp_airport":
+            return "postcard_stamp_airport"
+        default:
+            return postcard.stampAssetName
+        }
     }
 
 }

@@ -18,6 +18,18 @@ struct TicketRuleEngine {
     }
 
     func evaluate(todaySteps: Int, giftedCountToday: Int) -> TicketEligibility {
+        evaluate(
+            todaySteps: todaySteps,
+            giftedCountToday: giftedCountToday,
+            stepFundedTicketCountToday: giftedCountToday
+        )
+    }
+
+    func evaluate(
+        todaySteps: Int,
+        giftedCountToday: Int,
+        stepFundedTicketCountToday: Int
+    ) -> TicketEligibility {
         guard giftedCountToday < dailyTicketLimit else {
             return TicketEligibility(
                 isEligible: false,
@@ -26,7 +38,10 @@ struct TicketRuleEngine {
             )
         }
 
-        let availableSteps = remainingSteps(todaySteps: todaySteps, giftedCountToday: giftedCountToday)
+        let availableSteps = remainingSteps(
+            todaySteps: todaySteps,
+            giftedCountToday: stepFundedTicketCountToday
+        )
         guard availableSteps >= requiredStepsPerTicket else {
             return TicketEligibility(
                 isEligible: false,

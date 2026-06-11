@@ -17,8 +17,7 @@ struct CabinView: View {
                 VStack(spacing: 14) {
                     header
                     CabinSceneView(
-                        resident: environment.repository.currentCabinAnimal,
-                        visitor: nil,
+                        animals: environment.repository.cabinAnimals,
                         isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
                     )
 
@@ -66,9 +65,9 @@ struct CabinView: View {
                 TicketGiftConfirmationView(
                     confirmation: confirmation,
                     isWorking: viewModel.isWorking,
-                    onConfirm: {
+                    onConfirm: { animalId in
                         Task {
-                            let trip = await viewModel.confirmGiftTodaySteps()
+                            let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId)
                             if let trip {
                                 showGiftFlight()
                                 withAnimation(.easeOut(duration: 0.22)) {
@@ -81,7 +80,7 @@ struct CabinView: View {
                         viewModel.cancelGiftConfirmation()
                     }
                 )
-                .presentationDetents([.height(360)])
+                .presentationDetents([.height(430)])
                 .presentationDragIndicator(.visible)
             }
         }
@@ -144,7 +143,7 @@ struct CabinView: View {
 
             if isWaitingForAnimal == false {
                 Label {
-                    Text(AppCopy.Cabin.ruleHint)
+                    Text(viewModel.isFirstImmediateTicketAvailable ? AppCopy.Cabin.firstTicketRuleHint : AppCopy.Cabin.ruleHint)
                         .lineLimit(1)
                         .minimumScaleFactor(0.88)
                 } icon: {
@@ -188,7 +187,11 @@ struct CabinView: View {
                             await viewModel.prepareGiftConfirmation()
                         }
                     }
-                    .accessibilityLabel(canGiftTicket ? "赠送一张脚步机票" : "达到3000步后可赠送一张机票")
+                    .accessibilityLabel(
+                        canGiftTicket
+                        ? (viewModel.isFirstImmediateTicketAvailable ? AppCopy.Cabin.firstTicketGiftButton : "赠送一张脚步机票")
+                        : "达到3000步后可赠送一张机票"
+                    )
                 }
 
                 if viewModel.requiresHealthConnection {
@@ -198,11 +201,48 @@ struct CabinView: View {
                     .buttonStyle(OutlineButtonStyle())
                 }
             }
+
+            #if DEBUG
+            debugControls
+            #endif
         }
         .padding(.horizontal, 18)
         .padding(.vertical, isWaitingForAnimal ? 22 : 18)
         .paperCard(cornerRadius: 24)
     }
+
+    #if DEBUG
+    private var debugControls: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 10) {
+                Button(AppCopy.Cabin.debugAddStepsButton) {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    environment.debugAddSteps()
+                    Task {
+                        await viewModel.refresh()
+                    }
+                }
+                .buttonStyle(OutlineButtonStyle())
+
+                Button(AppCopy.Cabin.debugAddHoursButton) {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    environment.debugAdvanceHours()
+                    Task {
+                        await viewModel.refresh()
+                    }
+                }
+                .buttonStyle(OutlineButtonStyle())
+            }
+
+            Text("DEBUG \(environment.debugCurrentDateText) · +\(environment.debugStepBonus)步")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(AppTheme.secondaryInk.opacity(0.78))
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+        }
+        .frame(maxWidth: .infinity)
+    }
+    #endif
 
     private func showGiftFlight() {
         guard reduceMotion == false else { return }
@@ -229,7 +269,7 @@ struct CabinView: View {
     private var isPrimaryButtonDisabled: Bool {
         if viewModel.isWorking { return true }
         if viewModel.requiresHealthConnection { return false }
-        return environment.repository.currentCabinAnimal == nil
+        return environment.repository.cabinAnimals.isEmpty
     }
 }
 
@@ -346,14 +386,15 @@ private struct TicketGiftButtonStyle: ButtonStyle {
 private struct TicketGiftConfirmationView: View {
     let confirmation: TicketGiftConfirmation
     var isWorking: Bool
-    var onConfirm: () -> Void
+    var onConfirm: (String) -> Void
     var onCancel: () -> Void
+    @State private var selectedAnimalId: String?
 
     var body: some View {
         ZStack {
             PaperBackground()
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 14) {
                 Text(AppCopy.GiftConfirmation.subtitle)
                     .font(AppTheme.sheetDescription)
                     .foregroundStyle(AppTheme.ink)
@@ -361,8 +402,26 @@ private struct TicketGiftConfirmationView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    confirmationLine(iconName: "icon_ticket", text: AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount))
+                VStack(alignment: .leading, spacing: 10) {
+                    confirmationLine(
+                        iconName: "icon_ticket",
+                        text: confirmation.isFirstImmediateTicket
+                            ? AppCopy.GiftConfirmation.firstTicketLine
+                            : AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount)
+                    )
+
+                    Text(AppCopy.GiftConfirmation.chooseAnimalTitle)
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(confirmation.animalOptions) { option in
+                                animalChoice(option)
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(14)
@@ -370,12 +429,16 @@ private struct TicketGiftConfirmationView: View {
 
                 Button(isWorking ? AppCopy.GiftConfirmation.workingButton : AppCopy.GiftConfirmation.confirmButton) {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    onConfirm()
+                    guard let animalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId else { return }
+                    onConfirm(animalId)
                 }
                 .buttonStyle(PrimaryButtonStyle())
-                .disabled(isWorking)
+                .disabled(isWorking || confirmation.animalOptions.isEmpty)
             }
             .padding(20)
+        }
+        .onAppear {
+            selectedAnimalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId
         }
     }
 
@@ -388,6 +451,40 @@ private struct TicketGiftConfirmationView: View {
                 .font(AppTheme.body)
                 .foregroundStyle(AppTheme.ink)
         }
+    }
+
+    private func animalChoice(_ option: TicketGiftAnimalOption) -> some View {
+        let isSelected = (selectedAnimalId ?? confirmation.animalOptions.first?.animalId) == option.animalId
+
+        return Button {
+            selectedAnimalId = option.animalId
+        } label: {
+            VStack(spacing: 6) {
+                ArtImage(name: option.assetName)
+                    .frame(width: 54, height: 54)
+
+                Text(option.animalName)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Text(option.destination)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+            .frame(width: 82, height: 100)
+            .background(isSelected ? AppTheme.sage.opacity(0.18) : AppTheme.paperWhite.opacity(0.36))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isSelected ? AppTheme.deepSage : AppTheme.sage.opacity(0.42), lineWidth: isSelected ? 1.4 : AppTheme.hairline)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(option.animalName)，想去\(option.destination)")
     }
 }
 

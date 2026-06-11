@@ -17,6 +17,10 @@ final class AppEnvironment: ObservableObject {
     let postcardScheduler: PostcardScheduler
     let destinations: [ManifestDestination]
     @Published private(set) var stepSnapshot: StepCountSnapshot
+    #if DEBUG
+    @Published private var debugStepBonusByDay: [Date: Int] = [:]
+    @Published private(set) var debugTimeOffset: TimeInterval = 0
+    #endif
     private var cancellables: Set<AnyCancellable> = []
     private var isRefreshingSteps = false
     private var isObservingStepChanges = false
@@ -90,6 +94,62 @@ final class AppEnvironment: ObservableObject {
         destinations.first { $0.id == trip.destinationId || $0.displayName == trip.destination }
     }
 
+    var currentDate: Date {
+        #if DEBUG
+        Date().addingTimeInterval(debugTimeOffset)
+        #else
+        Date()
+        #endif
+    }
+
+    var effectiveTodaySteps: Int {
+        let providerSteps = stepSnapshot.steps ?? 0
+        #if DEBUG
+        return providerSteps + debugStepBonus
+        #else
+        return providerSteps
+        #endif
+    }
+
+    var usesDebugStepOverride: Bool {
+        #if DEBUG
+        debugStepBonus > 0
+        #else
+        false
+        #endif
+    }
+
+    #if DEBUG
+    var debugStepBonus: Int {
+        debugStepBonusByDay[debugCurrentDay, default: 0]
+    }
+
+    var debugCurrentDateText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd HH:mm"
+        return formatter.string(from: currentDate)
+    }
+
+    func debugAddSteps(_ amount: Int = 1_000) {
+        debugStepBonusByDay[debugCurrentDay, default: 0] += max(0, amount)
+    }
+
+    func debugAdvanceHours(_ hours: Int = 6) {
+        let advancedDate = Calendar.current.date(
+            byAdding: .hour,
+            value: hours,
+            to: currentDate
+        ) ?? currentDate.addingTimeInterval(TimeInterval(hours * 3_600))
+        debugTimeOffset = advancedDate.timeIntervalSince(Date())
+        repository.refreshCabinLodging(on: currentDate)
+        _ = revealEligiblePostcards()
+    }
+
+    private var debugCurrentDay: Date {
+        Calendar.current.startOfDay(for: currentDate)
+    }
+    #endif
+
     @discardableResult
     func requestStepAuthorizationAndRefresh() async throws -> Bool {
         let didRequest = try await stepCountProvider.requestAuthorization()
@@ -103,7 +163,7 @@ final class AppEnvironment: ObservableObject {
     }
 
     func refreshStepsIfPossible() async {
-        repository.refreshCabinLodging()
+        repository.refreshCabinLodging(on: currentDate)
         updateStepStatus()
         guard stepSnapshot.status.canAttemptStepRead else { return }
         guard isRefreshingSteps == false else { return }
@@ -134,7 +194,7 @@ final class AppEnvironment: ObservableObject {
         stepSnapshot = StepCountSnapshot(
             status: stepCountProvider.authorizationStatus(),
             steps: steps,
-            readAt: Date(),
+            readAt: currentDate,
             errorMessage: nil
         )
         startStepObservationIfPossible()
@@ -172,11 +232,11 @@ final class AppEnvironment: ObservableObject {
     }
 
     @discardableResult
-    func revealEligiblePostcards(on date: Date = Date()) -> Bool {
+    func revealEligiblePostcards(on date: Date? = nil) -> Bool {
         repository.revealEligiblePostcards(
             scheduler: postcardScheduler,
             destinations: destinations,
-            on: date
+            on: date ?? currentDate
         )
     }
 }

@@ -17,6 +17,7 @@ struct ManifestAnimal: Decodable {
     var selfieAssetName: String
     var visitorAssetName: String
     var isResident: Bool
+    var pool: AnimalPool?
 }
 
 struct ManifestDestination: Decodable {
@@ -64,7 +65,8 @@ extension SeedData {
                 selfieAssetName: animal.selfieAssetName,
                 visitorAssetName: animal.visitorAssetName,
                 discoveredAt: animal.isResident ? now : nil,
-                isResident: animal.isResident
+                isResident: animal.isResident,
+                pool: animal.pool ?? .primary
             )
         }
 

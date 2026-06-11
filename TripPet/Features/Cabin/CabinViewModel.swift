@@ -3,10 +3,18 @@ import Foundation
 
 struct TicketGiftConfirmation: Identifiable, Equatable {
     let id = UUID()
-    var animalName: String
-    var destination: String
+    var animalOptions: [TicketGiftAnimalOption]
     var ticketCount: Int
     var steps: Int
+    var isFirstImmediateTicket: Bool = false
+}
+
+struct TicketGiftAnimalOption: Identifiable, Equatable {
+    var id: String { animalId }
+    var animalId: String
+    var animalName: String
+    var assetName: String
+    var destination: String
 }
 
 @MainActor
@@ -21,23 +29,34 @@ final class CabinViewModel: ObservableObject {
     private var environment: AppEnvironment?
     private var pendingSteps: Int?
     private var pendingTicketCount: Int?
+    private var pendingIsFirstImmediateTicket = false
 
     var requiresHealthConnection: Bool {
-        healthAuthorizationStatus.canAttemptStepRead == false
+        if isFirstImmediateTicketAvailable {
+            return false
+        }
+        if environment?.usesDebugStepOverride == true {
+            return false
+        }
+        return healthAuthorizationStatus.canAttemptStepRead == false
     }
 
     var availableStepsForDisplay: Int {
         guard let environment else { return 0 }
-        return availableSteps(from: environment.stepSnapshot.steps ?? 0)
+        if isFirstImmediateTicketAvailable {
+            return environment.ticketRuleEngine.requiredStepsPerTicket
+        }
+        return availableSteps(from: environment.effectiveTodaySteps)
     }
 
     var giftedStepsSummaryText: String? {
         guard let environment,
-              let totalSteps = environment.stepSnapshot.steps else {
+              environment.stepSnapshot.steps != nil else {
             return nil
         }
 
-        let giftedSteps = environment.repository.giftedTicketCountToday() * environment.ticketRuleEngine.requiredStepsPerTicket
+        let totalSteps = environment.effectiveTodaySteps
+        let giftedSteps = environment.repository.stepFundedTicketCountToday(on: environment.currentDate) * environment.ticketRuleEngine.requiredStepsPerTicket
         guard giftedSteps > 0 else { return nil }
 
         return AppCopy.Cabin.giftedStepsSummary(
@@ -48,11 +67,21 @@ final class CabinViewModel: ObservableObject {
 
     var canGiftAvailableSteps: Bool {
         guard let environment, requiresHealthConnection == false else { return false }
+        if isFirstImmediateTicketAvailable {
+            return true
+        }
         let eligibility = environment.ticketRuleEngine.evaluate(
-            todaySteps: environment.stepSnapshot.steps ?? 0,
-            giftedCountToday: environment.repository.giftedTicketCountToday()
+            todaySteps: environment.effectiveTodaySteps,
+            giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+            stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
         )
         return eligibility.isEligible
+    }
+
+    var isFirstImmediateTicketAvailable: Bool {
+        guard let environment else { return false }
+        return environment.repository.canUseFirstImmediateTicket() &&
+            environment.repository.cabinAnimals.isEmpty == false
     }
 
     func bind(environment: AppEnvironment) {
@@ -61,7 +90,7 @@ final class CabinViewModel: ObservableObject {
 
     func refresh() async {
         guard let environment else { return }
-        environment.repository.refreshCabinLodging()
+        environment.repository.refreshCabinLodging(on: environment.currentDate)
 
         healthAuthorizationStatus = environment.stepSnapshot.status
 
@@ -91,7 +120,9 @@ final class CabinViewModel: ObservableObject {
             }
         }
 
-        if environment.repository.hasReachedDailyAnimalLimit {
+        if isFirstImmediateTicketAvailable {
+            actionMessage = AppCopy.Cabin.firstTicketRuleHint
+        } else if environment.repository.hasReachedDailyAnimalLimit {
             actionMessage = AppCopy.Cabin.dailyLimitReached
         } else if environment.repository.isCabinEmpty {
             actionMessage = AppCopy.Cabin.emptyCabinBody.isEmpty
@@ -129,15 +160,22 @@ final class CabinViewModel: ObservableObject {
     func prepareGiftConfirmation() async {
         guard let environment else { return }
 
-        let status = environment.stepSnapshot.status
-        guard status.canAttemptStepRead else {
-            await connectHealth()
+        environment.repository.refreshCabinLodging(on: environment.currentDate)
+        guard environment.repository.cabinAnimals.isEmpty == false else {
+            await refresh()
             return
         }
 
-        environment.repository.refreshCabinLodging()
-        guard environment.repository.currentCabinAnimal != nil else {
-            await refresh()
+        if environment.repository.canUseFirstImmediateTicket() {
+            pendingSteps = 0
+            pendingTicketCount = 1
+            pendingIsFirstImmediateTicket = true
+            pendingGiftConfirmation = TicketGiftConfirmation(
+                animalOptions: giftAnimalOptions(from: environment),
+                ticketCount: 1,
+                steps: 0,
+                isFirstImmediateTicket: true
+            )
             return
         }
 
@@ -145,10 +183,20 @@ final class CabinViewModel: ObservableObject {
         defer { isWorking = false }
 
         do {
-            let steps = try await environment.readTodaySteps()
+            if environment.usesDebugStepOverride == false {
+                let status = environment.stepSnapshot.status
+                guard status.canAttemptStepRead else {
+                    isWorking = false
+                    await connectHealth()
+                    return
+                }
+                _ = try await environment.readTodaySteps()
+            }
+            let steps = environment.effectiveTodaySteps
             let eligibility = environment.ticketRuleEngine.evaluate(
                 todaySteps: steps,
-                giftedCountToday: environment.repository.giftedTicketCountToday()
+                giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+                stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
             )
 
             guard eligibility.isEligible else {
@@ -159,11 +207,12 @@ final class CabinViewModel: ObservableObject {
 
             pendingSteps = steps
             pendingTicketCount = eligibility.ticketCount
+            pendingIsFirstImmediateTicket = false
             pendingGiftConfirmation = TicketGiftConfirmation(
-                animalName: environment.repository.currentCabinAnimal?.name ?? "小动物",
-                destination: environment.repository.activeWish?.destination ?? "远方",
+                animalOptions: giftAnimalOptions(from: environment),
                 ticketCount: eligibility.ticketCount,
-                steps: steps
+                steps: steps,
+                isFirstImmediateTicket: false
             )
         } catch {
             actionMessage = AppCopy.Cabin.stepReadFailed
@@ -172,7 +221,7 @@ final class CabinViewModel: ObservableObject {
     }
 
     @discardableResult
-    func confirmGiftTodaySteps() async -> Trip? {
+    func confirmGiftTodaySteps(animalId: String? = nil) async -> Trip? {
         guard let environment,
               let steps = pendingSteps,
               let ticketCount = pendingTicketCount else {
@@ -184,24 +233,34 @@ final class CabinViewModel: ObservableObject {
         defer {
             pendingSteps = nil
             pendingTicketCount = nil
+            pendingIsFirstImmediateTicket = false
             pendingGiftConfirmation = nil
             isWorking = false
         }
 
-        let eligibility = environment.ticketRuleEngine.evaluate(
-            todaySteps: steps,
-            giftedCountToday: environment.repository.giftedTicketCountToday()
-        )
+        if pendingIsFirstImmediateTicket == false {
+            let eligibility = environment.ticketRuleEngine.evaluate(
+                todaySteps: steps,
+                giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+                stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
+            )
 
-        guard eligibility.isEligible else {
-            actionMessage = eligibility.message
+            guard eligibility.isEligible else {
+                actionMessage = eligibility.message
+                await refresh()
+                return nil
+            }
+        } else if environment.repository.canUseFirstImmediateTicket() == false {
             await refresh()
             return nil
         }
 
         let trip = environment.repository.giftTicket(
             sourceSteps: steps,
-            ticketCount: ticketCount
+            ticketCount: ticketCount,
+            animalId: animalId,
+            date: environment.currentDate,
+            isFirstImmediateTicket: pendingIsFirstImmediateTicket
         )
         lastGiftedTrip = trip
         actionMessage = AppCopy.Cabin.gifted
@@ -212,6 +271,7 @@ final class CabinViewModel: ObservableObject {
     func cancelGiftConfirmation() {
         pendingSteps = nil
         pendingTicketCount = nil
+        pendingIsFirstImmediateTicket = false
         pendingGiftConfirmation = nil
     }
 
@@ -219,8 +279,19 @@ final class CabinViewModel: ObservableObject {
         guard let environment else { return 0 }
         return environment.ticketRuleEngine.remainingSteps(
             todaySteps: steps,
-            giftedCountToday: environment.repository.giftedTicketCountToday()
+            giftedCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
         )
+    }
+
+    private func giftAnimalOptions(from environment: AppEnvironment) -> [TicketGiftAnimalOption] {
+        environment.repository.cabinAnimals.map { animal in
+            TicketGiftAnimalOption(
+                animalId: animal.id,
+                animalName: animal.name,
+                assetName: animal.homeAssetName,
+                destination: environment.repository.activeWish(for: animal.id)?.destination ?? "远方"
+            )
+        }
     }
 
     private var shouldReplaceActionMessageWithHealthGuidance: Bool {
