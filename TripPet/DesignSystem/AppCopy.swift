@@ -64,8 +64,6 @@ enum AppCopy {
         static let emptyCabinTitle = "也许会有更多小动物来到小屋..."
         static let emptyCabinBody = ""
         static let dailyLimitReached = "今天已经送出 3 张机票。小屋会在明天继续迎接小动物们。"
-        static let debugAddStepsButton = "+1000步"
-        static let debugAddHoursButton = "+6小时"
 
         static func activeTripMessage(animalName: String, destination: String) -> String {
             "\(animalName)已经在去\(destination)的路上。等明信片寄回来，再送出下一张机票吧。"

@@ -110,25 +110,27 @@ struct CabinView: View {
         let canGiftTicket = viewModel.canGiftAvailableSteps
 
         return VStack(alignment: .center, spacing: 14) {
-            Text(AppCopy.Cabin.todayStepsTitle)
-                .font(AppTheme.cardTitle)
-                .foregroundStyle(AppTheme.ink)
-                .lineLimit(1)
-
-            StepCounterView(
-                value: viewModel.availableStepsForDisplay,
-                limit: environment.ticketRuleEngine.requiredStepsPerTicket
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
-            .frame(maxWidth: .infinity)
-
-            if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
-                Text(giftedStepsSummaryText)
-                    .font(AppTheme.caption)
-                    .foregroundStyle(AppTheme.secondaryInk)
+            if viewModel.shouldShowStepCounter {
+                Text(AppCopy.Cabin.todayStepsTitle)
+                    .font(AppTheme.cardTitle)
+                    .foregroundStyle(AppTheme.ink)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-                    .frame(maxWidth: .infinity)
+
+                StepCounterView(
+                    value: viewModel.availableStepsForDisplay,
+                    limit: environment.ticketRuleEngine.requiredStepsPerTicket
+                )
+                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity)
+
+                if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
+                    Text(giftedStepsSummaryText)
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                        .frame(maxWidth: .infinity)
+                }
             }
 
             if isWaitingForAnimal {
@@ -202,47 +204,11 @@ struct CabinView: View {
                 }
             }
 
-            #if DEBUG
-            debugControls
-            #endif
         }
         .padding(.horizontal, 18)
         .padding(.vertical, isWaitingForAnimal ? 22 : 18)
         .paperCard(cornerRadius: 24)
     }
-
-    #if DEBUG
-    private var debugControls: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 10) {
-                Button(AppCopy.Cabin.debugAddStepsButton) {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    environment.debugAddSteps()
-                    Task {
-                        await viewModel.refresh()
-                    }
-                }
-                .buttonStyle(OutlineButtonStyle())
-
-                Button(AppCopy.Cabin.debugAddHoursButton) {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    environment.debugAdvanceHours()
-                    Task {
-                        await viewModel.refresh()
-                    }
-                }
-                .buttonStyle(OutlineButtonStyle())
-            }
-
-            Text("DEBUG \(environment.debugCurrentDateText) · +\(environment.debugStepBonus)步")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(AppTheme.secondaryInk.opacity(0.78))
-                .lineLimit(1)
-                .minimumScaleFactor(0.78)
-        }
-        .frame(maxWidth: .infinity)
-    }
-    #endif
 
     private func showGiftFlight() {
         guard reduceMotion == false else { return }

@@ -22,6 +22,7 @@ final class CabinViewModelTests: XCTestCase {
         viewModel.bind(environment: environment)
         await environment.refreshStepsIfPossible()
 
+        XCTAssertTrue(viewModel.shouldShowStepCounter)
         XCTAssertEqual(viewModel.availableStepsForDisplay, 5_000)
         XCTAssertTrue(viewModel.canGiftAvailableSteps)
         XCTAssertNil(viewModel.giftedStepsSummaryText)
@@ -38,7 +39,7 @@ final class CabinViewModelTests: XCTestCase {
         await viewModel.refresh()
 
         XCTAssertFalse(viewModel.requiresHealthConnection)
-        XCTAssertEqual(viewModel.availableStepsForDisplay, 3_000)
+        XCTAssertFalse(viewModel.shouldShowStepCounter)
         XCTAssertTrue(viewModel.canGiftAvailableSteps)
 
         await viewModel.prepareGiftConfirmation()
@@ -68,6 +69,30 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.requiresHealthConnection)
     }
 
+    func testFirstImmediateTicketRefreshesAndShowsRealStepsAfterGift() async {
+        let environment = AppEnvironment.preview(
+            stepStatus: .sharingAuthorized,
+            steps: 1_234
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+
+        XCTAssertFalse(viewModel.shouldShowStepCounter)
+        XCTAssertNil(environment.stepSnapshot.steps)
+
+        await viewModel.prepareGiftConfirmation()
+        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
+        let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId)
+
+        XCTAssertNotNil(trip)
+        XCTAssertTrue(environment.repository.userFlags.firstImmediateTicketGifted)
+        XCTAssertTrue(viewModel.shouldShowStepCounter)
+        XCTAssertEqual(environment.stepSnapshot.steps, 1_234)
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 1_234)
+    }
+
     func testGiftedStepsSummaryKeepsTotalStepsVisibleAfterGift() async {
         let environment = AppEnvironment.preview(steps: 5_000)
         let viewModel = CabinViewModel()
@@ -76,6 +101,7 @@ final class CabinViewModelTests: XCTestCase {
         await environment.refreshStepsIfPossible()
         environment.repository.giftTicket(sourceSteps: 5_000, ticketCount: 1)
 
+        XCTAssertTrue(viewModel.shouldShowStepCounter)
         XCTAssertEqual(viewModel.availableStepsForDisplay, 2_000)
         XCTAssertFalse(viewModel.canGiftAvailableSteps)
         XCTAssertEqual(viewModel.giftedStepsSummaryText, "今日总步数 5000，已赠送 3000 步")
@@ -125,70 +151,4 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.actionMessage.contains("2999 步"))
     }
 
-    #if DEBUG
-    func testDebugStepBonusAppliesToCurrentSimulatedDay() async {
-        let environment = AppEnvironment.preview(
-            flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
-            steps: 500
-        )
-        let viewModel = CabinViewModel()
-
-        viewModel.bind(environment: environment)
-        await environment.refreshStepsIfPossible()
-        environment.debugAddSteps()
-
-        XCTAssertEqual(viewModel.availableStepsForDisplay, 1_500)
-    }
-
-    func testDebugStepBonusCanPrepareGiftWithoutHealthRead() async {
-        let environment = AppEnvironment.preview(
-            flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
-            stepStatus: .sharingDenied,
-            steps: 0
-        )
-        let viewModel = CabinViewModel()
-
-        viewModel.bind(environment: environment)
-        environment.debugAddSteps(3_000)
-        await viewModel.refresh()
-        await viewModel.prepareGiftConfirmation()
-
-        XCTAssertFalse(viewModel.requiresHealthConnection)
-        XCTAssertTrue(viewModel.canGiftAvailableSteps)
-        XCTAssertEqual(viewModel.pendingGiftConfirmation?.steps, 3_000)
-        XCTAssertEqual(viewModel.pendingGiftConfirmation?.isFirstImmediateTicket, false)
-    }
-
-    func testDebugStepsAfterFirstImmediateTicketAreNotReducedByFreeTicket() async {
-        let environment = AppEnvironment.preview(
-            stepStatus: .notDetermined,
-            steps: 0
-        )
-        let viewModel = CabinViewModel()
-
-        viewModel.bind(environment: environment)
-        await viewModel.refresh()
-        await viewModel.prepareGiftConfirmation()
-        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
-        _ = await viewModel.confirmGiftTodaySteps(animalId: animalId)
-
-        environment.debugAddSteps(3_000)
-        await viewModel.refresh()
-
-        XCTAssertEqual(environment.repository.giftedTicketCountToday(on: environment.currentDate), 1)
-        XCTAssertEqual(environment.repository.stepFundedTicketCountToday(on: environment.currentDate), 0)
-        XCTAssertEqual(viewModel.availableStepsForDisplay, 3_000)
-        XCTAssertTrue(viewModel.canGiftAvailableSteps)
-    }
-
-    func testDebugAdvanceHoursUsesCalendarDateForDailyCabinRefresh() {
-        let environment = AppEnvironment.preview()
-        let before = environment.currentDate
-
-        environment.debugAdvanceHours()
-
-        let elapsed = environment.currentDate.timeIntervalSince(before)
-        XCTAssertEqual(elapsed, 21_600, accuracy: 2)
-    }
-    #endif
 }

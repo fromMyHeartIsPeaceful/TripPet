@@ -355,7 +355,11 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             PersistedAppFlag.self,
             PersistedCabinLodgingState.self
         ])
-        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        let configuration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: inMemory,
+            cloudKitDatabase: .none
+        )
         let container = try ModelContainer(for: schema, configurations: [configuration])
         context = ModelContext(container)
     }

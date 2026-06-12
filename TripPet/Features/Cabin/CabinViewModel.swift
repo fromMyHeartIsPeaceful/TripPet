@@ -35,10 +35,11 @@ final class CabinViewModel: ObservableObject {
         if isFirstImmediateTicketAvailable {
             return false
         }
-        if environment?.usesDebugStepOverride == true {
-            return false
-        }
         return healthAuthorizationStatus.canAttemptStepRead == false
+    }
+
+    var shouldShowStepCounter: Bool {
+        isFirstImmediateTicketAvailable == false
     }
 
     var availableStepsForDisplay: Int {
@@ -183,15 +184,13 @@ final class CabinViewModel: ObservableObject {
         defer { isWorking = false }
 
         do {
-            if environment.usesDebugStepOverride == false {
-                let status = environment.stepSnapshot.status
-                guard status.canAttemptStepRead else {
-                    isWorking = false
-                    await connectHealth()
-                    return
-                }
-                _ = try await environment.readTodaySteps()
+            let status = environment.stepSnapshot.status
+            guard status.canAttemptStepRead else {
+                isWorking = false
+                await connectHealth()
+                return
             }
+            _ = try await environment.readTodaySteps()
             let steps = environment.effectiveTodaySteps
             let eligibility = environment.ticketRuleEngine.evaluate(
                 todaySteps: steps,
@@ -264,6 +263,7 @@ final class CabinViewModel: ObservableObject {
         )
         lastGiftedTrip = trip
         actionMessage = AppCopy.Cabin.gifted
+        await environment.refreshStepsIfPossible()
         await refresh()
         return trip
     }

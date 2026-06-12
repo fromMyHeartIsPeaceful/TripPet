@@ -8,6 +8,12 @@ struct AppRootView: View {
         Group {
             if isPreparing {
                 LoadingStoryView()
+            } else if environment.repository.userFlags.onboardingCompleted == false {
+                ComicStoryView(
+                    onFinished: {
+                        environment.repository.completeOnboarding()
+                    }
+                )
             } else if environment.repository.userFlags.healthGuideDismissed == false {
                 HealthConnectView(
                     onFinished: {
@@ -48,6 +54,132 @@ struct LoadingStoryView: View {
             .accessibilityLabel("步履小屋启动图，小屋前有准备旅行的小动物")
             .ignoresSafeArea()
         }
+    }
+}
+
+struct ComicStoryView: View {
+    private static let imageNames = (1...11).map { String(format: "story_comic_%02d", $0) }
+    private static let arrowInitialOpacity = 0.06
+    private static let timingDelay: UInt64 = 2_500_000_000
+    private static let fadeDuration = 2.5
+
+    @State private var currentIndex = 0
+    @State private var arrowOpacity = arrowInitialOpacity
+    @State private var isArrowEnabled = false
+
+    var onFinished: () -> Void
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                AppTheme.paperWhite
+                    .ignoresSafeArea()
+
+                ArtImage(name: Self.imageNames[currentIndex], contentMode: .fill)
+                    .frame(
+                        width: proxy.size.width,
+                        height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom,
+                        alignment: storyImageAlignment
+                    )
+                    .clipped()
+                    .ignoresSafeArea()
+                    .id(currentIndex)
+                    .transition(.opacity)
+
+                HStack {
+                    Spacer()
+
+                    Button {
+                        advanceStory()
+                    } label: {
+                        ComicNextArrow()
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isArrowEnabled == false)
+                    .opacity(arrowOpacity)
+                    .accessibilityLabel(currentIndex == Self.imageNames.count - 1 ? "进入健康授权" : "下一张剧情")
+                    .accessibilityHint("继续步履小屋的启动剧情")
+                }
+                .padding(.trailing, max(18, proxy.safeAreaInsets.trailing + 14))
+                .padding(.top, proxy.safeAreaInsets.top + 24)
+                .padding(.bottom, proxy.safeAreaInsets.bottom + 24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+            }
+            .ignoresSafeArea()
+        }
+        .animation(.easeInOut(duration: 0.24), value: currentIndex)
+        .task(id: currentIndex) {
+            await revealArrowAfterDelay()
+        }
+    }
+
+    private func advanceStory() {
+        guard isArrowEnabled else { return }
+
+        if currentIndex == Self.imageNames.count - 1 {
+            onFinished()
+        } else {
+            currentIndex += 1
+        }
+    }
+
+    private var storyImageAlignment: Alignment {
+        currentIndex == 5 ? .trailing : .center
+    }
+
+    @MainActor
+    private func revealArrowAfterDelay() async {
+        arrowOpacity = Self.arrowInitialOpacity
+        isArrowEnabled = false
+
+        try? await Task.sleep(nanoseconds: Self.timingDelay)
+        guard Task.isCancelled == false else { return }
+
+        withAnimation(.easeInOut(duration: Self.fadeDuration)) {
+            arrowOpacity = 1
+        }
+
+        try? await Task.sleep(nanoseconds: Self.timingDelay)
+        guard Task.isCancelled == false else { return }
+        isArrowEnabled = true
+    }
+}
+
+private struct ComicNextArrow: View {
+    @Environment(\.isEnabled) private var isEnabled
+
+    var body: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: 30, weight: .heavy, design: .rounded))
+            .foregroundStyle(AppTheme.ink)
+            .frame(width: 58, height: 74)
+            .background {
+                Capsule(style: .continuous)
+                    .fill(Color(red: 0.98, green: 0.82, blue: 0.42))
+                    .overlay {
+                        Capsule(style: .continuous)
+                            .fill(AppTheme.paperWhite.opacity(0.28))
+                            .padding(7)
+                            .offset(x: -6, y: -10)
+                    }
+                    .overlay {
+                        Capsule(style: .continuous)
+                            .stroke(AppTheme.ink.opacity(0.82), lineWidth: 2)
+                    }
+                    .shadow(color: .black.opacity(isEnabled ? 0.24 : 0.1), radius: 10, x: 0, y: 5)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                Circle()
+                    .fill(AppTheme.peach)
+                    .frame(width: 13, height: 13)
+                    .overlay {
+                        Circle()
+                            .stroke(AppTheme.ink.opacity(0.58), lineWidth: 1)
+                    }
+                    .offset(x: 1, y: 1)
+            }
+            .scaleEffect(isEnabled ? 1 : 0.96)
+            .contentShape(Capsule(style: .continuous))
     }
 }
 
