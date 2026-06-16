@@ -249,6 +249,72 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.activeTrip?.destination, "巴黎")
     }
 
+    func testMultipleDeparturesDoNotReuseActiveDestination() {
+        let repository = AppRepository(
+            seed: Self.makeMultiAnimalSeed(primaryCount: 3, backupCount: 0),
+            randomDestinationIndex: { _ in 0 }
+        )
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+        let third = Self.date(hour: 12)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+        repository.giftTicket(sourceSteps: 7_500, ticketCount: 1, date: third)
+
+        let activeDestinationIds = repository.activeTravelTrips.map(\.destinationId)
+        XCTAssertEqual(activeDestinationIds.count, 3)
+        XCTAssertEqual(Set(activeDestinationIds).count, 3)
+    }
+
+    func testCompletedDestinationCanBeSelectedAgain() throws {
+        let seed = Self.makeMultiAnimalSeed(primaryCount: 1, backupCount: 0, destinationCount: 1)
+        let repository = AppRepository(seed: seed, randomDestinationIndex: { _ in 0 })
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: Self.date(day: 1, hour: 8))
+        let firstTrip = try XCTUnwrap(repository.trips.first)
+
+        XCTAssertTrue(repository.completeTrip(firstTrip, postcard: nil))
+        repository.refreshCabinLodging(on: Self.date(day: 2, hour: 8))
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: Self.date(day: 2, hour: 9))
+
+        XCTAssertEqual(repository.trips.count, 2)
+        XCTAssertEqual(repository.trips[0].destinationId, repository.trips[1].destinationId)
+    }
+
+    func testOccupiedWaitingWishIsReassignedBeforeDeparture() {
+        let seed = Self.makeMultiAnimalSeed(
+            primaryCount: 2,
+            backupCount: 0,
+            destinationCount: 2,
+            duplicateInitialWishDestination: true
+        )
+        let repository = AppRepository(seed: seed, randomDestinationIndex: { _ in 0 })
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+
+        XCTAssertEqual(repository.trips.count, 2)
+        XCTAssertNotEqual(repository.trips[0].destinationId, repository.trips[1].destinationId)
+        XCTAssertEqual(repository.trips[1].animalId, "primary_2")
+    }
+
+    func testGiftReturnsNilWhenNoDestinationIsAvailable() {
+        let repository = AppRepository(
+            seed: Self.makeMultiAnimalSeed(primaryCount: 2, backupCount: 0, destinationCount: 1),
+            randomDestinationIndex: { _ in 0 }
+        )
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+
+        XCTAssertNotNil(repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first))
+        XCTAssertNil(repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second))
+
+        XCTAssertEqual(repository.tickets.count, 1)
+        XCTAssertEqual(repository.trips.count, 1)
+    }
+
     func testCabinRefreshesNextAnimalImmediatelyAfterDeparture() {
         let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 2, backupCount: 0))
         let giftedAt = Self.date(hour: 12)
@@ -376,13 +442,82 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.currentCabinAnimal?.id, "cat")
     }
 
+    func testRevealedPostcardsUseConsumableNarrativeLibraryWithoutRepeating() throws {
+        let scheduler = Self.fixedScheduler()
+        let seed = Self.makeNarrativeSeed()
+        let repository = AppRepository(seed: seed, postcardScheduler: scheduler)
+        let xiaomanBodies = Set(
+            PostcardTextLibrary.narratives
+                .filter { $0.animalKey == "xiaoman_hamster" }
+                .map(\.body)
+        )
+
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 6)))
+
+        XCTAssertEqual(repository.postcards.count, 2)
+        XCTAssertEqual(Set(repository.postcards.map(\.body)).count, 2)
+        XCTAssertTrue(repository.postcards.allSatisfy { xiaomanBodies.contains($0.body) })
+        XCTAssertEqual(repository.consumedPostcardTextIds.count, 2)
+    }
+
+    func testPostcardTextLibraryImportsVersionOnePointZeroSixMarkdownCorpus() {
+        let counts = Dictionary(
+            grouping: PostcardTextLibrary.narratives,
+            by: \.animalKey
+        ).mapValues(\.count)
+
+        XCTAssertEqual(PostcardTextLibrary.narratives.count, 1_130)
+        XCTAssertEqual(counts["xiaoman_hamster"], 140)
+        XCTAssertEqual(counts["tangyuan_puppy"], 140)
+        XCTAssertEqual(counts["moji_cat"], 140)
+        XCTAssertEqual(counts["dengdeng_rabbit"], 140)
+        XCTAssertEqual(counts["feifei_parrot"], 140)
+        XCTAssertEqual(counts["xiaolu_guinea_pig"], 140)
+        XCTAssertEqual(counts["deer_visitor"], 140)
+        XCTAssertEqual(counts["fox_visitor"], 140)
+        XCTAssertEqual(counts["bear_visitor"], 10)
+    }
+
+    func testNarrativeLibraryFallsBackToDestinationTemplateWhenAnimalTextsAreExhausted() throws {
+        let scheduler = Self.fixedScheduler()
+        let seed = Self.makeNarrativeSeed()
+        let consumedIds = Set(
+            PostcardTextLibrary.narratives
+                .filter { $0.animalKey == "xiaoman_hamster" }
+                .map(\.id)
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: seed.trips,
+            postcards: [],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalId: "cat"),
+            consumedPostcardTextIds: consumedIds
+        )
+        let repository = AppRepository(
+            seed: seed,
+            store: InMemoryUserStateStore(savedState: savedState),
+            postcardScheduler: scheduler
+        )
+
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
+        XCTAssertEqual(repository.postcards.first?.body, "小猫在巴黎的街角停了一会儿。")
+        XCTAssertEqual(repository.consumedPostcardTextIds, consumedIds)
+    }
+
     func testLateRefreshRevealsBothPostcardsAndCompletesTrip() throws {
         let scheduler = Self.fixedScheduler()
         let seed = Self.makeSeed()
         let repository = AppRepository(seed: seed, postcardScheduler: scheduler)
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 3)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 3, hour: 1)))
 
         XCTAssertNil(repository.activeTrip)
         XCTAssertEqual(repository.postcards.count, 2)
@@ -405,6 +540,109 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(restoredRepository.activeTrip?.destination, "巴黎新名字")
         XCTAssertEqual(restoredRepository.travelWishes.first?.destination, "巴黎新名字")
         XCTAssertEqual(restoredRepository.travelWishes.first?.destinationAssetName, "destination_iceland_line")
+    }
+
+    func testContentManifestUsesCanonicalAnimalIdentities() throws {
+        let manifest = try Self.loadContentManifest()
+        let expectedAnimals: [(id: String, name: String, species: String, homeAssetName: String)] = [
+            ("xiaoman_hamster", "小满", "仓鼠", "animal_home_xiaoman_hamster"),
+            ("tangyuan_puppy", "糖圆", "小狗", "animal_home_tangyuan_puppy"),
+            ("moji_cat", "墨迹", "猫", "animal_home_moji_cat"),
+            ("dengdeng_rabbit", "灯灯", "兔子", "animal_home_dengdeng_rabbit"),
+            ("feifei_parrot", "飞飞", "鹦鹉", "animal_home_feifei_parrot"),
+            ("xiaolu_guinea_pig", "小炉", "豚鼠", "animal_home_xiaolu_guinea_pig"),
+            ("deer_visitor", "啾啾", "小鹿", "animal_home_jiujiu_deer"),
+            ("fox_visitor", "埃尼", "小狐狸", "animal_home_aini_fox"),
+            ("bear_visitor", "墩墩", "小熊", "animal_home_dundun_bear")
+        ]
+
+        XCTAssertEqual(manifest.animals.count, expectedAnimals.count)
+        XCTAssertEqual(manifest.animals.map(\.id), expectedAnimals.map(\.id))
+        for (animal, expectedAnimal) in zip(manifest.animals, expectedAnimals) {
+            XCTAssertEqual(animal.displayName, expectedAnimal.name)
+            XCTAssertEqual(animal.species, expectedAnimal.species)
+            XCTAssertEqual(animal.homeAssetName, expectedAnimal.homeAssetName)
+            XCTAssertEqual(animal.selfieAssetName, expectedAnimal.homeAssetName)
+            XCTAssertEqual(animal.visitorAssetName, expectedAnimal.homeAssetName)
+        }
+        XCTAssertFalse(manifest.animals.map(\.displayName).contains { name in
+            ["地图小猫", "邮路小狗", "折角小兔", "新伙伴", "安静小猫", "小路小狗"].contains(name)
+        })
+    }
+
+    func testSeedPreviewUsesCanonicalAnimalIdentities() {
+        XCTAssertEqual(SeedData.preview.animals.map(\.id), [
+            "xiaoman_hamster",
+            "tangyuan_puppy",
+            "moji_cat",
+            "dengdeng_rabbit",
+            "feifei_parrot",
+            "xiaolu_guinea_pig",
+            "deer_visitor",
+            "fox_visitor",
+            "bear_visitor"
+        ])
+        XCTAssertEqual(SeedData.preview.animals.map(\.name), [
+            "小满",
+            "糖圆",
+            "墨迹",
+            "灯灯",
+            "飞飞",
+            "小炉",
+            "啾啾",
+            "埃尼",
+            "墩墩"
+        ])
+        XCTAssertTrue(SeedData.preview.animals.allSatisfy { animal in
+            animal.selfieAssetName == animal.homeAssetName &&
+                animal.visitorAssetName == animal.homeAssetName &&
+                animal.travelMarkerAssetName == animal.homeAssetName
+        })
+    }
+
+    func testLegacyAnimalIdsMigrateToCanonicalIdsWhenCanonicalAnimalsExist() throws {
+        let seed = SeedData.preview
+        let legacyTrip = Trip(
+            id: "legacy-map-cat-trip",
+            animalId: "map_cat",
+            destinationId: "paris",
+            destination: "巴黎",
+            departedAt: Self.date(day: 1, hour: 9),
+            expectedReturnAt: Self.date(day: 1, hour: 21),
+            status: .traveling
+        )
+        let savedState = AppUserState(
+            travelWishes: [
+                TravelWish(
+                    id: "legacy-wish",
+                    animalId: "cat",
+                    destinationId: "paris",
+                    destination: "巴黎",
+                    destinationAssetName: "postcard_destination_paris",
+                    requiredTickets: 1,
+                    status: .waiting,
+                    createdAt: Self.date()
+                )
+            ],
+            trips: [legacyTrip],
+            postcards: [],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(
+                on: Self.date(),
+                animalIds: ["cat", "map_cat", "cat", "quiet_cat"]
+            )
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+
+        XCTAssertEqual(repository.travelWishes.first?.animalId, "xiaoman_hamster")
+        XCTAssertEqual(repository.trips.first?.animalId, "deer_visitor")
+        XCTAssertEqual(repository.animalName(for: "map_cat"), "啾啾")
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, [
+            "xiaoman_hamster",
+            "feifei_parrot"
+        ])
     }
 
     private static func makeSeed(
@@ -456,7 +694,78 @@ final class AppRepositoryTripTests: XCTestCase {
         )
     }
 
-    private static func makeMultiAnimalSeed(primaryCount: Int, backupCount: Int) -> SeedData {
+    private static func makeNarrativeSeed() -> SeedData {
+        var seed = makeSeed()
+        seed.animals[0].homeAssetName = "animal_home_xiaoman_hamster"
+        return seed
+    }
+
+    func testLocationDestinationCatalogDecodesThreeHundredCities() throws {
+        let catalog = try Self.loadLocationDestinationCatalog()
+
+        XCTAssertEqual(catalog.destinations.count, 300)
+        XCTAssertEqual(Set(catalog.destinations.map(\.id)).count, 300)
+    }
+
+    func testLocationDestinationCatalogCoordinatesAreValid() throws {
+        let catalog = try Self.loadLocationDestinationCatalog()
+
+        for destination in catalog.destinations {
+            let latitude = try XCTUnwrap(destination.latitude, destination.id)
+            let longitude = try XCTUnwrap(destination.longitude, destination.id)
+            XCTAssert((-90...90).contains(latitude), destination.id)
+            XCTAssert((-180...180).contains(longitude), destination.id)
+        }
+    }
+
+    func testWorldMapUsesCatalogCoordinatesAndLegacyFallback() throws {
+        let catalogDestination = ManifestDestination(
+            id: "test_city",
+            displayName: "测试城市",
+            landmarkAssetName: "postcard_destination_city_generic",
+            stampAssetName: "postcard_stamp_city_generic",
+            routeMapAssetName: "trip_route_map_generic",
+            primaryColor: "#7AA7B8",
+            postcardTitleTemplate: "{animal}寄来的测试城市来信",
+            postcardSubtitle: "旅途中寄来",
+            postcardBodyTemplate: "{animal}在{destination}写信。",
+            latitude: 12.34,
+            longitude: 56.78
+        )
+
+        XCTAssertEqual(
+            WorldMapDestinationCoordinate.coordinate(for: "test_city", destination: catalogDestination),
+            WorldMapDestinationCoordinate(latitude: 12.34, longitude: 56.78)
+        )
+        XCTAssertEqual(
+            WorldMapDestinationCoordinate.coordinate(for: "paris", destination: nil),
+            WorldMapDestinationCoordinate(latitude: 48.8566, longitude: 2.3522)
+        )
+        XCTAssertNil(WorldMapDestinationCoordinate.coordinate(for: "unknown_city", destination: nil))
+    }
+
+    func testTravelMarkerAssetUsesHomeAnimalResource() {
+        let dog = Animal(
+            id: "tangyuan_puppy",
+            name: "糖圆",
+            species: "小狗",
+            personality: "活力过剩，喜欢把旅途小事故讲成现场播报",
+            homeAssetName: "animal_home_tangyuan_puppy",
+            selfieAssetName: "animal_home_tangyuan_puppy",
+            visitorAssetName: "animal_home_tangyuan_puppy",
+            discoveredAt: nil,
+            isResident: false
+        )
+
+        XCTAssertEqual(dog.travelMarkerAssetName, "animal_home_tangyuan_puppy")
+    }
+
+    private static func makeMultiAnimalSeed(
+        primaryCount: Int,
+        backupCount: Int,
+        destinationCount: Int? = nil,
+        duplicateInitialWishDestination: Bool = false
+    ) -> SeedData {
         let primaryAnimals = (0..<primaryCount).map { offset in
             let index = offset + 1
             return makeAnimal(
@@ -475,27 +784,63 @@ final class AppRepositoryTripTests: XCTestCase {
             )
         }
         let animals = primaryAnimals + backupAnimals
-        let destinations = [
-            ManifestDestination(
-                id: "paris",
-                displayName: "巴黎",
+        let resolvedDestinationCount = destinationCount ?? max(3, primaryCount + backupCount)
+        let destinations = (0..<resolvedDestinationCount).map { offset in
+            let index = offset + 1
+            return ManifestDestination(
+                id: "destination_\(index)",
+                displayName: "地点\(index)",
                 landmarkAssetName: "destination_paris_line",
                 stampAssetName: "stamp_paris",
                 routeMapAssetName: "trip_route_map_paris",
                 primaryColor: "#D8B36A",
-                postcardTitleTemplate: "{animal}寄来的巴黎早安",
+                postcardTitleTemplate: "{animal}寄来的地点\(index)早安",
                 postcardSubtitle: "旅途中寄来",
                 postcardBodyTemplate: "{animal}在{destination}的街角停了一会儿。"
             )
-        ]
+        }
+        let travelWishes = duplicateInitialWishDestination ? primaryAnimals.map { animal in
+            TravelWish(
+                id: "wish_destination_1_\(animal.id)",
+                animalId: animal.id,
+                destinationId: "destination_1",
+                destination: "地点1",
+                destinationAssetName: "destination_paris_line",
+                requiredTickets: 1,
+                status: .waiting,
+                createdAt: date()
+            )
+        } : []
 
         return SeedData(
             animals: animals,
-            travelWishes: [],
+            travelWishes: travelWishes,
             trips: [],
             postcards: [],
             destinations: destinations
         )
+    }
+
+    private static func loadLocationDestinationCatalog() throws -> LocationDestinationCatalog {
+        let testFile = URL(fileURLWithPath: #filePath)
+        let repoRoot = testFile.deletingLastPathComponent().deletingLastPathComponent()
+        let catalogURL = repoRoot
+            .appendingPathComponent("TripPet")
+            .appendingPathComponent("Resources")
+            .appendingPathComponent("LocationDestinationCatalog.json")
+        let data = try Data(contentsOf: catalogURL)
+        return try JSONDecoder().decode(LocationDestinationCatalog.self, from: data)
+    }
+
+    private static func loadContentManifest() throws -> ContentManifest {
+        let testFile = URL(fileURLWithPath: #filePath)
+        let repoRoot = testFile.deletingLastPathComponent().deletingLastPathComponent()
+        let manifestURL = repoRoot
+            .appendingPathComponent("TripPet")
+            .appendingPathComponent("Resources")
+            .appendingPathComponent("ContentManifest.json")
+        let data = try Data(contentsOf: manifestURL)
+        return try JSONDecoder().decode(ContentManifest.self, from: data)
     }
 
     private static func makeAnimal(

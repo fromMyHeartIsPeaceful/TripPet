@@ -21,7 +21,6 @@ final class AppEnvironment: ObservableObject {
     @Published private(set) var notificationRequestedTab: AppTab?
     private var cancellables: Set<AnyCancellable> = []
     private var notifiedPostcardIds: Set<String> = []
-    private var authorizationPendingPostcards: [Postcard] = []
     private var didRequestPostcardReturnNotificationAuthorization = false
     private var isRefreshingSteps = false
     private var isObservingStepChanges = false
@@ -202,9 +201,6 @@ final class AppEnvironment: ObservableObject {
         isFirstImmediateTicket: Bool = false
     ) async -> Trip? {
         let knownPostcardIds = currentPostcardIds
-        let shouldDeferFirstPostcardNotification = isFirstImmediateTicket &&
-            repository.canUseFirstImmediateTicket()
-
         let trip = repository.giftTicket(
             sourceSteps: sourceSteps,
             ticketCount: ticketCount,
@@ -216,22 +212,11 @@ final class AppEnvironment: ObservableObject {
         guard trip != nil else { return nil }
 
         let newPostcards = newUnreadPostcards(since: knownPostcardIds)
-        if shouldDeferFirstPostcardNotification {
-            authorizationPendingPostcards.append(contentsOf: newPostcards)
-        } else {
+        if isFirstImmediateTicket == false {
             notifyNewPostcardsLater(newPostcards)
         }
 
         return trip
-    }
-
-    func requestAuthorizationAndNotifyPendingPostcards() async {
-        let pendingPostcards = authorizationPendingPostcards
-        authorizationPendingPostcards.removeAll()
-        await notifyNewPostcards(
-            pendingPostcards,
-            shouldRequestAuthorization: true
-        )
     }
 
     @discardableResult
@@ -256,7 +241,7 @@ final class AppEnvironment: ObservableObject {
     func requestNotificationAuthorizationOnPostcardReturn(_ postcard: Postcard) async {
         guard didRequestPostcardReturnNotificationAuthorization == false else { return }
         didRequestPostcardReturnNotificationAuthorization = true
-        authorizationPendingPostcards.removeAll { $0.id == postcard.id }
+        notifiedPostcardIds.insert(postcard.id)
         _ = await postcardNotificationService.requestAuthorization()
     }
 
@@ -274,27 +259,19 @@ final class AppEnvironment: ObservableObject {
     private func notifyNewPostcardsLater(_ postcards: [Postcard]) {
         guard postcards.isEmpty == false else { return }
         Task {
-            await notifyNewPostcards(postcards, shouldRequestAuthorization: false)
+            await notifyNewPostcards(postcards)
         }
     }
 
-    private func notifyNewPostcards(
-        _ postcards: [Postcard],
-        shouldRequestAuthorization: Bool
-    ) async {
+    private func notifyNewPostcards(_ postcards: [Postcard]) async {
         let postcardsToNotify = postcards.filter { notifiedPostcardIds.contains($0.id) == false }
         guard postcardsToNotify.isEmpty == false else { return }
-
-        if shouldRequestAuthorization {
-            let granted = await postcardNotificationService.requestAuthorization()
-            guard granted else { return }
-        }
 
         for postcard in postcardsToNotify {
             notifiedPostcardIds.insert(postcard.id)
             await postcardNotificationService.scheduleNewPostcardNotification(
                 postcardId: postcard.id,
-                requiresCurrentAuthorization: shouldRequestAuthorization == false
+                requiresCurrentAuthorization: true
             )
         }
     }

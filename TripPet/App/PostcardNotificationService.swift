@@ -4,6 +4,7 @@ import UserNotifications
 enum AppTab: Hashable {
     case cabin
     case mailbox
+    case map
 }
 
 @MainActor

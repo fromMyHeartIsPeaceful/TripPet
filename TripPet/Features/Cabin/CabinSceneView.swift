@@ -15,16 +15,15 @@ struct CabinSceneView: View {
             let visibleAnimals = Array(animals.prefix(9))
 
             ZStack {
-                ArtImage(name: cabinAssetName, contentMode: .fill, cornerRadius: 28, showsShadow: true)
+                ArtImage(name: "cabin_room_base_user_test", contentMode: .fill, cornerRadius: 28, showsShadow: true)
                     .frame(width: size.width, height: size.height)
 
-                if shouldShowAnimals {
-                    ForEach(0..<displayAnimalCount(for: visibleAnimals), id: \.self) { index in
-                        let count = displayAnimalCount(for: visibleAnimals)
-                        let point = position(for: index, count: count, in: size)
-                        let animalSize = animalFrameSize(for: count, in: size)
+                if isEmpty == false {
+                    ForEach(Array(visibleAnimals.enumerated()), id: \.element.id) { index, animal in
+                        let point = position(for: index, count: visibleAnimals.count, in: size)
+                        let animalSize = animalFrameSize(for: visibleAnimals.count, in: size)
 
-                        ArtImage(name: displayAssetName(for: visibleAnimals[safe: index], index: index))
+                        ArtImage(name: animal.homeAssetName)
                             .frame(width: animalSize.width, height: animalSize.height)
                             .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.018 : 0.994))
                             .offset(y: reduceMotion ? 0 : (isBreathing ? -2 : 1))
@@ -46,13 +45,6 @@ struct CabinSceneView: View {
     private func animalFrameSize(for count: Int, in size: CGSize) -> CGSize {
         let widthRatio: CGFloat
         let heightRatio: CGFloat
-        #if DEBUG
-        if count == 9 {
-            let side = size.height * 0.31
-            return CGSize(width: side, height: side)
-        }
-        #endif
-
         switch count {
         case 0...1:
             widthRatio = 0.27
@@ -105,54 +97,5 @@ struct CabinSceneView: View {
 
         let point = ratios[min(index, ratios.count - 1)]
         return CGPoint(x: size.width * point.x, y: size.height * point.y)
-    }
-
-    private var shouldShowAnimals: Bool {
-        #if DEBUG
-        true
-        #else
-        isEmpty == false
-        #endif
-    }
-
-    private func displayAnimalCount(for animals: [Animal]) -> Int {
-        #if DEBUG
-        9
-        #else
-        animals.count
-        #endif
-    }
-
-    private var cabinAssetName: String {
-        #if DEBUG
-        "cabin_room_base_user_test"
-        #else
-        "cabin_room_base_tall_v2"
-        #endif
-    }
-
-    private func displayAssetName(for animal: Animal?, index: Int) -> String {
-        #if DEBUG
-        let sampleAssets = [
-            "animal_home_xiaoman_hamster_sample",
-            "animal_home_tangyuan_puppy_sample",
-            "animal_home_moji_cat_sample",
-            "animal_home_deer_visitor_sample",
-            "animal_home_fox_visitor_sample",
-            "animal_home_xiaolu_guinea_pig_sample",
-            "animal_home_dengdeng_rabbit_sample",
-            "animal_home_feifei_parrot_sample",
-            "animal_home_bear_visitor_sample"
-        ]
-        return sampleAssets[safe: index] ?? "animal_visitor_unknown"
-        #else
-        animal?.homeAssetName ?? "animal_visitor_unknown"
-        #endif
-    }
-}
-
-private extension Array {
-    subscript(safe index: Index) -> Element? {
-        indices.contains(index) ? self[index] : nil
     }
 }

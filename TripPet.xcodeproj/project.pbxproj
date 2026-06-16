@@ -10,7 +10,6 @@
 		B00000000000000000000001 /* TripPetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000001 /* TripPetApp.swift */; };
 		B00000000000000000000002 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000002 /* AppEnvironment.swift */; };
 		B00000000000000000000003 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000003 /* RootTabView.swift */; };
-		B00000000000000000000025 /* PostcardNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* PostcardNotificationService.swift */; };
 		B00000000000000000000004 /* Animal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000004 /* Animal.swift */; };
 		B00000000000000000000005 /* TravelWish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000005 /* TravelWish.swift */; };
 		B00000000000000000000006 /* Ticket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000006 /* Ticket.swift */; };
@@ -44,6 +43,10 @@
 		B00000000000000000000022 /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000025 /* AppCopy.swift */; };
 		B00000000000000000000023 /* CabinViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000026 /* CabinViewModelTests.swift */; };
 		B00000000000000000000024 /* RootTabViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000027 /* RootTabViewTests.swift */; };
+		B00000000000000000000025 /* WorldMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* WorldMapView.swift */; };
+		B00000000000000000000026 /* PostcardTextLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000029 /* PostcardTextLibrary.swift */; };
+		B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002A /* LocationDestinationCatalog.json */; };
+		B00000000000000000000028 /* PostcardNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PostcardNotificationService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +63,6 @@
 		F00000000000000000000001 /* TripPetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPetApp.swift; sourceTree = "<group>"; };
 		F00000000000000000000002 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		F00000000000000000000003 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
-		F00000000000000000000028 /* PostcardNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationService.swift; sourceTree = "<group>"; };
 		F00000000000000000000004 /* Animal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Animal.swift; sourceTree = "<group>"; };
 		F00000000000000000000005 /* TravelWish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/TravelWish.swift; sourceTree = "<group>"; };
 		F00000000000000000000006 /* Ticket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Ticket.swift; sourceTree = "<group>"; };
@@ -97,6 +99,10 @@
 		F00000000000000000000025 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
 		F00000000000000000000026 /* CabinViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CabinViewModelTests.swift; sourceTree = "<group>"; };
 		F00000000000000000000027 /* RootTabViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabViewTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000028 /* WorldMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map/WorldMapView.swift; sourceTree = "<group>"; };
+		F00000000000000000000029 /* PostcardTextLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PostcardTextLibrary.swift; sourceTree = "<group>"; };
+		F0000000000000000000002A /* LocationDestinationCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LocationDestinationCatalog.json; sourceTree = "<group>"; };
+		F0000000000000000000002B /* PostcardNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,8 +160,8 @@
 			children = (
 				F00000000000000000000001 /* TripPetApp.swift */,
 				F00000000000000000000002 /* AppEnvironment.swift */,
-				F00000000000000000000028 /* PostcardNotificationService.swift */,
 				F00000000000000000000003 /* RootTabView.swift */,
+				F0000000000000000000002B /* PostcardNotificationService.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -173,6 +179,7 @@
 				F0000000000000000000000B /* TicketRuleEngine.swift */,
 				F0000000000000000000000C /* AnimalVisitService.swift */,
 				F0000000000000000000000D /* PostcardScheduler.swift */,
+				F00000000000000000000029 /* PostcardTextLibrary.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -227,6 +234,7 @@
 				F00000000000000000000024 /* OnboardingViews.swift */,
 				F00000000000000000000018 /* SettingsView.swift */,
 				F00000000000000000000019 /* TravelService.swift */,
+				F00000000000000000000028 /* WorldMapView.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -235,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				F0000000000000000000001A /* ContentManifest.json */,
+				F0000000000000000000002A /* LocationDestinationCatalog.json */,
 				F0000000000000000000001B /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -338,6 +347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0000000000000000000001A /* ContentManifest.json in Resources */,
+				B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */,
 				B0000000000000000000001B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -358,8 +368,8 @@
 			files = (
 				B00000000000000000000001 /* TripPetApp.swift in Sources */,
 				B00000000000000000000002 /* AppEnvironment.swift in Sources */,
-				B00000000000000000000025 /* PostcardNotificationService.swift in Sources */,
 				B00000000000000000000003 /* RootTabView.swift in Sources */,
+				B00000000000000000000028 /* PostcardNotificationService.swift in Sources */,
 				B00000000000000000000004 /* Animal.swift in Sources */,
 				B00000000000000000000005 /* TravelWish.swift in Sources */,
 				B00000000000000000000006 /* Ticket.swift in Sources */,
@@ -370,6 +380,7 @@
 				B0000000000000000000000B /* TicketRuleEngine.swift in Sources */,
 				B0000000000000000000000C /* AnimalVisitService.swift in Sources */,
 				B0000000000000000000000D /* PostcardScheduler.swift in Sources */,
+				B00000000000000000000026 /* PostcardTextLibrary.swift in Sources */,
 				B0000000000000000000000E /* AppRepository.swift in Sources */,
 				B0000000000000000000000F /* SeedData.swift in Sources */,
 				B0000000000000000000001D /* ContentManifest.swift in Sources */,
@@ -387,6 +398,7 @@
 				B00000000000000000000021 /* OnboardingViews.swift in Sources */,
 				B00000000000000000000018 /* SettingsView.swift in Sources */,
 				B00000000000000000000019 /* TravelService.swift in Sources */,
+				B00000000000000000000025 /* WorldMapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,7 +546,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TripPet/TripPet.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
@@ -551,7 +563,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -568,7 +580,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TripPet/TripPet.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
@@ -585,7 +597,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -602,7 +614,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -611,7 +623,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -629,7 +641,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -638,7 +650,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

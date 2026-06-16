@@ -40,12 +40,13 @@ struct PostcardScheduler {
         animal: Animal,
         destination: ManifestDestination,
         sequence: Int = 1,
-        on date: Date = Date()
+        on date: Date = Date(),
+        bodyOverride: String? = nil
     ) -> Postcard {
         let title = destination.postcardTitleTemplate
             .replacingOccurrences(of: "{animal}", with: animal.name)
             .replacingOccurrences(of: "{destination}", with: destination.displayName)
-        let body = destination.postcardBodyTemplate
+        let templateBody = destination.postcardBodyTemplate
             .replacingOccurrences(of: "{animal}", with: animal.name)
             .replacingOccurrences(of: "{destination}", with: destination.displayName)
 
@@ -54,7 +55,7 @@ struct PostcardScheduler {
             tripId: trip.id,
             destination: destination.displayName,
             title: title,
-            body: body,
+            body: bodyOverride ?? templateBody,
             imageAssetName: "postcard_\(destination.id)_\(animal.id)",
             templateAssetName: "postcard_template_classic",
             destinationAssetName: destination.landmarkAssetName,

@@ -15,6 +15,7 @@ struct AppUserState: Equatable {
     var tickets: [Ticket]
     var flags: AppUserFlags
     var cabinLodging: CabinLodgingState
+    var consumedPostcardTextIds: Set<String>
 
     init(seed: SeedData, flags: AppUserFlags = AppUserFlags()) {
         travelWishes = seed.travelWishes
@@ -26,6 +27,7 @@ struct AppUserState: Equatable {
             on: Date(),
             animalId: seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
         )
+        consumedPostcardTextIds = []
     }
 
     init(
@@ -34,7 +36,8 @@ struct AppUserState: Equatable {
         postcards: [Postcard],
         tickets: [Ticket],
         flags: AppUserFlags,
-        cabinLodging: CabinLodgingState
+        cabinLodging: CabinLodgingState,
+        consumedPostcardTextIds: Set<String> = []
     ) {
         self.travelWishes = travelWishes
         self.trips = trips
@@ -42,6 +45,7 @@ struct AppUserState: Equatable {
         self.tickets = tickets
         self.flags = flags
         self.cabinLodging = cabinLodging
+        self.consumedPostcardTextIds = consumedPostcardTextIds
     }
 }
 
@@ -342,6 +346,15 @@ final class PersistedCabinLodgingState {
     }
 }
 
+@Model
+final class PersistedConsumedPostcardText {
+    @Attribute(.unique) var id: String
+
+    init(id: String) {
+        self.id = id
+    }
+}
+
 @MainActor
 final class SwiftDataUserStateStore: AppUserStateStore {
     private let context: ModelContext
@@ -353,7 +366,8 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             PersistedPostcard.self,
             PersistedTravelWishState.self,
             PersistedAppFlag.self,
-            PersistedCabinLodgingState.self
+            PersistedCabinLodgingState.self,
+            PersistedConsumedPostcardText.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -379,6 +393,10 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             .sorted { $0.createdAt < $1.createdAt } ?? []
         let flags = loadFlags()
         let cabinLodging = loadCabinLodging(seed: seed)
+        let consumedPostcardTextIds = Set(
+            (try? context.fetch(FetchDescriptor<PersistedConsumedPostcardText>()))?
+                .map(\.id) ?? []
+        )
 
         return AppUserState(
             travelWishes: wishes.isEmpty ? seed.travelWishes : rehydrate(wishes: wishes, seed: seed),
@@ -386,7 +404,8 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             postcards: postcards,
             tickets: tickets,
             flags: flags,
-            cabinLodging: cabinLodging
+            cabinLodging: cabinLodging,
+            consumedPostcardTextIds: consumedPostcardTextIds
         )
     }
 
@@ -404,6 +423,7 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         replace(PersistedCabinLodgingState.self, with: [
             PersistedCabinLodgingState(state: state.cabinLodging)
         ])
+        replace(PersistedConsumedPostcardText.self, with: state.consumedPostcardTextIds.map(PersistedConsumedPostcardText.init(id:)))
         try? context.save()
     }
 

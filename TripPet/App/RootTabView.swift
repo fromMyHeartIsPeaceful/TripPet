@@ -18,6 +18,12 @@ struct RootTabView: View {
                 }
                 .badge(unreadMailboxBadgeCount)
                 .tag(AppTab.mailbox)
+
+            WorldMapView()
+                .tabItem {
+                    Label(AppCopy.Tabs.map, image: "icon_map")
+                }
+                .tag(AppTab.map)
         }
         .tint(AppTheme.deepSage)
         .onChange(of: environment.notificationRequestedTab) { _, requestedTab in

@@ -30,6 +30,16 @@ struct ManifestDestination: Decodable {
     var postcardTitleTemplate: String
     var postcardSubtitle: String
     var postcardBodyTemplate: String
+    var latitude: Double? = nil
+    var longitude: Double? = nil
+    var countryOrRegion: String? = nil
+    var continent: String? = nil
+    var travelDistanceTier: String? = nil
+}
+
+struct LocationDestinationCatalog: Decodable {
+    var version: Int
+    var destinations: [ManifestDestination]
 }
 
 struct ManifestPostcard: Decodable {
@@ -73,7 +83,7 @@ extension SeedData {
         let destinationsById = manifest.destinations.reduce(into: [String: ManifestDestination]()) { result, destination in
             result[destination.id] = destination
         }
-        let residentAnimalId = animals.first(where: \.isResident)?.id ?? manifest.animals.first?.id ?? "cat"
+        let residentAnimalId = animals.first(where: \.isResident)?.id ?? manifest.animals.first?.id ?? "xiaoman_hamster"
         let firstDestination = manifest.destinations.first
         let travelWishes: [TravelWish] = firstDestination.map { destination in
             [

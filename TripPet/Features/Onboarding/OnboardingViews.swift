@@ -59,9 +59,9 @@ struct LoadingStoryView: View {
 
 struct ComicStoryView: View {
     private static let imageNames = (1...11).map { String(format: "story_comic_%02d", $0) }
-    private static let arrowInitialOpacity = 0.06
-    private static let timingDelay: UInt64 = 2_500_000_000
-    private static let fadeDuration = 2.5
+    private static let arrowInitialOpacity = 0.0
+    private static let arrowFadeDuration = 2.0
+    private static let arrowEnableDelay: UInt64 = 2_000_000_000
 
     @State private var currentIndex = 0
     @State private var arrowOpacity = arrowInitialOpacity
@@ -132,14 +132,11 @@ struct ComicStoryView: View {
         arrowOpacity = Self.arrowInitialOpacity
         isArrowEnabled = false
 
-        try? await Task.sleep(nanoseconds: Self.timingDelay)
-        guard Task.isCancelled == false else { return }
-
-        withAnimation(.easeInOut(duration: Self.fadeDuration)) {
+        withAnimation(.easeInOut(duration: Self.arrowFadeDuration)) {
             arrowOpacity = 1
         }
 
-        try? await Task.sleep(nanoseconds: Self.timingDelay)
+        try? await Task.sleep(nanoseconds: Self.arrowEnableDelay)
         guard Task.isCancelled == false else { return }
         isArrowEnabled = true
     }
@@ -242,7 +239,10 @@ struct HealthConnectView: View {
         if isWorking {
             return AppCopy.Health.connectingButton
         }
-        return status.canAttemptStepRead ? AppCopy.Health.enterCabinButton : AppCopy.Health.connectTitle
+        if environment.stepSnapshot.steps != nil {
+            return AppCopy.Health.enterCabinButton
+        }
+        return status.canAttemptStepRead ? AppCopy.Health.retryReadButton : AppCopy.Health.connectTitle
     }
 
     private func refreshStatus() {
@@ -270,7 +270,7 @@ struct HealthConnectView: View {
     }
 
     private func connectHealth() async {
-        if status.canAttemptStepRead {
+        if environment.stepSnapshot.steps != nil {
             onFinished()
             return
         }
@@ -279,16 +279,24 @@ struct HealthConnectView: View {
         defer { isWorking = false }
 
         do {
-            let didRequest = try await environment.requestStepAuthorizationAndRefresh()
-            refreshStatus()
             if status.canAttemptStepRead {
+                _ = try await environment.readTodaySteps()
+                refreshStatus()
                 onFinished()
-            } else if didRequest == false {
-                message = AppCopy.Health.requestUnchanged
+            } else {
+                let didRequest = try await environment.requestStepAuthorizationAndRefresh()
+                refreshStatus()
+                if environment.stepSnapshot.steps != nil {
+                    onFinished()
+                } else if didRequest == false {
+                    message = AppCopy.Health.requestUnchanged
+                }
             }
         } catch {
             refreshStatus()
-            message = error.localizedDescription
+            message = status == .readPermissionRequested
+                ? AppCopy.Health.settingsRequestFailed
+                : error.localizedDescription
         }
     }
 }

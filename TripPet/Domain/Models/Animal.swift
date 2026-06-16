@@ -17,3 +17,9 @@ struct Animal: Identifiable, Equatable {
     var isResident: Bool
     var pool: AnimalPool = .primary
 }
+
+extension Animal {
+    var travelMarkerAssetName: String {
+        homeAssetName
+    }
+}

@@ -5,6 +5,8 @@ enum StepCountAuthorizationStatus: Equatable {
     case notDetermined
     case sharingDenied
     case sharingAuthorized
+    /// HealthKit does not expose reliable read authorization status. This means
+    /// the app has shown the system request before, not that reading is granted.
     case readPermissionRequested
 
     var canAttemptStepRead: Bool {

@@ -3,11 +3,8 @@ import UIKit
 
 struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var viewModel = CabinViewModel()
     @State private var isShowingSettings = false
-    @State private var isShowingGiftFlight = false
-    @State private var travelModalTrip: Trip?
 
     var body: some View {
         NavigationStack {
@@ -30,25 +27,6 @@ struct CabinView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 12)
 
-                if isShowingGiftFlight && reduceMotion == false {
-                    GiftFlightOverlay()
-                        .transition(.opacity.combined(with: .scale(scale: 0.96)))
-                        .padding(.horizontal, 34)
-                        .padding(.bottom, 180)
-                }
-
-                if let trip = travelModalTrip {
-                    TravelStatusModal(
-                        trip: trip,
-                        animalName: environment.repository.animalName(for: trip.animalId),
-                        routeMapAssetName: environment.destination(for: trip)?.routeMapAssetName ?? "trip_route_map_paris"
-                    ) {
-                        withAnimation(.easeOut(duration: 0.18)) {
-                            travelModalTrip = nil
-                        }
-                    }
-                    .transition(.opacity)
-                }
             }
             .navigationBarHidden(true)
             .task {
@@ -61,29 +39,39 @@ struct CabinView: View {
                 SettingsView()
                     .environmentObject(environment)
             }
-            .sheet(item: $viewModel.pendingGiftConfirmation) { confirmation in
+            .sheet(
+                item: $viewModel.pendingGiftConfirmation,
+                onDismiss: {
+                    viewModel.finishGiftFlow()
+                }
+            ) { confirmation in
                 TicketGiftConfirmationView(
                     confirmation: confirmation,
+                    confirmedTrip: viewModel.confirmedGiftTrip,
+                    confirmedAnimalName: viewModel.confirmedGiftTrip.map { environment.repository.animalName(for: $0.animalId) },
+                    confirmedAnimalAssetName: confirmedAnimalAssetName(for: viewModel.confirmedGiftTrip),
                     isWorking: viewModel.isWorking,
                     onConfirm: { animalId in
                         Task {
-                            let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId)
-                            if let trip {
-                                showGiftFlight()
-                                withAnimation(.easeOut(duration: 0.22)) {
-                                    travelModalTrip = trip
-                                }
-                            }
+                            await viewModel.confirmGiftTodaySteps(animalId: animalId)
                         }
+                    },
+                    onDone: {
+                        viewModel.finishGiftFlow()
                     },
                     onCancel: {
                         viewModel.cancelGiftConfirmation()
                     }
                 )
-                .presentationDetents([.height(430)])
+                .presentationDetents([.height(viewModel.confirmedGiftTrip == nil ? 430 : 500)])
                 .presentationDragIndicator(.visible)
             }
         }
+    }
+
+    private func confirmedAnimalAssetName(for trip: Trip?) -> String? {
+        guard let trip else { return nil }
+        return environment.repository.animal(for: trip.animalId)?.travelMarkerAssetName ?? "animal_visitor_unknown"
     }
 
     private var header: some View {
@@ -110,27 +98,25 @@ struct CabinView: View {
         let canGiftTicket = viewModel.canGiftAvailableSteps
 
         return VStack(alignment: .center, spacing: 14) {
-            if viewModel.shouldShowStepCounter {
-                Text(AppCopy.Cabin.todayStepsTitle)
-                    .font(AppTheme.cardTitle)
-                    .foregroundStyle(AppTheme.ink)
+            Text(AppCopy.Cabin.todayStepsTitle)
+                .font(AppTheme.cardTitle)
+                .foregroundStyle(AppTheme.ink)
+                .lineLimit(1)
+
+            StepCounterView(
+                value: viewModel.availableStepsForDisplay,
+                limit: environment.ticketRuleEngine.requiredStepsPerTicket
+            )
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity)
+
+            if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
+                Text(giftedStepsSummaryText)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
                     .lineLimit(1)
-
-                StepCounterView(
-                    value: viewModel.availableStepsForDisplay,
-                    limit: environment.ticketRuleEngine.requiredStepsPerTicket
-                )
-                .frame(maxWidth: .infinity, alignment: .center)
-                .frame(maxWidth: .infinity)
-
-                if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
-                    Text(giftedStepsSummaryText)
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.82)
-                        .frame(maxWidth: .infinity)
-                }
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity)
             }
 
             if isWaitingForAnimal {
@@ -203,26 +189,10 @@ struct CabinView: View {
                     .buttonStyle(OutlineButtonStyle())
                 }
             }
-
         }
         .padding(.horizontal, 18)
         .padding(.vertical, isWaitingForAnimal ? 22 : 18)
         .paperCard(cornerRadius: 24)
-    }
-
-    private func showGiftFlight() {
-        guard reduceMotion == false else { return }
-        withAnimation(.easeOut(duration: 0.18)) {
-            isShowingGiftFlight = true
-        }
-        Task {
-            try? await Task.sleep(nanoseconds: 1_300_000_000)
-            await MainActor.run {
-                withAnimation(.easeIn(duration: 0.22)) {
-                    isShowingGiftFlight = false
-                }
-            }
-        }
     }
 
     private var primaryButtonTitle: String {
@@ -256,7 +226,7 @@ private struct GiftTicketButton: View {
 
                 ArtImage(name: "prop_ticket_single")
                     .frame(width: isAvailable ? 174 : 164, height: isAvailable ? 78 : 74)
-                    .scaleEffect(isAvailable ? (isGlowing ? 1.12 : 0.94) : 1)
+                    .scaleEffect(ticketScale)
 
                 if isAvailable {
                     Text("点击赠送")
@@ -289,11 +259,24 @@ private struct GiftTicketButton: View {
         .onChange(of: isAvailable) { _, _ in
             updateGlow()
         }
+        .onChange(of: isWorking) { _, _ in
+            updateGlow()
+        }
+    }
+
+    private var glowIntensity: CGFloat {
+        isAvailable ? 1 : 0.7
+    }
+
+    private var ticketScale: CGFloat {
+        let baseScale: CGFloat = isAvailable ? 0.94 : 0.96
+        let scaleRange: CGFloat = 0.18 * glowIntensity
+        return isGlowing ? baseScale + scaleRange : baseScale
     }
 
     private func updateGlow() {
         isGlowing = false
-        guard isAvailable else { return }
+        guard isWorking == false else { return }
         withAnimation(.easeInOut(duration: 1.35).repeatForever(autoreverses: true)) {
             isGlowing = true
         }
@@ -351,8 +334,12 @@ private struct TicketGiftButtonStyle: ButtonStyle {
 
 private struct TicketGiftConfirmationView: View {
     let confirmation: TicketGiftConfirmation
+    let confirmedTrip: Trip?
+    let confirmedAnimalName: String?
+    let confirmedAnimalAssetName: String?
     var isWorking: Bool
     var onConfirm: (String) -> Void
+    var onDone: () -> Void
     var onCancel: () -> Void
     @State private var selectedAnimalId: String?
 
@@ -360,52 +347,85 @@ private struct TicketGiftConfirmationView: View {
         ZStack {
             PaperBackground()
 
-            VStack(alignment: .leading, spacing: 14) {
-                Text(AppCopy.GiftConfirmation.subtitle)
-                    .font(AppTheme.sheetDescription)
-                    .foregroundStyle(AppTheme.ink)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 8)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    confirmationLine(
-                        iconName: "icon_ticket",
-                        text: confirmation.isFirstImmediateTicket
-                            ? AppCopy.GiftConfirmation.firstTicketLine
-                            : AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount)
-                    )
-
-                    Text(AppCopy.GiftConfirmation.chooseAnimalTitle)
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(confirmation.animalOptions) { option in
-                                animalChoice(option)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(14)
-                .paperCard(cornerRadius: 18)
-
-                Button(isWorking ? AppCopy.GiftConfirmation.workingButton : AppCopy.GiftConfirmation.confirmButton) {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    guard let animalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId else { return }
-                    onConfirm(animalId)
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .disabled(isWorking || confirmation.animalOptions.isEmpty)
+            if let confirmedTrip {
+                departureContent(for: confirmedTrip)
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
+            } else {
+                confirmationContent
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
             }
-            .padding(20)
         }
         .onAppear {
             selectedAnimalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId
         }
+        .animation(.easeOut(duration: 0.22), value: confirmedTrip?.id)
+    }
+
+    private var confirmationContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(AppCopy.GiftConfirmation.subtitle)
+                .font(AppTheme.sheetDescription)
+                .foregroundStyle(AppTheme.ink)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
+
+            VStack(alignment: .leading, spacing: 10) {
+                confirmationLine(
+                    iconName: "icon_ticket",
+                    text: confirmation.isFirstImmediateTicket
+                        ? AppCopy.GiftConfirmation.firstTicketLine
+                        : AppCopy.GiftConfirmation.ticketLine(count: confirmation.ticketCount)
+                )
+
+                Text(AppCopy.GiftConfirmation.chooseAnimalTitle)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(confirmation.animalOptions) { option in
+                            animalChoice(option)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(14)
+            .paperCard(cornerRadius: 18)
+
+            Button(isWorking ? AppCopy.GiftConfirmation.workingButton : AppCopy.GiftConfirmation.confirmButton) {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                guard let animalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId else { return }
+                onConfirm(animalId)
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(isWorking || confirmation.animalOptions.isEmpty)
+        }
+        .padding(20)
+    }
+
+    private func departureContent(for trip: Trip) -> some View {
+        VStack(spacing: 18) {
+            Text(AppCopy.Cabin.gifted)
+                .font(AppTheme.sheetDescription)
+                .foregroundStyle(AppTheme.ink)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
+
+            GiftDepartureCard(
+                trip: trip,
+                animalName: confirmedAnimalName ?? "小动物",
+                animalAssetName: confirmedAnimalAssetName ?? "animal_visitor_unknown"
+            )
+
+            Button("知道了") {
+                onDone()
+            }
+            .buttonStyle(PrimaryButtonStyle())
+        }
+        .padding(20)
     }
 
     private func confirmationLine(iconName: String, text: String) -> some View {
@@ -454,108 +474,24 @@ private struct TicketGiftConfirmationView: View {
     }
 }
 
-private struct TravelStatusModal: View {
+private struct GiftDepartureCard: View {
     let trip: Trip
     let animalName: String
-    let routeMapAssetName: String
-    let onDismiss: () -> Void
+    let animalAssetName: String
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.5)
-                .ignoresSafeArea()
-                .onTapGesture(perform: onDismiss)
-
-            VStack(spacing: 20) {
-                TripStatusCard(
-                    trip: trip,
-                    animalName: animalName,
-                    routeMapAssetName: routeMapAssetName,
-                    isLarge: true
-                )
-
-                Button("知道了") {
-                    onDismiss()
-                }
-                .buttonStyle(PrimaryButtonStyle())
-            }
-            .padding(.horizontal, 22)
-            .padding(.vertical, 26)
-            .frame(maxWidth: 360)
-            .frame(minHeight: 560)
-            .paperCard(cornerRadius: 30, stroke: AppTheme.sage.opacity(0.42))
-            .padding(.horizontal, 28)
-        }
-    }
-}
-
-private struct TripStatusCard: View {
-    let trip: Trip
-    let animalName: String
-    let routeMapAssetName: String
-    var isLarge = false
-
-    var body: some View {
-        if isLarge {
-            largeLayout
-        } else {
-            compactLayout
-        }
-    }
-
-    private var compactLayout: some View {
-        HStack(spacing: isLarge ? 16 : 14) {
-            ZStack {
-                ArtImage(name: routeMapAssetName)
-                    .frame(width: isLarge ? 170 : 132, height: isLarge ? 106 : 82)
-                    .cornerRadius(16)
-
-                ArtImage(name: "trip_marker_cat")
-                    .frame(width: isLarge ? 52 : 42, height: isLarge ? 52 : 42)
-                    .position(x: isLarge ? 92 : 72, y: isLarge ? 58 : 45)
-
-                ArtImage(name: "prop_paper_plane")
-                    .frame(width: isLarge ? 58 : 48, height: isLarge ? 40 : 34)
-                    .rotationEffect(.degrees(-9))
-                    .position(x: isLarge ? 134 : 105, y: isLarge ? 32 : 25)
-            }
-            .frame(width: isLarge ? 170 : 132, height: isLarge ? 106 : 82)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text(AppCopy.Cabin.tripTitle(animalName: animalName, destination: trip.destination))
-                    .font(.system(size: isLarge ? 22 : 16, weight: .semibold))
-                    .foregroundStyle(AppTheme.ink)
-                    .lineLimit(2)
-
-                Text(AppCopy.Cabin.tripReturnHint)
-                    .font(isLarge ? AppTheme.body : AppTheme.caption)
-                    .foregroundStyle(AppTheme.secondaryInk)
-
-                Label {
-                    Text(AppCopy.Cabin.tripStatus)
-                } icon: {
-                    ArtImage(name: "icon_ticket")
-                        .frame(width: 14, height: 14)
-                        .foregroundStyle(AppTheme.deepSage)
-                }
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(AppTheme.deepSage)
-            }
-
-            Spacer(minLength: 0)
-        }
-        .padding(12)
-        .paperCard(cornerRadius: 20, stroke: AppTheme.sage.opacity(0.36))
-    }
-
-    private var largeLayout: some View {
         VStack(alignment: .center, spacing: 22) {
             ZStack {
-                ArtImage(name: routeMapAssetName, cornerRadius: 18, showsShadow: true)
+                ArtImage(name: "trip_route_map_generic", cornerRadius: 18, showsShadow: true)
                     .frame(width: 268, height: 178)
 
-                ArtImage(name: "trip_marker_cat")
+                ArtImage(name: animalAssetName)
                     .frame(width: 72, height: 72)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(AppTheme.paperWhite.opacity(0.9), lineWidth: 1.4)
+                    )
                     .position(x: 144, y: 96)
 
                 ArtImage(name: "prop_paper_plane")
@@ -598,30 +534,6 @@ private struct TripStatusCard: View {
     }
 }
 
-private struct GiftFlightOverlay: View {
-    @State private var isFlying = false
-
-    var body: some View {
-        ZStack(alignment: .leading) {
-            ArtImage(name: "ticket_flight_trail")
-                .frame(maxWidth: .infinity)
-                .frame(height: 86)
-                .opacity(isFlying ? 0.9 : 0.1)
-
-            ArtImage(name: "prop_paper_plane")
-                .frame(width: 58, height: 42)
-                .rotationEffect(.degrees(-10))
-                .offset(x: isFlying ? 220 : 8, y: isFlying ? -28 : 26)
-        }
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.9)) {
-                isFlying = true
-            }
-        }
-        .accessibilityHidden(true)
-    }
-}
-
 #Preview("Cabin authorized") {
     CabinView()
         .environmentObject(AppEnvironment.preview())
@@ -645,8 +557,8 @@ private struct GiftFlightOverlay: View {
                     animals: SeedData.preview.animals,
                     travelWishes: [
                         TravelWish(
-                            id: "wish_iceland_cat",
-                            animalId: "cat",
+                            id: "wish_iceland_xiaoman",
+                            animalId: "xiaoman_hamster",
                             destinationId: "iceland",
                             destination: "冰岛",
                             destinationAssetName: "destination_iceland_line",
@@ -658,7 +570,7 @@ private struct GiftFlightOverlay: View {
                     trips: [
                         Trip(
                             id: "preview_trip_iceland",
-                            animalId: "cat",
+                            animalId: "xiaoman_hamster",
                             destinationId: "iceland",
                             destination: "冰岛",
                             departedAt: Date(),

@@ -7,47 +7,53 @@ struct MailboxView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                PaperBackground()
+            GeometryReader { proxy in
+                ZStack(alignment: .top) {
+                    PaperBackground()
 
-                VStack(alignment: .leading, spacing: 14) {
-                    header
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 14) {
+                            header
 
-                    ArtImage(name: "mailbox_tray_base")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 128)
-                        .padding(.top, -6)
+                            ArtImage(name: "mailbox_tray_base")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 128)
+                                .padding(.top, -6)
 
-                    Text("今天可能会有远方来信")
-                        .font(AppTheme.body)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, -4)
+                            Text("今天可能会有远方来信")
+                                .font(AppTheme.body)
+                                .foregroundStyle(AppTheme.secondaryInk)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, -4)
 
-                    if environment.repository.postcards.isEmpty {
-                        MailboxEmptyState()
-                    } else {
-                        ScrollView(showsIndicators: false) {
-                            VStack(spacing: 14) {
-                                ForEach(environment.repository.postcards) { postcard in
-                                    EnvelopeRow(
-                                        postcard: postcard,
-                                        senderName: senderName(for: postcard),
-                                        reduceMotion: reduceMotion
-                                    ) {
-                                        viewModel.open(postcard, repository: environment.repository)
+                            if environment.repository.postcards.isEmpty {
+                                MailboxEmptyState()
+                            } else {
+                                VStack(spacing: 14) {
+                                    ForEach(environment.repository.postcards) { postcard in
+                                        EnvelopeRow(
+                                            postcard: postcard,
+                                            senderName: senderName(for: postcard),
+                                            reduceMotion: reduceMotion
+                                        ) {
+                                            viewModel.open(postcard, repository: environment.repository)
+                                        }
                                     }
                                 }
                             }
-                            .padding(.bottom, 112)
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 18)
+                        .padding(.bottom, 112)
+                        .frame(minHeight: proxy.size.height, alignment: .top)
                     }
 
-                    Spacer(minLength: 0)
+                    MailboxTopGlassGradient()
+                        .frame(height: proxy.safeAreaInsets.top + 118)
+                        .ignoresSafeArea(edges: .top)
+                        .allowsHitTesting(false)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 18)
             }
             .navigationBarHidden(true)
             .task {
@@ -63,7 +69,7 @@ struct MailboxView: View {
         if let trip = environment.repository.trips.first(where: { $0.id == postcard.tripId }) {
             return environment.repository.animalName(for: trip.animalId)
         }
-        return postcard.senderNameFallback
+        return postcard.titleSenderNameFallback
     }
 
     private var header: some View {
@@ -72,6 +78,35 @@ struct MailboxView: View {
                 .font(AppTheme.pageTitle)
                 .foregroundStyle(AppTheme.ink)
         }
+    }
+}
+
+private struct MailboxTopGlassGradient: View {
+    var body: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .overlay(
+                LinearGradient(
+                    colors: [
+                        AppTheme.paperWhite.opacity(0.36),
+                        AppTheme.paperWhite.opacity(0.16),
+                        AppTheme.paperWhite.opacity(0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .mask(
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0),
+                        .init(color: .black.opacity(0.82), location: 0.52),
+                        .init(color: .black.opacity(0), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
     }
 }
 
@@ -124,23 +159,21 @@ private struct EnvelopeRow: View {
     }
 }
 
-private extension Postcard {
-    var senderNameFallback: String {
-        if let range = title.range(of: "寄来的明信片") {
-            let name = title[..<range.lowerBound]
-            if name.isEmpty == false {
-                return String(name)
+extension Postcard {
+    var titleSenderNameFallback: String {
+        let senderMarkers = [
+            "寄来的明信片",
+            "寄来的第一张明信片",
+            "寄来"
+        ]
+        for marker in senderMarkers {
+            if let range = title.range(of: marker) {
+                let name = title[..<range.lowerBound]
+                if name.isEmpty == false {
+                    return String(name)
+                }
             }
         }
-
-        if animalAssetName.contains("dog") {
-            return "小狗"
-        } else if animalAssetName.contains("rabbit") {
-            return "小兔"
-        } else if animalAssetName.contains("cat") {
-            return "小猫"
-        }
-
         return "小动物"
     }
 }

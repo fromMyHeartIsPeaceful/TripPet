@@ -13,7 +13,7 @@ struct PostcardDetailView: View {
             VStack(spacing: 18) {
                 header
 
-                PostcardArtwork(postcard: postcard)
+                PostcardArtwork(postcard: postcard, senderName: senderName)
 
                 Spacer(minLength: 0)
             }
@@ -45,10 +45,18 @@ struct PostcardDetailView: View {
             Spacer()
         }
     }
+
+    private var senderName: String {
+        if let trip = environment.repository.trips.first(where: { $0.id == postcard.tripId }) {
+            return environment.repository.animalName(for: trip.animalId)
+        }
+        return postcard.titleSenderNameFallback
+    }
 }
 
 private struct PostcardArtwork: View {
     let postcard: Postcard
+    let senderName: String
 
     var body: some View {
         GeometryReader { geometry in
@@ -93,14 +101,6 @@ private struct PostcardArtwork: View {
 
     private var senderLine: String {
         "\(senderName)从\(postcard.destination)寄来"
-    }
-
-    private var senderName: String {
-        guard let range = postcard.title.range(of: "寄来") else {
-            return "小动物"
-        }
-        let name = postcard.title[..<range.lowerBound]
-        return name.isEmpty ? "小动物" : String(name)
     }
 
     private var destinationArtworkName: String {
