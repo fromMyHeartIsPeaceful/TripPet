@@ -2,6 +2,8 @@ import SwiftUI
 
 struct PostcardDetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var environment: AppEnvironment
+    @State private var isHandlingReturn = false
     let postcard: Postcard
 
     var body: some View {
@@ -23,7 +25,12 @@ struct PostcardDetailView: View {
     private var header: some View {
         HStack {
             Button {
-                dismiss()
+                guard isHandlingReturn == false else { return }
+                isHandlingReturn = true
+                Task {
+                    await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
+                    dismiss()
+                }
             } label: {
                 HStack(spacing: 6) {
                     ArtImage(name: "icon_back", isDecorative: false)
@@ -33,6 +40,7 @@ struct PostcardDetailView: View {
                 }
             }
             .buttonStyle(OutlineButtonStyle())
+            .disabled(isHandlingReturn)
             .accessibilityLabel("返回邮箱")
             Spacer()
         }
@@ -129,8 +137,10 @@ private struct PostcardArtwork: View {
 
 #Preview("Postcard Paris") {
     PostcardDetailView(postcard: SeedData.preview.postcards[0])
+        .environmentObject(AppEnvironment.preview())
 }
 
 #Preview("Postcard Iceland") {
     PostcardDetailView(postcard: SeedData.preview.postcards[1])
+        .environmentObject(AppEnvironment.preview())
 }

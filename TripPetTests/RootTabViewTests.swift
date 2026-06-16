@@ -18,6 +18,14 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(RootTabView.unreadMailboxBadgeCount(in: [postcard]), 0)
     }
 
+    func testPostcardNotificationPayloadRoutesToMailboxTab() {
+        XCTAssertEqual(
+            PostcardNotificationService.targetTab(from: ["target": "mailbox", "postcardId": "postcard-1"]),
+            .mailbox
+        )
+        XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
+    }
+
     private func makePostcard(id: String, isRead: Bool) -> Postcard {
         Postcard(
             id: id,

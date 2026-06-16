@@ -10,6 +10,7 @@
 		B00000000000000000000001 /* TripPetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000001 /* TripPetApp.swift */; };
 		B00000000000000000000002 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000002 /* AppEnvironment.swift */; };
 		B00000000000000000000003 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000003 /* RootTabView.swift */; };
+		B00000000000000000000025 /* PostcardNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* PostcardNotificationService.swift */; };
 		B00000000000000000000004 /* Animal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000004 /* Animal.swift */; };
 		B00000000000000000000005 /* TravelWish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000005 /* TravelWish.swift */; };
 		B00000000000000000000006 /* Ticket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000006 /* Ticket.swift */; };
@@ -59,6 +60,7 @@
 		F00000000000000000000001 /* TripPetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPetApp.swift; sourceTree = "<group>"; };
 		F00000000000000000000002 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		F00000000000000000000003 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		F00000000000000000000028 /* PostcardNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationService.swift; sourceTree = "<group>"; };
 		F00000000000000000000004 /* Animal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Animal.swift; sourceTree = "<group>"; };
 		F00000000000000000000005 /* TravelWish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/TravelWish.swift; sourceTree = "<group>"; };
 		F00000000000000000000006 /* Ticket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Ticket.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			children = (
 				F00000000000000000000001 /* TripPetApp.swift */,
 				F00000000000000000000002 /* AppEnvironment.swift */,
+				F00000000000000000000028 /* PostcardNotificationService.swift */,
 				F00000000000000000000003 /* RootTabView.swift */,
 			);
 			path = App;
@@ -355,6 +358,7 @@
 			files = (
 				B00000000000000000000001 /* TripPetApp.swift in Sources */,
 				B00000000000000000000002 /* AppEnvironment.swift in Sources */,
+				B00000000000000000000025 /* PostcardNotificationService.swift in Sources */,
 				B00000000000000000000003 /* RootTabView.swift in Sources */,
 				B00000000000000000000004 /* Animal.swift in Sources */,
 				B00000000000000000000005 /* TravelWish.swift in Sources */,

@@ -254,7 +254,7 @@ final class CabinViewModel: ObservableObject {
             return nil
         }
 
-        let trip = environment.repository.giftTicket(
+        let trip = await environment.giftTicket(
             sourceSteps: steps,
             ticketCount: ticketCount,
             animalId: animalId,
