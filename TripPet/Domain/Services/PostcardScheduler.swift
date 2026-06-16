@@ -1,7 +1,7 @@
 import Foundation
 
 struct PostcardScheduler {
-    static let tripDuration: TimeInterval = 60 * 60 * 36
+    static let tripDuration: TimeInterval = 60 * 60 * 18
 
     var randomOffset: (ClosedRange<TimeInterval>) -> TimeInterval
 
@@ -13,12 +13,12 @@ struct PostcardScheduler {
         [
             TripPostcardPlanItem(
                 sequence: 1,
-                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 5...60 * 60 * 8)),
+                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 2...60 * 60 * 3)),
                 revealedAt: nil
             ),
             TripPostcardPlanItem(
                 sequence: 2,
-                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 16...60 * 60 * 24)),
+                dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 6...60 * 60 * 8)),
                 revealedAt: nil
             )
         ]

@@ -14,10 +14,10 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.trips.first?.animalId, "cat")
         XCTAssertEqual(repository.trips.first?.destination, "巴黎")
         XCTAssertEqual(repository.trips.first?.status, .traveling)
-        XCTAssertEqual(repository.trips.first?.expectedReturnAt, giftedAt.addingTimeInterval(60 * 60 * 36))
+        XCTAssertEqual(repository.trips.first?.expectedReturnAt, giftedAt.addingTimeInterval(60 * 60 * 18))
         XCTAssertEqual(repository.trips.first?.postcardPlan.count, 2)
-        XCTAssertEqual(repository.trips.first?.postcardPlan.first?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 5))
-        XCTAssertEqual(repository.trips.first?.postcardPlan.last?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 16))
+        XCTAssertEqual(repository.trips.first?.postcardPlan.first?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 2))
+        XCTAssertEqual(repository.trips.first?.postcardPlan.last?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 6))
         XCTAssertEqual(repository.travelWishes.first?.status, .traveling)
     }
 
@@ -26,10 +26,10 @@ final class AppRepositoryTripTests: XCTestCase {
         let lowPlan = PostcardScheduler(randomOffset: { $0.lowerBound }).makePostcardPlan(departedAt: departedAt)
         let highPlan = PostcardScheduler(randomOffset: { $0.upperBound }).makePostcardPlan(departedAt: departedAt)
 
-        XCTAssertEqual(lowPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 5))
-        XCTAssertEqual(highPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 8))
-        XCTAssertEqual(lowPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 16))
-        XCTAssertEqual(highPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 24))
+        XCTAssertEqual(lowPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 2))
+        XCTAssertEqual(highPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 3))
+        XCTAssertEqual(lowPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 6))
+        XCTAssertEqual(highPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 8))
     }
 
     func testActiveTripCanBeReadAfterGift() {
@@ -353,26 +353,26 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.trips.first?.status, .completed)
     }
 
-    func testPostcardsRevealAcrossThirtySixHourTrip() throws {
+    func testPostcardsRevealAcrossEighteenHourTrip() throws {
         let scheduler = Self.fixedScheduler()
         let seed = Self.makeSeed()
         let repository = AppRepository(seed: seed, postcardScheduler: scheduler)
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
 
-        XCTAssertFalse(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 13)))
+        XCTAssertFalse(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 10)))
         XCTAssertEqual(repository.postcards.count, 0)
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 11)))
         XCTAssertEqual(repository.postcards.count, 1)
         XCTAssertEqual(repository.trips.first?.status, .traveling)
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 6)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
         XCTAssertEqual(repository.postcards.count, 2)
         XCTAssertEqual(repository.trips.first?.status, .traveling)
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 21)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 3)))
         XCTAssertEqual(repository.trips.first?.status, .completed)
-        XCTAssertEqual(repository.trips.first?.completedAt, Self.date(day: 2, hour: 21))
+        XCTAssertEqual(repository.trips.first?.completedAt, Self.date(day: 2, hour: 3))
         XCTAssertEqual(repository.currentCabinAnimal?.id, "cat")
     }
 
@@ -382,7 +382,7 @@ final class AppRepositoryTripTests: XCTestCase {
         let repository = AppRepository(seed: seed, postcardScheduler: scheduler)
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 3, hour: 1)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 3)))
 
         XCTAssertNil(repository.activeTrip)
         XCTAssertEqual(repository.postcards.count, 2)
