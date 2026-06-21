@@ -1,31 +1,56 @@
 import SwiftUI
 import UIKit
 
+private let ticketGiftSheetHeight: CGFloat = 430
+private let cabinSceneHorizontalPadding: CGFloat = 0
+private let cabinSceneTopPadding: CGFloat = 140
+private let cabinSceneWidthScale: CGFloat = 1.0
+private let cabinSceneHorizontalOffset: CGFloat = 0
+private let cabinSceneDayVerticalCorrection: CGFloat = 12
+private let bottomGlassBlendHeight: CGFloat = 360
+private let compactActionCardHorizontalPadding: CGFloat = 28
+private let compactActionCardBottomPadding: CGFloat = 8
+private let cabinSceneImageHeightMultiplier: CGFloat = 1455.0 / 1254.0
+
 struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var viewModel = CabinViewModel()
-    @State private var isShowingSettings = false
 
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                PaperBackground()
+                cabinBackground
 
-                VStack(spacing: 14) {
-                    header
-                    CabinSceneView(
-                        animals: environment.repository.cabinAnimals,
-                        isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
-                    )
+                GeometryReader { proxy in
+                    let sceneWidth = (proxy.size.width - cabinSceneHorizontalPadding * 2) * cabinSceneWidthScale
+                    let sceneHeight = sceneWidth * cabinSceneImageHeightMultiplier
 
-                    Spacer(minLength: 138)
+                    VStack(spacing: 0) {
+                        CabinSceneView(
+                            animals: environment.repository.cabinAnimals,
+                            isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit,
+                            cabinAssetName: cabinHouseAssetName,
+                            preservesAspectRatio: false
+                        )
+                        .frame(width: sceneWidth, height: sceneHeight)
+                        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                        .shadow(color: Color.black.opacity(isSystemDark ? 0.30 : 0.12), radius: 12, x: 0, y: 8)
+                        .frame(maxWidth: .infinity)
+                        .offset(x: cabinSceneHorizontalOffset)
+
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.top, cabinSceneTopPadding + cabinSceneVerticalCorrection)
+                .ignoresSafeArea(edges: .top)
+
+                bottomGlassBlend
 
                 actionCard
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 12)
+                    .padding(.horizontal, compactActionCardHorizontalPadding)
+                    .padding(.bottom, compactActionCardBottomPadding)
 
             }
             .navigationBarHidden(true)
@@ -34,10 +59,6 @@ struct CabinView: View {
                 environment.revealEligiblePostcards()
                 await environment.refreshStepsIfPossible()
                 await viewModel.refresh()
-            }
-            .sheet(isPresented: $isShowingSettings) {
-                SettingsView()
-                    .environmentObject(environment)
             }
             .sheet(
                 item: $viewModel.pendingGiftConfirmation,
@@ -63,10 +84,71 @@ struct CabinView: View {
                         viewModel.cancelGiftConfirmation()
                     }
                 )
-                .presentationDetents([.height(viewModel.confirmedGiftTrip == nil ? 430 : 500)])
+                .presentationDetents([.height(ticketGiftSheetHeight)])
                 .presentationDragIndicator(.visible)
             }
         }
+    }
+
+    private var cabinBackground: some View {
+        GeometryReader { proxy in
+            ArtImage(name: cabinBackgroundAssetName, contentMode: .fill)
+                .frame(
+                    width: proxy.size.width,
+                    height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+                )
+                .offset(y: -proxy.safeAreaInsets.top)
+                .clipped()
+        }
+        .ignoresSafeArea()
+    }
+
+    private var bottomGlassBlend: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .overlay {
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(isSystemDark ? 0.02 : 0.06),
+                        Color.white.opacity(isSystemDark ? 0.08 : 0.16),
+                        Color.white.opacity(isSystemDark ? 0.12 : 0.22)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .black.opacity(0.22), location: 0.18),
+                        .init(color: .black.opacity(0.74), location: 0.54),
+                        .init(color: .black, location: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .frame(height: bottomGlassBlendHeight)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .ignoresSafeArea(edges: .bottom)
+            .allowsHitTesting(false)
+    }
+
+    private var isSystemDark: Bool {
+        colorScheme == .dark
+    }
+
+    private var cabinSceneVerticalCorrection: CGFloat {
+        isSystemDark ? 0 : cabinSceneDayVerticalCorrection
+    }
+
+    private var cabinBackgroundAssetName: String {
+        isSystemDark ? "cabin_bg_night_full" : "cabin_bg_day_full"
+    }
+
+    private var cabinHouseAssetName: String {
+        isSystemDark ? "cabin_house_night_lit" : "cabin_house_day_natural"
     }
 
     private func confirmedAnimalAssetName(for trip: Trip?) -> String? {
@@ -74,38 +156,20 @@ struct CabinView: View {
         return environment.repository.animal(for: trip.animalId)?.travelMarkerAssetName ?? "animal_visitor_unknown"
     }
 
-    private var header: some View {
-        HStack(alignment: .center) {
-            Text(AppCopy.Cabin.title)
-                .font(AppTheme.pageTitle)
-                .foregroundStyle(AppTheme.ink)
-            Spacer()
-            Button {
-                isShowingSettings = true
-            } label: {
-                ArtImage(name: "icon_settings", isDecorative: false)
-                    .frame(width: 22, height: 22)
-                    .foregroundStyle(AppTheme.ink)
-                    .frame(width: 42, height: 42)
-            }
-            .buttonStyle(OutlineButtonStyle())
-            .accessibilityLabel("设置")
-        }
-    }
-
     private var actionCard: some View {
         let isWaitingForAnimal = environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
         let canGiftTicket = viewModel.canGiftAvailableSteps
 
-        return VStack(alignment: .center, spacing: 14) {
+        return VStack(alignment: .center, spacing: 7) {
             Text(AppCopy.Cabin.todayStepsTitle)
-                .font(AppTheme.cardTitle)
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(AppTheme.ink)
                 .lineLimit(1)
 
             StepCounterView(
                 value: viewModel.availableStepsForDisplay,
-                limit: environment.ticketRuleEngine.requiredStepsPerTicket
+                limit: environment.ticketRuleEngine.requiredStepsPerTicket,
+                fontSize: 24
             )
             .frame(maxWidth: .infinity, alignment: .center)
             .frame(maxWidth: .infinity)
@@ -139,7 +203,7 @@ struct CabinView: View {
                         .frame(width: 16, height: 16)
                         .foregroundStyle(AppTheme.ochre)
                 }
-                .font(AppTheme.caption)
+                .font(.system(size: 13))
                 .foregroundStyle(AppTheme.secondaryInk)
 
                 if viewModel.requiresHealthConnection {
@@ -168,7 +232,8 @@ struct CabinView: View {
                 } else {
                     GiftTicketButton(
                         isAvailable: canGiftTicket,
-                        isWorking: viewModel.isWorking
+                        isWorking: viewModel.isWorking,
+                        isCompact: true
                     ) {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         Task {
@@ -191,8 +256,8 @@ struct CabinView: View {
             }
         }
         .padding(.horizontal, 18)
-        .padding(.vertical, isWaitingForAnimal ? 22 : 18)
-        .paperCard(cornerRadius: 24)
+        .padding(.vertical, isWaitingForAnimal ? 14 : 10)
+        .paperCard(cornerRadius: 22)
     }
 
     private var primaryButtonTitle: String {
@@ -212,6 +277,7 @@ struct CabinView: View {
 private struct GiftTicketButton: View {
     var isAvailable: Bool
     var isWorking: Bool
+    var isCompact: Bool = false
     var action: () -> Void
     @State private var isGlowing = false
 
@@ -222,10 +288,11 @@ private struct GiftTicketButton: View {
                     TicketEdgeStroke()
                         .opacity(isGlowing ? 1 : 0.78)
                         .scaleEffect(isGlowing ? 1.16 : 0.92)
+                        .scaleEffect(isCompact ? 0.82 : 1)
                 }
 
                 ArtImage(name: "prop_ticket_single")
-                    .frame(width: isAvailable ? 174 : 164, height: isAvailable ? 78 : 74)
+                    .frame(width: ticketWidth, height: ticketHeight)
                     .scaleEffect(ticketScale)
 
                 if isAvailable {
@@ -241,13 +308,14 @@ private struct GiftTicketButton: View {
                                 .stroke(AppTheme.paperWhite.opacity(0.82), lineWidth: AppTheme.hairline)
                         )
                         .shadow(color: AppTheme.ochre.opacity(0.4), radius: 5, x: 0, y: 2)
-                        .offset(x: 68, y: -28)
+                        .offset(x: isCompact ? 50 : 68, y: isCompact ? -19 : -28)
                         .scaleEffect(isGlowing ? 1.08 : 0.96)
+                        .scaleEffect(isCompact ? 0.88 : 1)
                         .accessibilityHidden(true)
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 88)
+            .frame(height: isCompact ? 54 : 88)
             .contentShape(Rectangle())
         }
         .buttonStyle(TicketGiftButtonStyle(isAvailable: isAvailable))
@@ -270,8 +338,22 @@ private struct GiftTicketButton: View {
 
     private var ticketScale: CGFloat {
         let baseScale: CGFloat = isAvailable ? 0.94 : 0.96
-        let scaleRange: CGFloat = 0.18 * glowIntensity
+        let scaleRange: CGFloat = (isCompact ? 0.12 : 0.18) * glowIntensity
         return isGlowing ? baseScale + scaleRange : baseScale
+    }
+
+    private var ticketWidth: CGFloat {
+        if isCompact {
+            return isAvailable ? 126 : 120
+        }
+        return isAvailable ? 174 : 164
+    }
+
+    private var ticketHeight: CGFloat {
+        if isCompact {
+            return isAvailable ? 56 : 54
+        }
+        return isAvailable ? 78 : 74
     }
 
     private func updateGlow() {
@@ -407,7 +489,7 @@ private struct TicketGiftConfirmationView: View {
     }
 
     private func departureContent(for trip: Trip) -> some View {
-        VStack(spacing: 18) {
+        VStack(spacing: 12) {
             Text(AppCopy.Cabin.gifted)
                 .font(AppTheme.sheetDescription)
                 .foregroundStyle(AppTheme.ink)
@@ -480,31 +562,30 @@ private struct GiftDepartureCard: View {
     let animalAssetName: String
 
     var body: some View {
-        VStack(alignment: .center, spacing: 22) {
+        VStack(alignment: .center, spacing: 12) {
             ZStack {
                 ArtImage(name: "trip_route_map_generic", cornerRadius: 18, showsShadow: true)
-                    .frame(width: 268, height: 178)
+                    .frame(width: 220, height: 136)
 
                 ArtImage(name: animalAssetName)
-                    .frame(width: 72, height: 72)
+                    .frame(width: 58, height: 58)
                     .clipShape(Circle())
                     .overlay(
                         Circle()
                             .stroke(AppTheme.paperWhite.opacity(0.9), lineWidth: 1.4)
                     )
-                    .position(x: 144, y: 96)
+                    .position(x: 118, y: 74)
 
                 ArtImage(name: "prop_paper_plane")
-                    .frame(width: 76, height: 54)
+                    .frame(width: 62, height: 44)
                     .rotationEffect(.degrees(-9))
-                    .position(x: 216, y: 52)
+                    .position(x: 178, y: 42)
             }
-            .frame(width: 268, height: 178)
-            .padding(.top, 4)
+            .frame(width: 220, height: 136)
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 7) {
                 Text(AppCopy.Cabin.tripTitle(animalName: animalName, destination: trip.destination))
-                    .font(.system(size: 28, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(AppTheme.ink)
                     .lineLimit(2)
                     .minimumScaleFactor(0.82)
@@ -525,11 +606,10 @@ private struct GiftDepartureCard: View {
                 .foregroundStyle(AppTheme.deepSage)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 12)
-            .padding(.bottom, 8)
+            .padding(.horizontal, 8)
         }
         .frame(maxWidth: .infinity)
-        .padding(14)
+        .padding(12)
         .paperCard(cornerRadius: 22, stroke: AppTheme.sage.opacity(0.36))
     }
 }

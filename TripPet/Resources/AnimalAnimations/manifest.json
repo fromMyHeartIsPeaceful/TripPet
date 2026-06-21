@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "resourceSubdirectory": "AnimalAnimations",
+  "animations": [
+    {
+      "animalId": "xiaoman_hamster",
+      "filename": "animal_animation_xiaoman_hamster.gif",
+      "frameCount": 91,
+      "pixelWidth": 318,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "tangyuan_puppy",
+      "filename": "animal_animation_tangyuan_puppy.gif",
+      "frameCount": 73,
+      "pixelWidth": 355,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "moji_cat",
+      "filename": "animal_animation_moji_cat.gif",
+      "frameCount": 73,
+      "pixelWidth": 387,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "dengdeng_rabbit",
+      "filename": "animal_animation_dengdeng_rabbit.gif",
+      "frameCount": 73,
+      "pixelWidth": 323,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "feifei_parrot",
+      "filename": "animal_animation_feifei_parrot.gif",
+      "frameCount": 73,
+      "pixelWidth": 399,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "xiaolu_guinea_pig",
+      "filename": "animal_animation_xiaolu_guinea_pig.gif",
+      "frameCount": 73,
+      "pixelWidth": 408,
+      "pixelHeight": 392
+    },
+    {
+      "animalId": "deer_visitor",
+      "filename": "animal_animation_jiujiu_deer.gif",
+      "frameCount": 73,
+      "pixelWidth": 267,
+      "pixelHeight": 420
+    },
+    {
+      "animalId": "fox_visitor",
+      "filename": "animal_animation_aini_fox.gif",
+      "frameCount": 73,
+      "pixelWidth": 314,
+      "pixelHeight": 419
+    },
+    {
+      "animalId": "bear_visitor",
+      "filename": "animal_animation_dundun_bear.gif",
+      "frameCount": 73,
+      "pixelWidth": 363,
+      "pixelHeight": 420
+    }
+  ]
+}

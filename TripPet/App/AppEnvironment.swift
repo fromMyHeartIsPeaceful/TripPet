@@ -209,27 +209,28 @@ final class AppEnvironment: ObservableObject {
             isFirstImmediateTicket: isFirstImmediateTicket
         )
 
-        guard trip != nil else { return nil }
+        guard let trip else { return nil }
+        PostcardNotificationDiagnostics.record(
+            "gift created trip=\(trip.id) animal=\(trip.animalId) plan=\(trip.postcardPlan.map { "\($0.sequence):\(PostcardNotificationDiagnostics.describe($0.dueAt))" }.joined(separator: ","))"
+        )
 
         let newPostcards = newUnreadPostcards(since: knownPostcardIds)
         if isFirstImmediateTicket == false {
             notifyNewPostcardsLater(newPostcards)
         }
+        await schedulePendingPostcardNotifications(for: [trip])
 
         return trip
     }
 
     @discardableResult
     func revealEligiblePostcards(on date: Date? = nil) -> Bool {
-        let knownPostcardIds = currentPostcardIds
         let didReveal = repository.revealEligiblePostcards(
             scheduler: postcardScheduler,
             destinations: destinations,
             on: date ?? currentDate
         )
 
-        let newPostcards = newUnreadPostcards(since: knownPostcardIds)
-        notifyNewPostcardsLater(newPostcards)
         return didReveal
     }
 
@@ -242,7 +243,17 @@ final class AppEnvironment: ObservableObject {
         guard didRequestPostcardReturnNotificationAuthorization == false else { return }
         didRequestPostcardReturnNotificationAuthorization = true
         notifiedPostcardIds.insert(postcard.id)
-        _ = await postcardNotificationService.requestAuthorization()
+        PostcardNotificationDiagnostics.record("authorization entry postcardId=\(postcard.id)")
+        let isAuthorized = await postcardNotificationService.requestAuthorization()
+        PostcardNotificationDiagnostics.record("authorization entry result=\(isAuthorized)")
+        if isAuthorized {
+            await schedulePendingPostcardNotificationsForActiveTrips()
+        }
+    }
+
+    func schedulePendingPostcardNotificationsForActiveTrips() async {
+        PostcardNotificationDiagnostics.record("schedule active trips count=\(repository.activeTravelTrips.count)")
+        await schedulePendingPostcardNotifications(for: repository.activeTravelTrips)
     }
 
     private var currentPostcardIds: Set<String> {
@@ -268,11 +279,43 @@ final class AppEnvironment: ObservableObject {
         guard postcardsToNotify.isEmpty == false else { return }
 
         for postcard in postcardsToNotify {
-            notifiedPostcardIds.insert(postcard.id)
-            await postcardNotificationService.scheduleNewPostcardNotification(
+            let didSchedule = await postcardNotificationService.scheduleNewPostcardNotification(
                 postcardId: postcard.id,
                 requiresCurrentAuthorization: true
             )
+            if didSchedule {
+                notifiedPostcardIds.insert(postcard.id)
+            }
+        }
+    }
+
+    private func schedulePendingPostcardNotifications(for trips: [Trip]) async {
+        let now = currentDate
+        for trip in trips where trip.status == .traveling || trip.status == .preparing {
+            for planItem in trip.postcardPlan where planItem.revealedAt == nil {
+                let postcardId = "postcard_\(trip.id)_\(planItem.sequence)"
+                let isAlreadyNotified = notifiedPostcardIds.contains(postcardId)
+                let alreadyExists = repository.postcards.contains { $0.id == postcardId }
+                let isFuture = planItem.dueAt > now
+
+                guard isAlreadyNotified == false,
+                      alreadyExists == false,
+                      isFuture else {
+                    PostcardNotificationDiagnostics.record(
+                        "schedule skipped postcardId=\(postcardId) alreadyNotified=\(isAlreadyNotified) exists=\(alreadyExists) future=\(isFuture) dueAt=\(PostcardNotificationDiagnostics.describe(planItem.dueAt)) now=\(PostcardNotificationDiagnostics.describe(now))"
+                    )
+                    continue
+                }
+
+                let didSchedule = await postcardNotificationService.scheduleNewPostcardNotification(
+                    postcardId: postcardId,
+                    deliveryDate: planItem.dueAt,
+                    requiresCurrentAuthorization: true
+                )
+                if didSchedule {
+                    notifiedPostcardIds.insert(postcardId)
+                }
+            }
         }
     }
 }

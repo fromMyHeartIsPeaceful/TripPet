@@ -69,7 +69,7 @@ final class CabinViewModel: ObservableObject {
         }
         let eligibility = environment.ticketRuleEngine.evaluate(
             todaySteps: environment.effectiveTodaySteps,
-            giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+            giftedCountToday: environment.repository.dailyLimitedTicketCountToday(on: environment.currentDate),
             stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
         )
         return eligibility.isEligible
@@ -191,7 +191,7 @@ final class CabinViewModel: ObservableObject {
             let steps = environment.effectiveTodaySteps
             let eligibility = environment.ticketRuleEngine.evaluate(
                 todaySteps: steps,
-                giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+                giftedCountToday: environment.repository.dailyLimitedTicketCountToday(on: environment.currentDate),
                 stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
             )
 
@@ -236,7 +236,7 @@ final class CabinViewModel: ObservableObject {
         if pendingIsFirstImmediateTicket == false {
             let eligibility = environment.ticketRuleEngine.evaluate(
                 todaySteps: steps,
-                giftedCountToday: environment.repository.giftedTicketCountToday(on: environment.currentDate),
+                giftedCountToday: environment.repository.dailyLimitedTicketCountToday(on: environment.currentDate),
                 stepFundedTicketCountToday: environment.repository.stepFundedTicketCountToday(on: environment.currentDate)
             )
 

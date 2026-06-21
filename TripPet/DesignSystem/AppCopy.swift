@@ -135,7 +135,7 @@ enum AppCopy {
         static let aboutTitle = "关于步履小屋"
         static let aboutDetail = "版本与说明"
         static let aboutBody = "步履小屋把每日脚步变成小动物的旅行机票。它更像一本会慢慢长出来的手帐，而不是一个催促你完成目标的工具。"
-        static let versionTitle = "1.0.6 版本"
+        static let versionTitle = "1.0.7 版本"
         static let versionBody = "当前包含小屋、邮箱、可消耗明信片文本库、300 城市旅行地点库、世界地图旅行标记、Health 步数读取和基础旅行规则。"
 
         static func collectionCount(_ count: Int) -> String {

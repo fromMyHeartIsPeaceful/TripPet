@@ -81,6 +81,7 @@ struct StepCounterView: View {
 
     let value: Int
     var limit: Int = defaultLimit
+    var fontSize: CGFloat = 30
 
     static func displayText(value: Int, limit: Int = defaultLimit) -> String {
         let clampedValue = max(value, 0)
@@ -103,7 +104,7 @@ struct StepCounterView: View {
             Text("/" + String(clampedLimit))
                 .foregroundStyle(AppTheme.secondaryInk)
         }
-        .font(.system(size: 30, weight: .heavy, design: .rounded))
+        .font(.system(size: fontSize, weight: .heavy, design: .rounded))
         .lineLimit(1)
         .minimumScaleFactor(0.9)
         .fixedSize(horizontal: true, vertical: false)

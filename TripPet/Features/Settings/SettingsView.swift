@@ -1,5 +1,9 @@
 import SwiftUI
 
+#if DEBUG
+import UserNotifications
+#endif
+
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var environment: AppEnvironment
@@ -36,6 +40,15 @@ struct SettingsView: View {
                             SettingsStrip(iconName: "icon_about", title: AppCopy.Settings.aboutTitle, detail: AppCopy.Settings.aboutDetail)
                         }
                         .buttonStyle(.plain)
+
+                        #if DEBUG
+                        NavigationLink {
+                            NotificationDiagnosticsPage()
+                        } label: {
+                            SettingsStrip(iconName: "icon_notification", title: "通知诊断", detail: "查看授权、pending 通知和最近排程日志")
+                        }
+                        .buttonStyle(.plain)
+                        #endif
                     }
 
                     Spacer(minLength: 0)
@@ -177,6 +190,123 @@ struct SettingsView: View {
         }
     }
 }
+
+#if DEBUG
+private struct NotificationDiagnosticsPage: View {
+    @State private var authorizationSummary = "正在读取"
+    @State private var pendingRequests: [String] = []
+    @State private var events = PostcardNotificationDiagnostics.recentEvents
+
+    var body: some View {
+        SettingsDetailScaffold(
+            title: "通知诊断",
+            imageName: "settings_notification_note",
+            bodyText: "这个页面只在 DEBUG 包显示，用来判断端外通知是否成功排进系统。"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(authorizationSummary)
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineSpacing(3)
+
+                HStack {
+                    Button("刷新") {
+                        Task { await reload() }
+                    }
+                    .buttonStyle(OutlineButtonStyle())
+
+                    Button("清空日志") {
+                        PostcardNotificationDiagnostics.clear()
+                        events = []
+                    }
+                    .buttonStyle(OutlineButtonStyle())
+                }
+
+                diagnosticGroup(title: "Pending 通知", lines: pendingRequests)
+                diagnosticGroup(title: "最近日志", lines: events)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .paperCard(cornerRadius: 18)
+            .task {
+                await reload()
+            }
+        }
+    }
+
+    private func reload() async {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        let requests = await center.pendingNotificationRequests()
+
+        authorizationSummary = [
+            "授权：\(describe(settings.authorizationStatus))",
+            "横幅：\(settings.alertSetting.rawValue)",
+            "声音：\(settings.soundSetting.rawValue)",
+            "角标：\(settings.badgeSetting.rawValue)",
+            "pending：\(requests.count)"
+        ].joined(separator: " · ")
+
+        pendingRequests = requests.map { request in
+            "\(request.identifier) · \(describe(request.trigger)) · \(request.content.title)"
+        }.sorted()
+
+        events = PostcardNotificationDiagnostics.recentEvents
+    }
+
+    @ViewBuilder
+    private func diagnosticGroup(title: String, lines: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(AppTheme.ink)
+
+            if lines.isEmpty {
+                Text("暂无")
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
+            } else {
+                ForEach(lines, id: \.self) { line in
+                    Text(line)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
+    private func describe(_ status: UNAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined:
+            return "notDetermined"
+        case .denied:
+            return "denied"
+        case .authorized:
+            return "authorized"
+        case .provisional:
+            return "provisional"
+        case .ephemeral:
+            return "ephemeral"
+        @unknown default:
+            return "unknown"
+        }
+    }
+
+    private func describe(_ trigger: UNNotificationTrigger?) -> String {
+        guard let trigger else { return "no trigger" }
+        if let trigger = trigger as? UNTimeIntervalNotificationTrigger {
+            return "timeInterval=\(Int(trigger.timeInterval))s"
+        }
+        if let trigger = trigger as? UNCalendarNotificationTrigger,
+           let nextDate = trigger.nextTriggerDate() {
+            return "calendar=\(PostcardNotificationDiagnostics.describe(nextDate))"
+        }
+        return String(describing: type(of: trigger))
+    }
+}
+#endif
 
 private struct SettingsStrip: View {
     var iconName: String

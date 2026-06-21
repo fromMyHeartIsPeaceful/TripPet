@@ -3,6 +3,107 @@ import XCTest
 
 @MainActor
 final class CabinViewModelTests: XCTestCase {
+    func testCabinAnimalLayoutUsesFixedThreeFloorRoomSlots() {
+        XCTAssertEqual(CabinAnimalLayout.slots.map(\.animalId), [
+            "xiaoman_hamster",
+            "moji_cat",
+            "dengdeng_rabbit",
+            "tangyuan_puppy",
+            "xiaolu_guinea_pig",
+            "bear_visitor",
+            "deer_visitor",
+            "fox_visitor",
+            "feifei_parrot"
+        ])
+
+        for floor in CabinAnimalLayout.Floor.allCases {
+            let floorSlots = CabinAnimalLayout.slots.filter { $0.floor == floor }
+            XCTAssertEqual(floorSlots.filter { $0.side == .leftLarge }.count, 2)
+            XCTAssertEqual(floorSlots.filter { $0.side == .rightSmall }.count, 1)
+        }
+
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "moji_cat")?.side, .leftLarge)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "dengdeng_rabbit")?.side, .rightSmall)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "bear_visitor")?.side, .rightSmall)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "feifei_parrot")?.floor, .bottom)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "dengdeng_rabbit")?.isMirrored, true)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "bear_visitor")?.isMirrored, true)
+        XCTAssertEqual(CabinAnimalLayout.slot(for: "moji_cat")?.isMirrored, false)
+    }
+
+    func testCabinAnimalLayoutAnchorsAnimalsToRoomSurfaces() {
+        let sceneSize = CGSize(width: 1254, height: 1455)
+
+        for slot in CabinAnimalLayout.slots {
+            let frame = slot.frame(in: sceneSize, aspectRatio: 0.9)
+            let footPoint = slot.footPoint(in: sceneSize)
+
+            XCTAssertEqual(frame.maxY, footPoint.y, accuracy: 0.01)
+            XCTAssertGreaterThanOrEqual(frame.minX, 0)
+            XCTAssertLessThanOrEqual(frame.maxX, sceneSize.width)
+            XCTAssertGreaterThan(frame.height / sceneSize.height, 0.10)
+            XCTAssertLessThan(frame.height / sceneSize.height, 0.12)
+
+            switch slot.floor {
+            case .top:
+                XCTAssertGreaterThan(slot.footPointRatio.y, 0.38)
+                XCTAssertLessThan(slot.footPointRatio.y, 0.41)
+            case .middle:
+                XCTAssertGreaterThan(slot.footPointRatio.y, 0.64)
+                XCTAssertLessThan(slot.footPointRatio.y, 0.69)
+            case .bottom:
+                XCTAssertGreaterThan(slot.footPointRatio.y, 0.94)
+                XCTAssertLessThan(slot.footPointRatio.y, 0.97)
+            }
+        }
+    }
+
+    func testCabinAnimalLayoutKeepsRemainingCanonicalAnimalsInFixedSlots() {
+        let animals = SeedData.preview.animals.filter { $0.id != "xiaoman_hamster" }
+        let placements = CabinAnimalLayout.placements(for: animals)
+
+        XCTAssertNil(placements.first { $0.animal.id == "xiaoman_hamster" })
+        XCTAssertEqual(placements.count, 8)
+        XCTAssertEqual(
+            placements.first { $0.animal.id == "tangyuan_puppy" }?.slot.footPointRatio,
+            CabinAnimalLayout.slot(for: "tangyuan_puppy")?.footPointRatio
+        )
+        XCTAssertEqual(
+            placements.first { $0.animal.id == "bear_visitor" }?.slot.side,
+            .rightSmall
+        )
+    }
+
+    func testCabinAnimalAnimationsMapEveryCanonicalAnimalToGif() {
+        let expectedFilenamesByAnimalId = [
+            "xiaoman_hamster": "animal_animation_xiaoman_hamster.gif",
+            "tangyuan_puppy": "animal_animation_tangyuan_puppy.gif",
+            "moji_cat": "animal_animation_moji_cat.gif",
+            "dengdeng_rabbit": "animal_animation_dengdeng_rabbit.gif",
+            "feifei_parrot": "animal_animation_feifei_parrot.gif",
+            "xiaolu_guinea_pig": "animal_animation_xiaolu_guinea_pig.gif",
+            "deer_visitor": "animal_animation_jiujiu_deer.gif",
+            "fox_visitor": "animal_animation_aini_fox.gif",
+            "bear_visitor": "animal_animation_dundun_bear.gif"
+        ]
+
+        XCTAssertEqual(CabinAnimalAnimationCatalog.fallbackEntries.count, 9)
+        for animal in SeedData.preview.animals {
+            let entry = CabinAnimalAnimationCatalog.entry(for: animal.id)
+            XCTAssertEqual(entry?.filename, expectedFilenamesByAnimalId[animal.id])
+            XCTAssertGreaterThan(entry?.aspectRatio ?? 0, 0.6)
+            XCTAssertLessThan(entry?.aspectRatio ?? 0, 1.1)
+        }
+    }
+
+    func testCabinAnimalAnimationUsesPingPongOnlyForNonSeamlessPuppyGif() {
+        XCTAssertTrue(CabinAnimalAnimationCatalog.usesPingPongLoop(for: "tangyuan_puppy"))
+
+        for animal in SeedData.preview.animals where animal.id != "tangyuan_puppy" {
+            XCTAssertFalse(CabinAnimalAnimationCatalog.usesPingPongLoop(for: animal.id))
+        }
+    }
+
     func testStepCounterDisplayTextShowsActualStepsAndPadsSmallValues() {
         XCTAssertEqual(StepCounterView.displayText(value: -1), "0000")
         XCTAssertEqual(StepCounterView.displayText(value: 0), "0000")
@@ -75,7 +176,7 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.confirmedGiftTrip)
     }
 
-    func testFirstImmediateTicketDoesNotRequestAuthorizationOrSendPostcardNotification() async {
+    func testFirstImmediateTicketDoesNotRequestAuthorizationButSchedulesTripNotificationsWhenAuthorized() async {
         let notificationService = RecordingPostcardNotificationService(authorizationGranted: true)
         let environment = AppEnvironment.preview(
             stepStatus: .notDetermined,
@@ -93,10 +194,14 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertNotNil(trip)
         XCTAssertEqual(notificationService.authorizationRequestCount, 0)
-        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+        XCTAssertEqual(notificationService.scheduledPostcardIds, [
+            "postcard_\(trip?.id ?? "")_1",
+            "postcard_\(trip?.id ?? "")_2"
+        ])
+        XCTAssertEqual(notificationService.scheduledDeliveryDates.count, 2)
     }
 
-    func testPostcardReturnRequestsNotificationAuthorizationOnlyOnceWithoutSchedulingNotification() async {
+    func testPostcardReturnRequestsNotificationAuthorizationOnlyOnceAndDoesNotDuplicateScheduledNotifications() async {
         let notificationService = RecordingPostcardNotificationService(authorizationGranted: true)
         let environment = AppEnvironment.preview(
             stepStatus: .notDetermined,
@@ -121,7 +226,7 @@ final class CabinViewModelTests: XCTestCase {
         await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
 
         XCTAssertEqual(notificationService.authorizationRequestCount, 1)
-        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+        XCTAssertEqual(notificationService.scheduledPostcardIds.count, 2)
     }
 
     func testNormalTicketGiftKeepsSheetOpenInConfirmedState() async {
@@ -147,23 +252,20 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.confirmedGiftTrip)
     }
 
-    func testRevealEligiblePostcardsSchedulesNotificationWithoutRequestingAuthorization() async {
+    func testRevealEligiblePostcardsDoesNotScheduleForegroundNotifications() async {
         let notificationService = RecordingPostcardNotificationService(authorizationGranted: true)
         let environment = AppEnvironment.preview(
             flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
             postcardNotificationService: notificationService
         )
-        let departedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let departedAt = Date()
 
         environment.repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: departedAt)
         XCTAssertTrue(environment.revealEligiblePostcards(on: departedAt.addingTimeInterval(60 * 60 * 20)))
-        await waitForScheduledNotifications(in: notificationService, count: 2)
+        await Task.yield()
 
         XCTAssertEqual(notificationService.authorizationRequestCount, 0)
-        XCTAssertEqual(notificationService.scheduledTitles, [
-            PostcardNotificationService.newPostcardTitle,
-            PostcardNotificationService.newPostcardTitle
-        ])
+        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
     }
 
     func testRevealEligiblePostcardsDoesNotScheduleNotificationWhenNothingIsNew() async {
@@ -172,7 +274,7 @@ final class CabinViewModelTests: XCTestCase {
             flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
             postcardNotificationService: notificationService
         )
-        let departedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let departedAt = Date()
 
         environment.repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: departedAt)
         XCTAssertFalse(environment.revealEligiblePostcards(on: departedAt))
@@ -180,6 +282,133 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertEqual(notificationService.authorizationRequestCount, 0)
         XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+    }
+
+    func testGiftSchedulesFuturePostcardNotificationsAndRevealDoesNotDuplicateThem() async {
+        let notificationService = RecordingPostcardNotificationService(authorizationGranted: true)
+        let environment = AppEnvironment.preview(
+            flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
+            postcardNotificationService: notificationService
+        )
+        let departedAt = Date()
+
+        let trip = await environment.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: departedAt)
+        XCTAssertNotNil(trip)
+        XCTAssertEqual(notificationService.scheduledPostcardIds, [
+            "postcard_\(trip?.id ?? "")_1",
+            "postcard_\(trip?.id ?? "")_2"
+        ])
+
+        XCTAssertTrue(environment.revealEligiblePostcards(on: departedAt.addingTimeInterval(60 * 60 * 20)))
+        await Task.yield()
+
+        XCTAssertEqual(notificationService.scheduledPostcardIds.count, 2)
+    }
+
+    func testAuthorizationBackfillSkipsPastDuePostcardNotifications() async {
+        let notificationService = RecordingPostcardNotificationService(authorizationGranted: false)
+        let environment = AppEnvironment.preview(
+            stepStatus: .notDetermined,
+            steps: 0,
+            postcardNotificationService: notificationService
+        )
+        let departedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.prepareGiftConfirmation()
+        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
+        let trip = await environment.giftTicket(
+            sourceSteps: 0,
+            ticketCount: 1,
+            animalId: animalId,
+            date: departedAt,
+            isFirstImmediateTicket: true
+        )
+
+        XCTAssertNotNil(trip)
+        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+        guard let postcard = environment.repository.postcards.first else {
+            XCTFail("Expected first immediate ticket to create a postcard")
+            return
+        }
+
+        notificationService.authorizationGranted = true
+        await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
+
+        XCTAssertEqual(notificationService.authorizationRequestCount, 1)
+        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+    }
+
+    func testAuthorizationBackfillSchedulesOnlyFuturePostcardsWhenFirstDuePassed() async {
+        let notificationService = RecordingPostcardNotificationService(authorizationGranted: false)
+        let environment = AppEnvironment.preview(
+            stepStatus: .notDetermined,
+            steps: 0,
+            postcardNotificationService: notificationService
+        )
+        let departedAt = Date().addingTimeInterval(-60 * 60 * 4)
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.prepareGiftConfirmation()
+        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
+        let trip = await environment.giftTicket(
+            sourceSteps: 0,
+            ticketCount: 1,
+            animalId: animalId,
+            date: departedAt,
+            isFirstImmediateTicket: true
+        )
+
+        XCTAssertNotNil(trip)
+        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+        guard let postcard = environment.repository.postcards.first else {
+            XCTFail("Expected first immediate ticket to create a postcard")
+            return
+        }
+
+        notificationService.authorizationGranted = true
+        await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
+
+        XCTAssertEqual(notificationService.authorizationRequestCount, 1)
+        XCTAssertEqual(notificationService.scheduledPostcardIds, [
+            "postcard_\(trip?.id ?? "")_2"
+        ])
+    }
+
+    func testUnauthorizedGiftDoesNotScheduleUntilExistingAuthorizationEntrySucceeds() async {
+        let notificationService = RecordingPostcardNotificationService(authorizationGranted: false)
+        let environment = AppEnvironment.preview(
+            stepStatus: .notDetermined,
+            steps: 0,
+            postcardNotificationService: notificationService
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.prepareGiftConfirmation()
+        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
+        let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId)
+
+        XCTAssertNotNil(trip)
+        XCTAssertTrue(notificationService.scheduledPostcardIds.isEmpty)
+        guard let postcard = environment.repository.postcards.first else {
+            XCTFail("Expected first immediate ticket to create a postcard")
+            return
+        }
+
+        notificationService.authorizationGranted = true
+        await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
+
+        XCTAssertEqual(notificationService.authorizationRequestCount, 1)
+        XCTAssertEqual(notificationService.scheduledPostcardIds, [
+            "postcard_\(trip?.id ?? "")_1",
+            "postcard_\(trip?.id ?? "")_2"
+        ])
     }
 
     func testGiftedStepsSummaryKeepsTotalStepsVisibleAfterGift() async {
@@ -258,33 +487,32 @@ private final class RecordingPostcardNotificationService: PostcardNotificationSe
         return authorizationGranted
     }
 
-    func scheduleNewPostcardNotification(postcardId: String) async {
+    private(set) var scheduledDeliveryDates: [Date?] = []
+
+    func scheduleNewPostcardNotification(postcardId: String) async -> Bool {
         await scheduleNewPostcardNotification(postcardId: postcardId, requiresCurrentAuthorization: true)
     }
 
     func scheduleNewPostcardNotification(
         postcardId: String,
         requiresCurrentAuthorization: Bool
-    ) async {
-        guard authorizationGranted else { return }
+    ) async -> Bool {
+        await scheduleNewPostcardNotification(
+            postcardId: postcardId,
+            deliveryDate: nil,
+            requiresCurrentAuthorization: requiresCurrentAuthorization
+        )
+    }
+
+    func scheduleNewPostcardNotification(
+        postcardId: String,
+        deliveryDate: Date?,
+        requiresCurrentAuthorization: Bool
+    ) async -> Bool {
+        guard authorizationGranted else { return false }
         scheduledPostcardIds.append(postcardId)
         scheduledTitles.append(PostcardNotificationService.newPostcardTitle)
+        scheduledDeliveryDates.append(deliveryDate)
+        return true
     }
-}
-
-private func waitForScheduledNotifications(
-    in service: RecordingPostcardNotificationService,
-    count: Int,
-    file: StaticString = #filePath,
-    line: UInt = #line
-) async {
-    for _ in 0..<20 {
-        if await service.scheduledPostcardIds.count >= count {
-            return
-        }
-        try? await Task.sleep(nanoseconds: 10_000_000)
-    }
-
-    let actualCount = await service.scheduledPostcardIds.count
-    XCTAssertEqual(actualCount, count, file: file, line: line)
 }

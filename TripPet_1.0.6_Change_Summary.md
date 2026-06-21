@@ -36,7 +36,7 @@
 
 - 新增 `TripPet/Domain/Services/PostcardTextLibrary.swift`，作为第一版可消耗明信片文本库。
 - 合并 `Content/AnimalDatabase/PostcardTextLibrary_1.0.6` 作者资源，并通过 `Tools/generate_postcard_text_library.py` 生成运行时静态库。
-- 文本库当前共 1,130 条：8 只小动物各 140 条，小熊保留本地 1.0.6 fallback 10 条；分支内重复的灯灯副本不进入生成。
+- 文本库当前共 1,260 条：9 只小动物各 140 条；分支内重复的灯灯副本不进入生成。
 - `AppRepository` 生成明信片时记录已使用 `textId`，后续不再重复展示。
 - `UserStatePersistence` 持久化已消耗文本 ID。
 - `PostcardScheduler` 支持传入正文覆盖，文本耗尽时回退到目的地模板。
@@ -80,6 +80,7 @@
   - 后续 reveal 新明信片时，在已授权情况下发送本地通知。
 - Loader/catalog tests：
   - 300 城市全部加载。
+  - 300 个城市目的地 ID 唯一。
   - 所有城市都有合法经纬度。
   - 旧 manifest 地点仍可解码。
 - Map tests：

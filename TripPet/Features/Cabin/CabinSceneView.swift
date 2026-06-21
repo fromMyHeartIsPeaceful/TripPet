@@ -1,4 +1,215 @@
+import ImageIO
 import SwiftUI
+import UIKit
+
+struct CabinAnimalLayout {
+    enum Floor: Int, CaseIterable {
+        case top
+        case middle
+        case bottom
+    }
+
+    enum RoomSide: String {
+        case leftLarge
+        case rightSmall
+    }
+
+    struct Slot: Identifiable, Equatable {
+        var id: String { animalId }
+        var animalId: String
+        var floor: Floor
+        var side: RoomSide
+        var footPointRatio: CGPoint
+        var heightRatio: CGFloat
+        var isMirrored: Bool = false
+
+        func footPoint(in size: CGSize) -> CGPoint {
+            CGPoint(
+                x: size.width * footPointRatio.x,
+                y: size.height * footPointRatio.y
+            )
+        }
+
+        func frame(in size: CGSize, aspectRatio: CGFloat) -> CGRect {
+            let height = size.height * heightRatio
+            let width = height * aspectRatio
+            let footPoint = footPoint(in: size)
+
+            return CGRect(
+                x: footPoint.x - width / 2,
+                y: footPoint.y - height,
+                width: width,
+                height: height
+            )
+        }
+    }
+
+    struct Placement: Identifiable {
+        var id: String { animal.id }
+        var animal: Animal
+        var slot: Slot
+    }
+
+    static let slots: [Slot] = [
+        Slot(
+            animalId: "xiaoman_hamster",
+            floor: .top,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.315, y: 0.397),
+            heightRatio: 0.112
+        ),
+        Slot(
+            animalId: "moji_cat",
+            floor: .top,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.485, y: 0.397),
+            heightRatio: 0.108
+        ),
+        Slot(
+            animalId: "dengdeng_rabbit",
+            floor: .top,
+            side: .rightSmall,
+            footPointRatio: CGPoint(x: 0.785, y: 0.385),
+            heightRatio: 0.105,
+            isMirrored: true
+        ),
+        Slot(
+            animalId: "tangyuan_puppy",
+            floor: .middle,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.335, y: 0.672),
+            heightRatio: 0.116
+        ),
+        Slot(
+            animalId: "xiaolu_guinea_pig",
+            floor: .middle,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.555, y: 0.674),
+            heightRatio: 0.111
+        ),
+        Slot(
+            animalId: "bear_visitor",
+            floor: .middle,
+            side: .rightSmall,
+            footPointRatio: CGPoint(x: 0.782, y: 0.655),
+            heightRatio: 0.107,
+            isMirrored: true
+        ),
+        Slot(
+            animalId: "deer_visitor",
+            floor: .bottom,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.345, y: 0.960),
+            heightRatio: 0.116
+        ),
+        Slot(
+            animalId: "fox_visitor",
+            floor: .bottom,
+            side: .leftLarge,
+            footPointRatio: CGPoint(x: 0.555, y: 0.957),
+            heightRatio: 0.112
+        ),
+        Slot(
+            animalId: "feifei_parrot",
+            floor: .bottom,
+            side: .rightSmall,
+            footPointRatio: CGPoint(x: 0.802, y: 0.944),
+            heightRatio: 0.102
+        )
+    ]
+
+    static func slot(for animalId: String) -> Slot? {
+        slots.first { $0.animalId == animalId }
+    }
+
+    static func placements(for animals: [Animal]) -> [Placement] {
+        let animalsById = Dictionary(animals.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let knownPlacements = slots.compactMap { slot -> Placement? in
+            guard let animal = animalsById[slot.animalId] else { return nil }
+            return Placement(animal: animal, slot: slot)
+        }
+
+        let knownIds = Set(slots.map(\.animalId))
+        let placedIds = Set(knownPlacements.map(\.animal.id))
+        let unmatchedAnimals = animals
+            .filter { knownIds.contains($0.id) == false }
+            .prefix(max(0, slots.count - knownPlacements.count))
+        let emptySlots = slots.filter { placedIds.contains($0.animalId) == false }
+
+        let fallbackPlacements = zip(unmatchedAnimals, emptySlots).map { animal, slot in
+            Placement(animal: animal, slot: slot)
+        }
+
+        return knownPlacements + fallbackPlacements
+    }
+}
+
+enum CabinAnimalAnimationCatalog {
+    struct Entry: Decodable, Equatable {
+        var animalId: String
+        var filename: String
+        var frameCount: Int
+        var pixelWidth: Int
+        var pixelHeight: Int
+
+        var aspectRatio: CGFloat {
+            guard pixelHeight > 0 else { return 1 }
+            return CGFloat(pixelWidth) / CGFloat(pixelHeight)
+        }
+    }
+
+    private struct Manifest: Decodable {
+        var resourceSubdirectory: String
+        var animations: [Entry]
+    }
+
+    static let resourceSubdirectory = "AnimalAnimations"
+
+    static let fallbackEntries: [Entry] = [
+        Entry(animalId: "xiaoman_hamster", filename: "animal_animation_xiaoman_hamster.gif", frameCount: 91, pixelWidth: 318, pixelHeight: 420),
+        Entry(animalId: "tangyuan_puppy", filename: "animal_animation_tangyuan_puppy.gif", frameCount: 73, pixelWidth: 355, pixelHeight: 420),
+        Entry(animalId: "moji_cat", filename: "animal_animation_moji_cat.gif", frameCount: 73, pixelWidth: 387, pixelHeight: 420),
+        Entry(animalId: "dengdeng_rabbit", filename: "animal_animation_dengdeng_rabbit.gif", frameCount: 73, pixelWidth: 323, pixelHeight: 420),
+        Entry(animalId: "feifei_parrot", filename: "animal_animation_feifei_parrot.gif", frameCount: 73, pixelWidth: 399, pixelHeight: 420),
+        Entry(animalId: "xiaolu_guinea_pig", filename: "animal_animation_xiaolu_guinea_pig.gif", frameCount: 73, pixelWidth: 408, pixelHeight: 392),
+        Entry(animalId: "deer_visitor", filename: "animal_animation_jiujiu_deer.gif", frameCount: 73, pixelWidth: 267, pixelHeight: 420),
+        Entry(animalId: "fox_visitor", filename: "animal_animation_aini_fox.gif", frameCount: 73, pixelWidth: 314, pixelHeight: 419),
+        Entry(animalId: "bear_visitor", filename: "animal_animation_dundun_bear.gif", frameCount: 73, pixelWidth: 363, pixelHeight: 420)
+    ]
+
+    static func entry(for animalId: String, bundle: Bundle = .main) -> Entry? {
+        entries(bundle: bundle).first { $0.animalId == animalId }
+    }
+
+    static func animationURL(for animalId: String, bundle: Bundle = .main) -> URL? {
+        guard let entry = entry(for: animalId, bundle: bundle) else { return nil }
+        let resourceName = (entry.filename as NSString).deletingPathExtension
+        let resourceExtension = (entry.filename as NSString).pathExtension
+        return bundle.url(
+            forResource: resourceName,
+            withExtension: resourceExtension,
+            subdirectory: resourceSubdirectory
+        )
+    }
+
+    static func usesPingPongLoop(for animalId: String) -> Bool {
+        animalId == "tangyuan_puppy"
+    }
+
+    private static func entries(bundle: Bundle) -> [Entry] {
+        guard let manifestURL = bundle.url(
+            forResource: "manifest",
+            withExtension: "json",
+            subdirectory: resourceSubdirectory
+        ),
+              let data = try? Data(contentsOf: manifestURL),
+              let manifest = try? JSONDecoder().decode(Manifest.self, from: data),
+              manifest.animations.isEmpty == false else {
+            return fallbackEntries
+        }
+        return manifest.animations
+    }
+}
 
 struct CabinSceneView: View {
     private let sceneAspectRatio: CGFloat = 1254.0 / 1455.0
@@ -8,94 +219,184 @@ struct CabinSceneView: View {
 
     var animals: [Animal]
     var isEmpty: Bool = false
+    var cabinAssetName: String = "cabin_room_base_night_cutaway"
+    var preservesAspectRatio: Bool = true
 
     var body: some View {
+        scene
+            .onAppear {
+                guard reduceMotion == false else { return }
+                withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
+                    isBreathing = true
+                }
+            }
+    }
+
+    @ViewBuilder
+    private var scene: some View {
+        if preservesAspectRatio {
+            sceneContent
+                .frame(maxWidth: .infinity)
+                .aspectRatio(sceneAspectRatio, contentMode: .fit)
+        } else {
+            sceneContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private var sceneContent: some View {
         GeometryReader { geometry in
             let size = geometry.size
-            let visibleAnimals = Array(animals.prefix(9))
+            let placements = CabinAnimalLayout.placements(for: Array(animals.prefix(9)))
 
             ZStack {
-                ArtImage(name: "cabin_room_base_user_test", contentMode: .fill, cornerRadius: 28, showsShadow: true)
+                ArtImage(name: cabinAssetName, contentMode: .fit)
                     .frame(width: size.width, height: size.height)
 
                 if isEmpty == false {
-                    ForEach(Array(visibleAnimals.enumerated()), id: \.element.id) { index, animal in
-                        let point = position(for: index, count: visibleAnimals.count, in: size)
-                        let animalSize = animalFrameSize(for: visibleAnimals.count, in: size)
+                    ForEach(placements) { placement in
+                        let animationEntry = CabinAnimalAnimationCatalog.entry(for: placement.animal.id)
+                        let aspectRatio = animationEntry?.aspectRatio ?? 1
+                        let frame = placement.slot.frame(in: size, aspectRatio: aspectRatio)
 
-                        ArtImage(name: animal.homeAssetName)
-                            .frame(width: animalSize.width, height: animalSize.height)
-                            .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.018 : 0.994))
-                            .offset(y: reduceMotion ? 0 : (isBreathing ? -2 : 1))
-                            .position(point)
+                        cabinAnimalView(
+                            for: placement.animal,
+                            maxPixelSize: max(frame.width, frame.height) * UIScreen.main.scale
+                        )
+                            .frame(width: frame.width, height: frame.height)
+                            .scaleEffect(x: placement.slot.isMirrored ? -1 : 1, y: 1, anchor: .center)
+                            .scaleEffect(reduceMotion ? 1 : (isBreathing ? 1.012 : 0.996), anchor: .bottom)
+                            .position(x: frame.midX, y: frame.midY)
                     }
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .aspectRatio(sceneAspectRatio, contentMode: .fit)
-        .onAppear {
-            guard reduceMotion == false else { return }
-            withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
-                isBreathing = true
-            }
-        }
     }
 
-    private func animalFrameSize(for count: Int, in size: CGSize) -> CGSize {
-        let widthRatio: CGFloat
-        let heightRatio: CGFloat
-        switch count {
-        case 0...1:
-            widthRatio = 0.27
-            heightRatio = 0.31
-        case 2...4:
-            widthRatio = 0.19
-            heightRatio = 0.22
-        default:
-            widthRatio = 0.18
-            heightRatio = 0.23
+    @ViewBuilder
+    private func cabinAnimalView(for animal: Animal, maxPixelSize: CGFloat) -> some View {
+        if reduceMotion == false,
+           let animationURL = CabinAnimalAnimationCatalog.animationURL(for: animal.id) {
+            AnimatedGIFImage(
+                url: animationURL,
+                maxPixelSize: maxPixelSize,
+                usesPingPongLoop: CabinAnimalAnimationCatalog.usesPingPongLoop(for: animal.id)
+            )
+                .accessibilityHidden(true)
+        } else {
+            ArtImage(name: animal.homeAssetName)
         }
-        return CGSize(width: size.width * widthRatio, height: size.height * heightRatio)
+    }
+}
+
+private struct AnimatedGIFImage: UIViewRepresentable {
+    var url: URL
+    var maxPixelSize: CGFloat = 256
+    var usesPingPongLoop: Bool = false
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
     }
 
-    private func position(for index: Int, count: Int, in size: CGSize) -> CGPoint {
-        let single = [CGPoint(x: 0.5, y: 0.62)]
-        let pair = [
-            CGPoint(x: 0.35, y: 0.63),
-            CGPoint(x: 0.66, y: 0.63)
-        ]
-        let compact = [
-            CGPoint(x: 0.28, y: 0.58),
-            CGPoint(x: 0.49, y: 0.55),
-            CGPoint(x: 0.69, y: 0.58),
-            CGPoint(x: 0.82, y: 0.69)
-        ]
-        let full = [
-            CGPoint(x: 0.18, y: 0.47),
-            CGPoint(x: 0.39, y: 0.43),
-            CGPoint(x: 0.64, y: 0.43),
-            CGPoint(x: 0.90, y: 0.55),
-            CGPoint(x: 0.14, y: 0.66),
-            CGPoint(x: 0.36, y: 0.72),
-            CGPoint(x: 0.73, y: 0.69),
-            CGPoint(x: 0.18, y: 0.83),
-            CGPoint(x: 0.79, y: 0.83)
-        ]
+    func makeUIView(context: Context) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .clear
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = false
+        return imageView
+    }
 
-        let ratios: [CGPoint]
-        switch count {
-        case 0...1:
-            ratios = single
-        case 2:
-            ratios = pair
-        case 3...4:
-            ratios = compact
-        default:
-            ratios = full
+    func updateUIView(_ imageView: UIImageView, context: Context) {
+        let roundedMaxPixelSize = max(64, Int(maxPixelSize.rounded(.up)))
+        guard context.coordinator.currentURL != url ||
+                context.coordinator.currentMaxPixelSize != roundedMaxPixelSize ||
+                context.coordinator.currentUsesPingPongLoop != usesPingPongLoop else {
+            imageView.startAnimating()
+            return
         }
 
-        let point = ratios[min(index, ratios.count - 1)]
-        return CGPoint(x: size.width * point.x, y: size.height * point.y)
+        context.coordinator.currentURL = url
+        context.coordinator.currentMaxPixelSize = roundedMaxPixelSize
+        context.coordinator.currentUsesPingPongLoop = usesPingPongLoop
+        imageView.image = UIImage.animatedGIF(
+            from: url,
+            maxPixelSize: roundedMaxPixelSize,
+            usesPingPongLoop: usesPingPongLoop
+        )
+        imageView.startAnimating()
+    }
+
+    final class Coordinator {
+        var currentURL: URL?
+        var currentMaxPixelSize: Int?
+        var currentUsesPingPongLoop: Bool?
+    }
+}
+
+private final class AnimatedGIFCache {
+    static let shared: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.countLimit = 18
+        return cache
+    }()
+}
+
+private extension UIImage {
+    static func animatedGIF(from url: URL, maxPixelSize: Int, usesPingPongLoop: Bool) -> UIImage? {
+        let cacheKey = "\(url.absoluteString)#\(maxPixelSize)#pingPong:\(usesPingPongLoop)" as NSString
+        if let cached = AnimatedGIFCache.shared.object(forKey: cacheKey) {
+            return cached
+        }
+
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+            return nil
+        }
+
+        let frameCount = CGImageSourceGetCount(source)
+        guard frameCount > 0 else { return nil }
+
+        var images: [UIImage] = []
+        var totalDuration: TimeInterval = 0
+        let frameOptions = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize,
+            kCGImageSourceShouldCacheImmediately: true
+        ] as CFDictionary
+
+        for index in 0..<frameCount {
+            let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, index, frameOptions)
+            let fullSizeImage = thumbnail ?? CGImageSourceCreateImageAtIndex(source, index, nil)
+            guard let cgImage = fullSizeImage else { continue }
+            images.append(UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up))
+            totalDuration += frameDuration(at: index, source: source)
+        }
+
+        guard images.isEmpty == false else { return nil }
+
+        if usesPingPongLoop, images.count > 2 {
+            let reverseFrames = images.dropFirst().dropLast().reversed()
+            images.append(contentsOf: reverseFrames)
+            totalDuration *= 2
+        }
+
+        let animatedImage = UIImage.animatedImage(
+            with: images,
+            duration: max(totalDuration, TimeInterval(images.count) / 15.0)
+        )
+        if let animatedImage {
+            AnimatedGIFCache.shared.setObject(animatedImage, forKey: cacheKey)
+        }
+        return animatedImage
+    }
+
+    private static func frameDuration(at index: Int, source: CGImageSource) -> TimeInterval {
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString: Any],
+              let gifProperties = properties[kCGImagePropertyGIFDictionary] as? [CFString: Any] else {
+            return 1.0 / 15.0
+        }
+
+        let unclampedDelay = gifProperties[kCGImagePropertyGIFUnclampedDelayTime] as? TimeInterval
+        let delay = unclampedDelay ?? gifProperties[kCGImagePropertyGIFDelayTime] as? TimeInterval ?? 1.0 / 15.0
+        return delay > 0.011 ? delay : 1.0 / 15.0
     }
 }

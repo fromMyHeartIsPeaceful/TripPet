@@ -1,5 +1,9 @@
 .derivedData/
 DerivedData/
+BuildArtifacts/
+.worktrees/
+exports/
+Tools/__pycache__/
 *.xcuserdata/
 xcuserdata/
 **/xcuserdata/

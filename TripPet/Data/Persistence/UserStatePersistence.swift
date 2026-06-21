@@ -9,6 +9,8 @@ struct AppUserFlags: Equatable {
 }
 
 struct AppUserState: Equatable {
+    private static let defaultInitialCabinAnimalId = "moji_cat"
+
     var travelWishes: [TravelWish]
     var trips: [Trip]
     var postcards: [Postcard]
@@ -25,7 +27,7 @@ struct AppUserState: Equatable {
         self.flags = flags
         cabinLodging = CabinLodgingState.initial(
             on: Date(),
-            animalId: seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
+            animalId: Self.initialCabinAnimalId(in: seed)
         )
         consumedPostcardTextIds = []
     }
@@ -46,6 +48,13 @@ struct AppUserState: Equatable {
         self.flags = flags
         self.cabinLodging = cabinLodging
         self.consumedPostcardTextIds = consumedPostcardTextIds
+    }
+
+    private static func initialCabinAnimalId(in seed: SeedData) -> String? {
+        if seed.animals.contains(where: { $0.id == defaultInitialCabinAnimalId }) {
+            return defaultInitialCabinAnimalId
+        }
+        return seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
     }
 }
 
@@ -357,6 +366,8 @@ final class PersistedConsumedPostcardText {
 
 @MainActor
 final class SwiftDataUserStateStore: AppUserStateStore {
+    private static let defaultInitialCabinAnimalId = "moji_cat"
+
     private let context: ModelContext
 
     init(inMemory: Bool = false) throws {
@@ -441,8 +452,15 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         let state = try? context.fetch(FetchDescriptor<PersistedCabinLodgingState>()).first?.state
         return state ?? CabinLodgingState.initial(
             on: Date(),
-            animalId: seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
+            animalId: initialCabinAnimalId(in: seed)
         )
+    }
+
+    private func initialCabinAnimalId(in seed: SeedData) -> String? {
+        if seed.animals.contains(where: { $0.id == Self.defaultInitialCabinAnimalId }) {
+            return Self.defaultInitialCabinAnimalId
+        }
+        return seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
     }
 
     private func replace<T: PersistentModel>(_ type: T.Type, with models: [T]) {

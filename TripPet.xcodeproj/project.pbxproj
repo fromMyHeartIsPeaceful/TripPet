@@ -47,6 +47,9 @@
 		B00000000000000000000026 /* PostcardTextLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000029 /* PostcardTextLibrary.swift */; };
 		B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002A /* LocationDestinationCatalog.json */; };
 		B00000000000000000000028 /* PostcardNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PostcardNotificationService.swift */; };
+		B00000000000000000000029 /* LXGWWenKaiScreen.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* LXGWWenKaiScreen.ttf */; };
+		B0000000000000000000002A /* AnimalAnimations in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002E /* AnimalAnimations */; };
+		B0000000000000000000002B /* PostcardNotificationDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002F /* PostcardNotificationDiagnostics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +106,10 @@
 		F00000000000000000000029 /* PostcardTextLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PostcardTextLibrary.swift; sourceTree = "<group>"; };
 		F0000000000000000000002A /* LocationDestinationCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LocationDestinationCatalog.json; sourceTree = "<group>"; };
 		F0000000000000000000002B /* PostcardNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationService.swift; sourceTree = "<group>"; };
+		F0000000000000000000002C /* LXGWWenKaiScreen.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fonts/LXGWWenKaiScreen.ttf; sourceTree = "<group>"; };
+		F0000000000000000000002D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F0000000000000000000002E /* AnimalAnimations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AnimalAnimations; sourceTree = "<group>"; };
+		F0000000000000000000002F /* PostcardNotificationDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +169,7 @@
 				F00000000000000000000002 /* AppEnvironment.swift */,
 				F00000000000000000000003 /* RootTabView.swift */,
 				F0000000000000000000002B /* PostcardNotificationService.swift */,
+				F0000000000000000000002F /* PostcardNotificationDiagnostics.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -244,7 +252,10 @@
 			children = (
 				F0000000000000000000001A /* ContentManifest.json */,
 				F0000000000000000000002A /* LocationDestinationCatalog.json */,
+				F0000000000000000000002D /* Info.plist */,
 				F0000000000000000000001B /* Assets.xcassets */,
+				F0000000000000000000002E /* AnimalAnimations */,
+				F0000000000000000000002C /* LXGWWenKaiScreen.ttf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -349,6 +360,8 @@
 				B0000000000000000000001A /* ContentManifest.json in Resources */,
 				B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */,
 				B0000000000000000000001B /* Assets.xcassets in Resources */,
+				B0000000000000000000002A /* AnimalAnimations in Resources */,
+				B00000000000000000000029 /* LXGWWenKaiScreen.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +383,7 @@
 				B00000000000000000000002 /* AppEnvironment.swift in Sources */,
 				B00000000000000000000003 /* RootTabView.swift in Sources */,
 				B00000000000000000000028 /* PostcardNotificationService.swift in Sources */,
+				B0000000000000000000002B /* PostcardNotificationDiagnostics.swift in Sources */,
 				B00000000000000000000004 /* Animal.swift in Sources */,
 				B00000000000000000000005 /* TravelWish.swift in Sources */,
 				B00000000000000000000006 /* Ticket.swift in Sources */,
@@ -550,20 +564,24 @@
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TripPet/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TripPet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，把脚步转化为送给小动物的旅行机票。";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "本应用不会写入健康数据，仅保留 HealthKit 能力用于后续扩展。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIAppFonts = (
+					LXGWWenKaiScreen.ttf,
+				);
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -584,20 +602,24 @@
 				DEVELOPMENT_TEAM = ZNY52MWKJN;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TripPet/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TripPet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，把脚步转化为送给小动物的旅行机票。";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "本应用不会写入健康数据，仅保留 HealthKit 能力用于后续扩展。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIAppFonts = (
+					LXGWWenKaiScreen.ttf,
+				);
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -623,7 +645,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -650,7 +672,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qianyu.TripPetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

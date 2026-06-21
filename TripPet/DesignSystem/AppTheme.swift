@@ -28,6 +28,14 @@ enum AppTheme {
     static let caption = Font.system(size: 15)
     static let button = Font.system(size: 16, weight: .semibold)
     static let tab = Font.system(size: 12, weight: .medium)
+
+    static func postcardTitle(size: CGFloat) -> Font {
+        .custom("LXGW WenKai Screen", size: size).weight(.semibold)
+    }
+
+    static func postcardBody(size: CGFloat) -> Font {
+        .custom("LXGW WenKai Screen", size: size)
+    }
 }
 
 struct PaperBackground: View {

@@ -315,25 +315,90 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.trips.count, 1)
     }
 
-    func testCabinRefreshesNextAnimalImmediatelyAfterDeparture() {
-        let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 2, backupCount: 0))
+    func testNewRepositoryStartsWithOnlyMojiCatWhenAvailable() {
+        let repository = AppRepository(seed: .preview)
+
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, ["moji_cat"])
+        XCTAssertEqual(repository.cabinAnimals.map(\.id), ["moji_cat"])
+    }
+
+    func testFirstImmediateTicketUnlocksRemainingIdleAnimals() {
+        let repository = AppRepository(seed: .preview, randomDestinationIndex: { _ in 0 })
+        let giftedAt = Self.date(hour: 12)
+
+        let trip = repository.giftTicket(
+            sourceSteps: 0,
+            ticketCount: 1,
+            animalId: "moji_cat",
+            date: giftedAt,
+            isFirstImmediateTicket: true
+        )
+
+        XCTAssertEqual(trip?.animalId, "moji_cat")
+        XCTAssertEqual(repository.activeTravelTrips.map(\.animalId), ["moji_cat"])
+        XCTAssertEqual(repository.cabinAnimals.count, 8)
+        XCTAssertFalse(repository.cabinLodging.presentAnimalIds.contains("moji_cat"))
+    }
+
+    func testCompletedTripRestoresAnimalToIdleCabinSet() throws {
+        let repository = AppRepository(seed: .preview, randomDestinationIndex: { _ in 0 })
+        let giftedAt = Self.date(hour: 12)
+        let trip = try XCTUnwrap(
+            repository.giftTicket(
+                sourceSteps: 0,
+                ticketCount: 1,
+                animalId: "moji_cat",
+                date: giftedAt,
+                isFirstImmediateTicket: true
+            )
+        )
+
+        XCTAssertEqual(repository.cabinAnimals.count, 8)
+
+        XCTAssertTrue(repository.completeTrip(trip, postcard: nil))
+
+        XCTAssertTrue(repository.activeTravelTrips.isEmpty)
+        XCTAssertEqual(repository.cabinAnimals.count, 9)
+        XCTAssertTrue(repository.cabinLodging.presentAnimalIds.contains("moji_cat"))
+    }
+
+    func testLegacyEightAnimalCabinStateBackfillsToAllIdleAnimals() {
+        let seed = SeedData.preview
+        let missingMojiIds = seed.animals.map(\.id).filter { $0 != "moji_cat" }
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [],
+            postcards: [],
+            tickets: [],
+            flags: AppUserFlags(firstImmediateTicketGifted: true),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: missingMojiIds)
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+
+        XCTAssertEqual(repository.cabinAnimals.count, 9)
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, seed.animals.map(\.id))
+    }
+
+    func testCabinShowsAllRemainingIdleAnimalsAfterDeparture() {
+        let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 3, backupCount: 0))
         let giftedAt = Self.date(hour: 12)
 
         repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: giftedAt)
 
-        XCTAssertEqual(repository.currentCabinAnimal?.id, "primary_2")
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, ["primary_2", "primary_3"])
         XCTAssertFalse(repository.isCabinEmpty)
     }
 
-    func testBackupAnimalsAppearOnlyAfterPrimaryPoolIsUnavailable() {
+    func testPrimaryAndBackupAnimalsBothAppearWhenIdleAfterUnlock() {
         let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 2, backupCount: 1))
         let giftedAt = Self.date(hour: 12)
 
         repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: giftedAt)
-        XCTAssertEqual(repository.currentCabinAnimal?.id, "primary_2")
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, ["primary_2", "backup_1"])
 
         repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: giftedAt.addingTimeInterval(60))
-        XCTAssertEqual(repository.currentCabinAnimal?.id, "backup_1")
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, ["backup_1"])
     }
 
     func testCabinStopsAfterThreeDeparturesAndResetsNextDay() {
@@ -353,6 +418,28 @@ final class AppRepositoryTripTests: XCTestCase {
 
         XCTAssertEqual(repository.cabinLodging.dispatchedCount, 0)
         XCTAssertNil(repository.currentCabinAnimal)
+    }
+
+    func testFirstImmediateTicketDoesNotCountTowardDailyStepFundedLimit() {
+        let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 4, backupCount: 0, destinationCount: 4))
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+        let third = Self.date(hour: 12)
+        let fourth = Self.date(hour: 14)
+
+        repository.giftTicket(sourceSteps: 0, ticketCount: 1, date: first, isFirstImmediateTicket: true)
+        XCTAssertEqual(repository.giftedTicketCountToday(on: first), 1)
+        XCTAssertEqual(repository.dailyLimitedTicketCountToday(on: first), 0)
+        XCTAssertFalse(repository.hasReachedDailyAnimalLimit)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: second)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: third)
+        repository.giftTicket(sourceSteps: 7_500, ticketCount: 1, date: fourth)
+
+        XCTAssertEqual(repository.tickets.count, 4)
+        XCTAssertEqual(repository.giftedTicketCountToday(on: first), 4)
+        XCTAssertEqual(repository.dailyLimitedTicketCountToday(on: first), 3)
+        XCTAssertTrue(repository.hasReachedDailyAnimalLimit)
     }
 
     func testSwiftDataStorePersistsRepositoryStateAcrossRepositoryInstances() throws {
@@ -469,7 +556,7 @@ final class AppRepositoryTripTests: XCTestCase {
             by: \.animalKey
         ).mapValues(\.count)
 
-        XCTAssertEqual(PostcardTextLibrary.narratives.count, 1_130)
+        XCTAssertEqual(PostcardTextLibrary.narratives.count, 1_260)
         XCTAssertEqual(counts["xiaoman_hamster"], 140)
         XCTAssertEqual(counts["tangyuan_puppy"], 140)
         XCTAssertEqual(counts["moji_cat"], 140)
@@ -478,7 +565,7 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(counts["xiaolu_guinea_pig"], 140)
         XCTAssertEqual(counts["deer_visitor"], 140)
         XCTAssertEqual(counts["fox_visitor"], 140)
-        XCTAssertEqual(counts["bear_visitor"], 10)
+        XCTAssertEqual(counts["bear_visitor"], 140)
     }
 
     func testNarrativeLibraryFallsBackToDestinationTemplateWhenAnimalTextsAreExhausted() throws {
@@ -639,10 +726,7 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.travelWishes.first?.animalId, "xiaoman_hamster")
         XCTAssertEqual(repository.trips.first?.animalId, "deer_visitor")
         XCTAssertEqual(repository.animalName(for: "map_cat"), "啾啾")
-        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, [
-            "xiaoman_hamster",
-            "feifei_parrot"
-        ])
+        XCTAssertEqual(repository.cabinLodging.presentAnimalIds, ["moji_cat"])
     }
 
     private static func makeSeed(

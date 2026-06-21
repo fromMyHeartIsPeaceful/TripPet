@@ -13,8 +13,13 @@ protocol PostcardNotificationServiceProtocol: AnyObject {
     var tabRequestHandler: ((AppTab) -> Void)? { get set }
 
     func requestAuthorization() async -> Bool
-    func scheduleNewPostcardNotification(postcardId: String) async
-    func scheduleNewPostcardNotification(postcardId: String, requiresCurrentAuthorization: Bool) async
+    func scheduleNewPostcardNotification(postcardId: String) async -> Bool
+    func scheduleNewPostcardNotification(postcardId: String, requiresCurrentAuthorization: Bool) async -> Bool
+    func scheduleNewPostcardNotification(
+        postcardId: String,
+        deliveryDate: Date?,
+        requiresCurrentAuthorization: Bool
+    ) async -> Bool
 }
 
 @MainActor
@@ -26,8 +31,13 @@ final class DisabledPostcardNotificationService: PostcardNotificationServiceProt
         false
     }
 
-    func scheduleNewPostcardNotification(postcardId: String) async {}
-    func scheduleNewPostcardNotification(postcardId: String, requiresCurrentAuthorization: Bool) async {}
+    func scheduleNewPostcardNotification(postcardId: String) async -> Bool { false }
+    func scheduleNewPostcardNotification(postcardId: String, requiresCurrentAuthorization: Bool) async -> Bool { false }
+    func scheduleNewPostcardNotification(
+        postcardId: String,
+        deliveryDate: Date?,
+        requiresCurrentAuthorization: Bool
+    ) async -> Bool { false }
 }
 
 @MainActor
@@ -49,25 +59,54 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
     }
 
     func requestAuthorization() async -> Bool {
+        PostcardNotificationDiagnostics.record("request authorization")
         do {
-            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
+            let isGranted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+            PostcardNotificationDiagnostics.record("authorization result granted=\(isGranted)")
+            return isGranted
         } catch {
+            PostcardNotificationDiagnostics.record("authorization error=\(error.localizedDescription)")
             return false
         }
     }
 
-    func scheduleNewPostcardNotification(postcardId: String) async {
+    func scheduleNewPostcardNotification(postcardId: String) async -> Bool {
         await scheduleNewPostcardNotification(postcardId: postcardId, requiresCurrentAuthorization: true)
     }
 
     func scheduleNewPostcardNotification(
         postcardId: String,
         requiresCurrentAuthorization: Bool
-    ) async {
+    ) async -> Bool {
+        await scheduleNewPostcardNotification(
+            postcardId: postcardId,
+            deliveryDate: nil,
+            requiresCurrentAuthorization: requiresCurrentAuthorization
+        )
+    }
+
+    func scheduleNewPostcardNotification(
+        postcardId: String,
+        deliveryDate: Date?,
+        requiresCurrentAuthorization: Bool
+    ) async -> Bool {
+        PostcardNotificationDiagnostics.record(
+            "schedule request postcardId=\(postcardId) deliveryDate=\(PostcardNotificationDiagnostics.describe(deliveryDate)) requiresAuth=\(requiresCurrentAuthorization)"
+        )
+
+        if let deliveryDate, deliveryDate <= Date() {
+            PostcardNotificationDiagnostics.record("schedule skipped past deliveryDate postcardId=\(postcardId)")
+            return false
+        }
+
         if requiresCurrentAuthorization {
             let settings = await center.notificationSettings()
+            PostcardNotificationDiagnostics.record(
+                "notification settings status=\(Self.describe(settings.authorizationStatus)) alert=\(settings.alertSetting.rawValue) sound=\(settings.soundSetting.rawValue) badge=\(settings.badgeSetting.rawValue)"
+            )
             guard Self.canScheduleNotification(for: settings.authorizationStatus) else {
-                return
+                PostcardNotificationDiagnostics.record("schedule skipped unauthorized postcardId=\(postcardId)")
+                return false
             }
         }
 
@@ -79,12 +118,26 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
             Self.postcardIdKey: postcardId
         ]
 
+        let timeInterval = max(1, deliveryDate?.timeIntervalSinceNow ?? 1)
         let request = UNNotificationRequest(
             identifier: "postcard-new-\(postcardId)",
             content: content,
-            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
         )
-        try? await center.add(request)
+        center.removePendingNotificationRequests(withIdentifiers: [request.identifier])
+        do {
+            try await center.add(request)
+            let pendingCount = await center.pendingNotificationRequests().count
+            PostcardNotificationDiagnostics.record(
+                "schedule added identifier=\(request.identifier) timeInterval=\(timeInterval) pendingCount=\(pendingCount)"
+            )
+            return true
+        } catch {
+            PostcardNotificationDiagnostics.record(
+                "schedule add error identifier=\(request.identifier) error=\(error.localizedDescription)"
+            )
+            return false
+        }
     }
 
     nonisolated static func targetTab(from userInfo: [AnyHashable: Any]) -> AppTab? {
@@ -104,6 +157,23 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
             return false
         }
     }
+
+    private nonisolated static func describe(_ status: UNAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined:
+            return "notDetermined"
+        case .denied:
+            return "denied"
+        case .authorized:
+            return "authorized"
+        case .provisional:
+            return "provisional"
+        case .ephemeral:
+            return "ephemeral"
+        @unknown default:
+            return "unknown"
+        }
+    }
 }
 
 extension PostcardNotificationService: UNUserNotificationCenterDelegate {
@@ -111,7 +181,7 @@ extension PostcardNotificationService: UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        [.banner, .sound, .badge]
+        []
     }
 
     nonisolated func userNotificationCenter(
