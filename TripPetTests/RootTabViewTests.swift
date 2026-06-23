@@ -26,6 +26,17 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
     }
 
+    func testEnvironmentConsumesQueuedNotificationTabRequest() {
+        let notificationService = RootTabNotificationService()
+        let environment = AppEnvironment.preview(postcardNotificationService: notificationService)
+
+        notificationService.tabRequestHandler?(.mailbox)
+
+        XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
+        XCTAssertNil(environment.consumeNotificationTabRequest())
+        XCTAssertNil(notificationService.requestedTab)
+    }
+
     func testPostcardSenderFallbackParsesTitleSender() {
         let postcard = makePostcard(
             id: "first",
@@ -71,4 +82,19 @@ final class RootTabViewTests: XCTestCase {
             isRead: isRead
         )
     }
+}
+
+@MainActor
+private final class RootTabNotificationService: PostcardNotificationServiceProtocol {
+    var requestedTab: AppTab?
+    var tabRequestHandler: ((AppTab) -> Void)?
+
+    func requestAuthorization() async -> Bool { true }
+    func scheduleNewPostcardNotification(postcardId: String) async -> Bool { true }
+    func scheduleNewPostcardNotification(postcardId: String, requiresCurrentAuthorization: Bool) async -> Bool { true }
+    func scheduleNewPostcardNotification(
+        postcardId: String,
+        deliveryDate: Date?,
+        requiresCurrentAuthorization: Bool
+    ) async -> Bool { true }
 }

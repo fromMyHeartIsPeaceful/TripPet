@@ -239,6 +239,14 @@ final class AppEnvironment: ObservableObject {
         postcardNotificationService.requestedTab = nil
     }
 
+    func consumeNotificationTabRequest() -> AppTab? {
+        let requestedTab = notificationRequestedTab ?? postcardNotificationService.requestedTab
+        guard requestedTab != nil else { return nil }
+        notificationRequestedTab = nil
+        postcardNotificationService.requestedTab = nil
+        return requestedTab
+    }
+
     func requestNotificationAuthorizationOnPostcardReturn(_ postcard: Postcard) async {
         guard didRequestPostcardReturnNotificationAuthorization == false else { return }
         didRequestPostcardReturnNotificationAuthorization = true

@@ -47,7 +47,7 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
     private nonisolated static let mailboxTarget = "mailbox"
     private nonisolated static let postcardIdKey = "postcardId"
 
-    @Published var requestedTab: AppTab?
+    var requestedTab: AppTab?
     var tabRequestHandler: ((AppTab) -> Void)?
 
     private let center: UNUserNotificationCenter
@@ -188,11 +188,15 @@ extension PostcardNotificationService: UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
+        PostcardNotificationDiagnostics.record("didReceive response action=\(response.actionIdentifier)")
         guard let tab = Self.targetTab(from: response.notification.request.content.userInfo) else {
+            PostcardNotificationDiagnostics.record("didReceive skipped unknown target")
             return
         }
 
-        await MainActor.run {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            PostcardNotificationDiagnostics.record("didReceive route tab=\(tab)")
             requestedTab = tab
             tabRequestHandler?(tab)
         }

@@ -193,9 +193,11 @@ struct SettingsView: View {
 
 #if DEBUG
 private struct NotificationDiagnosticsPage: View {
+    @EnvironmentObject private var environment: AppEnvironment
     @State private var authorizationSummary = "正在读取"
     @State private var pendingRequests: [String] = []
     @State private var events = PostcardNotificationDiagnostics.recentEvents
+    @State private var debugScheduleStatus = ""
 
     var body: some View {
         SettingsDetailScaffold(
@@ -215,11 +217,22 @@ private struct NotificationDiagnosticsPage: View {
                     }
                     .buttonStyle(OutlineButtonStyle())
 
+                    Button("1秒测试通知") {
+                        Task { await scheduleDebugNotification() }
+                    }
+                    .buttonStyle(OutlineButtonStyle())
+
                     Button("清空日志") {
                         PostcardNotificationDiagnostics.clear()
                         events = []
                     }
                     .buttonStyle(OutlineButtonStyle())
+                }
+
+                if debugScheduleStatus.isEmpty == false {
+                    Text(debugScheduleStatus)
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
                 }
 
                 diagnosticGroup(title: "Pending 通知", lines: pendingRequests)
@@ -252,6 +265,24 @@ private struct NotificationDiagnosticsPage: View {
         }.sorted()
 
         events = PostcardNotificationDiagnostics.recentEvents
+    }
+
+    private func scheduleDebugNotification() async {
+        let isAuthorized = await environment.postcardNotificationService.requestAuthorization()
+        guard isAuthorized else {
+            debugScheduleStatus = "通知授权未开启"
+            await reload()
+            return
+        }
+
+        let postcardId = "debug-\(Int(Date().timeIntervalSince1970))"
+        let didSchedule = await environment.postcardNotificationService.scheduleNewPostcardNotification(
+            postcardId: postcardId,
+            deliveryDate: Date().addingTimeInterval(1),
+            requiresCurrentAuthorization: false
+        )
+        debugScheduleStatus = didSchedule ? "已排入 1 秒测试通知" : "测试通知排入失败"
+        await reload()
     }
 
     @ViewBuilder

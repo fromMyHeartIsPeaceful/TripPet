@@ -218,6 +218,7 @@ private struct TrackingHorizontalScrollView<Content: View>: UIViewRepresentable 
 
     func makeUIView(context: Context) -> UIScrollView {
         let scrollView = UIScrollView()
+        context.coordinator.isActive = true
         scrollView.backgroundColor = .clear
         scrollView.delegate = context.coordinator
         scrollView.showsHorizontalScrollIndicator = false
@@ -252,11 +253,22 @@ private struct TrackingHorizontalScrollView<Content: View>: UIViewRepresentable 
         return scrollView
     }
 
+    static func dismantleUIView(_ scrollView: UIScrollView, coordinator: Coordinator) {
+        coordinator.isActive = false
+        scrollView.delegate = nil
+        scrollView.layer.removeAllAnimations()
+        scrollView.subviews.forEach { $0.removeFromSuperview() }
+        coordinator.hostingController = nil
+        coordinator.widthConstraint = nil
+        coordinator.heightConstraint = nil
+    }
+
     func updateUIView(_ scrollView: UIScrollView, context: Context) {
         context.coordinator.parent = self
         context.coordinator.hostingController?.rootView = content
         context.coordinator.widthConstraint?.constant = contentWidth
         context.coordinator.heightConstraint?.constant = contentHeight
+        scrollView.layoutIfNeeded()
 
         let maxOffset = max(0, contentWidth - scrollView.bounds.width)
         let clampedCurrentOffset = min(max(scrollView.contentOffset.x, 0), maxOffset)
@@ -279,6 +291,7 @@ private struct TrackingHorizontalScrollView<Content: View>: UIViewRepresentable 
         var widthConstraint: NSLayoutConstraint?
         var heightConstraint: NSLayoutConstraint?
         var lastCommandId: UUID?
+        var isActive = true
         private var lastReportedEdgeState: WorldMapScrollEdgeState?
 
         init(_ parent: TrackingHorizontalScrollView) {
@@ -327,6 +340,7 @@ private struct TrackingHorizontalScrollView<Content: View>: UIViewRepresentable 
             lastReportedEdgeState = nextState
 
             DispatchQueue.main.async {
+                guard self.isActive else { return }
                 self.parent.edgeState = nextState
             }
         }
