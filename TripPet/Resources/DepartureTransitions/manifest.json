@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "resourceSubdirectory": "DepartureTransitions",
+  "transitions": [
+    {
+      "id": "generic_airport_departure",
+      "filename": "generic_airport_departure.mp4",
+      "duration": 6.042,
+      "pixelWidth": 720,
+      "pixelHeight": 1280
+    }
+  ]
+}

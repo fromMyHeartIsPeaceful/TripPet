@@ -3,7 +3,7 @@ import XCTest
 
 @MainActor
 final class CabinViewModelTests: XCTestCase {
-    func testCabinAnimalLayoutUsesFixedThreeFloorRoomSlots() {
+    func testCabinAnimalLayoutUsesFixedSingleRoomSlots() {
         XCTAssertEqual(CabinAnimalLayout.slots.map(\.animalId), [
             "xiaoman_hamster",
             "moji_cat",
@@ -16,11 +16,13 @@ final class CabinViewModelTests: XCTestCase {
             "feifei_parrot"
         ])
 
-        for floor in CabinAnimalLayout.Floor.allCases {
-            let floorSlots = CabinAnimalLayout.slots.filter { $0.floor == floor }
-            XCTAssertEqual(floorSlots.filter { $0.side == .leftLarge }.count, 2)
-            XCTAssertEqual(floorSlots.filter { $0.side == .rightSmall }.count, 1)
-        }
+        let backRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y < 0.63 }
+        let middleRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.63 && $0.footPointRatio.y < 0.82 }
+        let frontRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.82 }
+
+        XCTAssertEqual(backRowSlots.count, 3)
+        XCTAssertEqual(middleRowSlots.count, 4)
+        XCTAssertEqual(frontRowSlots.count, 2)
 
         XCTAssertEqual(CabinAnimalLayout.slot(for: "moji_cat")?.side, .leftLarge)
         XCTAssertEqual(CabinAnimalLayout.slot(for: "dengdeng_rabbit")?.side, .rightSmall)
@@ -41,20 +43,10 @@ final class CabinViewModelTests: XCTestCase {
             XCTAssertEqual(frame.maxY, footPoint.y, accuracy: 0.01)
             XCTAssertGreaterThanOrEqual(frame.minX, 0)
             XCTAssertLessThanOrEqual(frame.maxX, sceneSize.width)
-            XCTAssertGreaterThan(frame.height / sceneSize.height, 0.10)
-            XCTAssertLessThan(frame.height / sceneSize.height, 0.12)
-
-            switch slot.floor {
-            case .top:
-                XCTAssertGreaterThan(slot.footPointRatio.y, 0.38)
-                XCTAssertLessThan(slot.footPointRatio.y, 0.41)
-            case .middle:
-                XCTAssertGreaterThan(slot.footPointRatio.y, 0.64)
-                XCTAssertLessThan(slot.footPointRatio.y, 0.69)
-            case .bottom:
-                XCTAssertGreaterThan(slot.footPointRatio.y, 0.94)
-                XCTAssertLessThan(slot.footPointRatio.y, 0.97)
-            }
+            XCTAssertGreaterThanOrEqual(frame.height / sceneSize.height, 0.15)
+            XCTAssertLessThanOrEqual(frame.height / sceneSize.height, 0.19)
+            XCTAssertGreaterThanOrEqual(slot.footPointRatio.y, 0.56)
+            XCTAssertLessThanOrEqual(slot.footPointRatio.y, 0.89)
         }
     }
 

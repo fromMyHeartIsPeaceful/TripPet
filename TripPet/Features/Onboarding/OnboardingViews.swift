@@ -9,7 +9,7 @@ struct AppRootView: View {
             if isPreparing {
                 LoadingStoryView()
             } else if environment.repository.userFlags.onboardingCompleted == false {
-                ComicStoryView(
+                OnboardingView(
                     onFinished: {
                         environment.repository.completeOnboarding()
                     }
@@ -57,126 +57,40 @@ struct LoadingStoryView: View {
     }
 }
 
-struct ComicStoryView: View {
-    private static let imageNames = (1...11).map { String(format: "story_comic_%02d", $0) }
-    private static let arrowInitialOpacity = 0.0
-    private static let arrowFadeDuration = 2.0
-    private static let arrowEnableDelay: UInt64 = 2_000_000_000
-
-    @State private var currentIndex = 0
-    @State private var arrowOpacity = arrowInitialOpacity
-    @State private var isArrowEnabled = false
-
+struct OnboardingView: View {
     var onFinished: () -> Void
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                AppTheme.paperWhite
-                    .ignoresSafeArea()
+        ZStack {
+            PaperBackground()
 
-                ArtImage(name: Self.imageNames[currentIndex], contentMode: .fill)
-                    .frame(
-                        width: proxy.size.width,
-                        height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom,
-                        alignment: storyImageAlignment
-                    )
-                    .clipped()
-                    .ignoresSafeArea()
-                    .id(currentIndex)
-                    .transition(.opacity)
+            VStack(spacing: 28) {
+                Spacer(minLength: 32)
 
-                HStack {
-                    Spacer()
+                VStack(spacing: 14) {
+                    Text(AppCopy.Onboarding.title)
+                        .font(AppTheme.pageTitle)
+                        .foregroundStyle(AppTheme.ink)
+                        .multilineTextAlignment(.center)
 
-                    Button {
-                        advanceStory()
-                    } label: {
-                        ComicNextArrow()
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(isArrowEnabled == false)
-                    .opacity(arrowOpacity)
-                    .accessibilityLabel(currentIndex == Self.imageNames.count - 1 ? "进入健康授权" : "下一张剧情")
-                    .accessibilityHint("继续步履小屋的启动剧情")
+                    Text(AppCopy.Onboarding.body)
+                        .font(AppTheme.sheetDescription)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineSpacing(6)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.trailing, max(18, proxy.safeAreaInsets.trailing + 14))
-                .padding(.top, proxy.safeAreaInsets.top + 24)
-                .padding(.bottom, proxy.safeAreaInsets.bottom + 24)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+
+                Button(AppCopy.Onboarding.startButton) {
+                    onFinished()
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .padding(.top, 6)
+
+                Spacer(minLength: 32)
             }
-            .ignoresSafeArea()
+            .padding(.horizontal, 28)
         }
-        .animation(.easeInOut(duration: 0.24), value: currentIndex)
-        .task(id: currentIndex) {
-            await revealArrowAfterDelay()
-        }
-    }
-
-    private func advanceStory() {
-        guard isArrowEnabled else { return }
-
-        if currentIndex == Self.imageNames.count - 1 {
-            onFinished()
-        } else {
-            currentIndex += 1
-        }
-    }
-
-    private var storyImageAlignment: Alignment {
-        currentIndex == 5 ? .trailing : .center
-    }
-
-    @MainActor
-    private func revealArrowAfterDelay() async {
-        arrowOpacity = Self.arrowInitialOpacity
-        isArrowEnabled = false
-
-        withAnimation(.easeInOut(duration: Self.arrowFadeDuration)) {
-            arrowOpacity = 1
-        }
-
-        try? await Task.sleep(nanoseconds: Self.arrowEnableDelay)
-        guard Task.isCancelled == false else { return }
-        isArrowEnabled = true
-    }
-}
-
-private struct ComicNextArrow: View {
-    @Environment(\.isEnabled) private var isEnabled
-
-    var body: some View {
-        Image(systemName: "chevron.right")
-            .font(.system(size: 30, weight: .heavy, design: .rounded))
-            .foregroundStyle(AppTheme.ink)
-            .frame(width: 58, height: 74)
-            .background {
-                Capsule(style: .continuous)
-                    .fill(Color(red: 0.98, green: 0.82, blue: 0.42))
-                    .overlay {
-                        Capsule(style: .continuous)
-                            .fill(AppTheme.paperWhite.opacity(0.28))
-                            .padding(7)
-                            .offset(x: -6, y: -10)
-                    }
-                    .overlay {
-                        Capsule(style: .continuous)
-                            .stroke(AppTheme.ink.opacity(0.82), lineWidth: 2)
-                    }
-                    .shadow(color: .black.opacity(isEnabled ? 0.24 : 0.1), radius: 10, x: 0, y: 5)
-            }
-            .overlay(alignment: .bottomTrailing) {
-                Circle()
-                    .fill(AppTheme.peach)
-                    .frame(width: 13, height: 13)
-                    .overlay {
-                        Circle()
-                            .stroke(AppTheme.ink.opacity(0.58), lineWidth: 1)
-                    }
-                    .offset(x: 1, y: 1)
-            }
-            .scaleEffect(isEnabled ? 1 : 0.96)
-            .contentShape(Capsule(style: .continuous))
     }
 }
 

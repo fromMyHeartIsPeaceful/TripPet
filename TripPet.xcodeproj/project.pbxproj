@@ -50,6 +50,8 @@
 		B00000000000000000000029 /* LXGWWenKaiScreen.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* LXGWWenKaiScreen.ttf */; };
 		B0000000000000000000002A /* AnimalAnimations in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002E /* AnimalAnimations */; };
 		B0000000000000000000002B /* PostcardNotificationDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002F /* PostcardNotificationDiagnostics.swift */; };
+		B0000000000000000000002C /* FullScreenDepartureTransitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000030 /* FullScreenDepartureTransitionView.swift */; };
+		B0000000000000000000002D /* DepartureTransitions in Resources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000031 /* DepartureTransitions */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +112,8 @@
 		F0000000000000000000002D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0000000000000000000002E /* AnimalAnimations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AnimalAnimations; sourceTree = "<group>"; };
 		F0000000000000000000002F /* PostcardNotificationDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationDiagnostics.swift; sourceTree = "<group>"; };
+		F00000000000000000000030 /* FullScreenDepartureTransitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPet/Features/Cabin/FullScreenDepartureTransitionView.swift; sourceTree = SOURCE_ROOT; };
+		F00000000000000000000031 /* DepartureTransitions */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DepartureTransitions; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -235,6 +239,7 @@
 			children = (
 				F00000000000000000000012 /* CabinViewModel.swift */,
 				F00000000000000000000013 /* CabinView.swift */,
+				F00000000000000000000030 /* FullScreenDepartureTransitionView.swift */,
 				F00000000000000000000014 /* CabinSceneView.swift */,
 				F00000000000000000000015 /* MailboxViewModel.swift */,
 				F00000000000000000000016 /* MailboxView.swift */,
@@ -255,6 +260,7 @@
 				F0000000000000000000002D /* Info.plist */,
 				F0000000000000000000001B /* Assets.xcassets */,
 				F0000000000000000000002E /* AnimalAnimations */,
+				F00000000000000000000031 /* DepartureTransitions */,
 				F0000000000000000000002C /* LXGWWenKaiScreen.ttf */,
 			);
 			path = Resources;
@@ -361,6 +367,7 @@
 				B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */,
 				B0000000000000000000001B /* Assets.xcassets in Resources */,
 				B0000000000000000000002A /* AnimalAnimations in Resources */,
+				B0000000000000000000002D /* DepartureTransitions in Resources */,
 				B00000000000000000000029 /* LXGWWenKaiScreen.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -405,6 +412,7 @@
 				B00000000000000000000011 /* LineArtComponents.swift in Sources */,
 				B00000000000000000000012 /* CabinViewModel.swift in Sources */,
 				B00000000000000000000013 /* CabinView.swift in Sources */,
+				B0000000000000000000002C /* FullScreenDepartureTransitionView.swift in Sources */,
 				B00000000000000000000014 /* CabinSceneView.swift in Sources */,
 				B00000000000000000000015 /* MailboxViewModel.swift in Sources */,
 				B00000000000000000000016 /* MailboxView.swift in Sources */,

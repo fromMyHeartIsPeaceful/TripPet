@@ -3,54 +3,35 @@ import UIKit
 
 private let ticketGiftSheetHeight: CGFloat = 430
 private let cabinSceneHorizontalPadding: CGFloat = 0
-private let cabinSceneTopPadding: CGFloat = 140
+private let cabinSceneTopPadding: CGFloat = 112
 private let cabinSceneWidthScale: CGFloat = 1.0
 private let cabinSceneHorizontalOffset: CGFloat = 0
 private let cabinSceneDayVerticalCorrection: CGFloat = 12
-private let bottomGlassBlendHeight: CGFloat = 360
 private let compactActionCardHorizontalPadding: CGFloat = 28
 private let compactActionCardBottomPadding: CGFloat = 8
+private let fullscreenActionCardBottomPadding: CGFloat = 72
 private let cabinSceneImageHeightMultiplier: CGFloat = 1455.0 / 1254.0
 
 struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @StateObject private var viewModel = CabinViewModel()
+    @State private var departureTransitionContext: DepartureTransitionContext?
+    @State private var queuedDepartureTransitionContext: DepartureTransitionContext?
 
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                cabinBackground
-
-                GeometryReader { proxy in
-                    let sceneWidth = (proxy.size.width - cabinSceneHorizontalPadding * 2) * cabinSceneWidthScale
-                    let sceneHeight = sceneWidth * cabinSceneImageHeightMultiplier
-
-                    VStack(spacing: 0) {
-                        CabinSceneView(
-                            animals: environment.repository.cabinAnimals,
-                            isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit,
-                            cabinAssetName: cabinHouseAssetName,
-                            preservesAspectRatio: false
-                        )
-                        .frame(width: sceneWidth, height: sceneHeight)
-                        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                        .shadow(color: Color.black.opacity(isSystemDark ? 0.30 : 0.12), radius: 12, x: 0, y: 8)
-                        .frame(maxWidth: .infinity)
-                        .offset(x: cabinSceneHorizontalOffset)
-
-                        Spacer(minLength: 0)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                if isSystemDark {
+                    cabinBackground
+                    nightCabinScene
+                } else {
+                    fullscreenDayCabinScene
                 }
-                .padding(.top, cabinSceneTopPadding + cabinSceneVerticalCorrection)
-                .ignoresSafeArea(edges: .top)
-
-                bottomGlassBlend
 
                 actionCard
-                    .padding(.horizontal, compactActionCardHorizontalPadding)
-                    .padding(.bottom, compactActionCardBottomPadding)
+                    .padding(.horizontal, actionCardHorizontalPadding)
+                    .padding(.bottom, actionCardBottomPadding)
 
             }
             .navigationBarHidden(true)
@@ -64,6 +45,10 @@ struct CabinView: View {
                 item: $viewModel.pendingGiftConfirmation,
                 onDismiss: {
                     viewModel.finishGiftFlow()
+                    if let context = queuedDepartureTransitionContext {
+                        queuedDepartureTransitionContext = nil
+                        departureTransitionContext = context
+                    }
                 }
             ) { confirmation in
                 TicketGiftConfirmationView(
@@ -74,7 +59,10 @@ struct CabinView: View {
                     isWorking: viewModel.isWorking,
                     onConfirm: { animalId in
                         Task {
-                            await viewModel.confirmGiftTodaySteps(animalId: animalId)
+                            if let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId) {
+                                queuedDepartureTransitionContext = departureContext(for: trip)
+                                viewModel.finishGiftFlow()
+                            }
                         }
                     },
                     onDone: {
@@ -87,7 +75,57 @@ struct CabinView: View {
                 .presentationDetents([.height(ticketGiftSheetHeight)])
                 .presentationDragIndicator(.visible)
             }
+            .fullScreenCover(item: $departureTransitionContext) { context in
+                FullScreenDepartureTransitionView(context: context) {
+                    departureTransitionContext = nil
+                }
+            }
         }
+    }
+
+    private var fullscreenDayCabinScene: some View {
+        GeometryReader { proxy in
+            CabinSceneView(
+                animals: dayCabinSceneAnimals,
+                isEmpty: dayCabinSceneAnimals.isEmpty,
+                cabinAssetName: cabinHouseAssetName,
+                cabinContentMode: .fill,
+                preservesAspectRatio: false
+            )
+            .frame(
+                width: proxy.size.width,
+                height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+            )
+            .offset(y: -proxy.safeAreaInsets.top)
+            .clipped()
+        }
+        .ignoresSafeArea()
+    }
+
+    private var nightCabinScene: some View {
+        GeometryReader { proxy in
+            let sceneWidth = (proxy.size.width - cabinSceneHorizontalPadding * 2) * cabinSceneWidthScale
+            let sceneHeight = sceneWidth * cabinSceneImageHeightMultiplier
+
+            VStack(spacing: 0) {
+                CabinSceneView(
+                    animals: environment.repository.cabinAnimals,
+                    isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit,
+                    cabinAssetName: cabinHouseAssetName,
+                    preservesAspectRatio: false
+                )
+                .frame(width: sceneWidth, height: sceneHeight)
+                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .shadow(color: Color.black.opacity(0.30), radius: 12, x: 0, y: 8)
+                .frame(maxWidth: .infinity)
+                .offset(x: cabinSceneHorizontalOffset)
+
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        .padding(.top, cabinSceneTopPadding + cabinSceneVerticalCorrection)
+        .ignoresSafeArea(edges: .top)
     }
 
     private var cabinBackground: some View {
@@ -103,38 +141,6 @@ struct CabinView: View {
         .ignoresSafeArea()
     }
 
-    private var bottomGlassBlend: some View {
-        Rectangle()
-            .fill(.ultraThinMaterial)
-            .overlay {
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(isSystemDark ? 0.02 : 0.06),
-                        Color.white.opacity(isSystemDark ? 0.08 : 0.16),
-                        Color.white.opacity(isSystemDark ? 0.12 : 0.22)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            }
-            .mask {
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.0),
-                        .init(color: .black.opacity(0.22), location: 0.18),
-                        .init(color: .black.opacity(0.74), location: 0.54),
-                        .init(color: .black, location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            }
-            .frame(height: bottomGlassBlendHeight)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            .ignoresSafeArea(edges: .bottom)
-            .allowsHitTesting(false)
-    }
-
     private var isSystemDark: Bool {
         colorScheme == .dark
     }
@@ -143,17 +149,40 @@ struct CabinView: View {
         isSystemDark ? 0 : cabinSceneDayVerticalCorrection
     }
 
+    private var actionCardHorizontalPadding: CGFloat {
+        compactActionCardHorizontalPadding
+    }
+
+    private var actionCardBottomPadding: CGFloat {
+        isSystemDark ? compactActionCardBottomPadding : fullscreenActionCardBottomPadding
+    }
+
     private var cabinBackgroundAssetName: String {
         isSystemDark ? "cabin_bg_night_full" : "cabin_bg_day_full"
     }
 
     private var cabinHouseAssetName: String {
-        isSystemDark ? "cabin_house_night_lit" : "cabin_house_day_natural"
+        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_fullscreen"
+    }
+
+    private var dayCabinSceneAnimals: [Animal] {
+        CabinAnimalLayout.slots.compactMap { slot in
+            environment.repository.animal(for: slot.animalId)
+        }
     }
 
     private func confirmedAnimalAssetName(for trip: Trip?) -> String? {
         guard let trip else { return nil }
         return environment.repository.animal(for: trip.animalId)?.travelMarkerAssetName ?? "animal_visitor_unknown"
+    }
+
+    private func departureContext(for trip: Trip) -> DepartureTransitionContext {
+        DepartureTransitionContext(
+            animalId: trip.animalId,
+            animalName: environment.repository.animalName(for: trip.animalId),
+            animalAssetName: environment.repository.animal(for: trip.animalId)?.travelMarkerAssetName ?? "animal_visitor_unknown",
+            destination: trip.destination
+        )
     }
 
     private var actionCard: some View {

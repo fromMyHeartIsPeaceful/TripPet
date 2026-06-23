@@ -9,6 +9,7 @@ struct RootTabView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             selectedContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.bottom, contentBottomReserve)
 
             RootBottomTabBar(
@@ -18,11 +19,8 @@ struct RootTabView: View {
             )
         }
         .background {
-            if selectedTab == .cabin {
+            if selectedTab == .cabin && colorScheme == .dark {
                 ArtImage(name: cabinBackgroundAssetName, contentMode: .fill)
-                    .ignoresSafeArea()
-            } else if selectedTab == .map {
-                ArtImage(name: "world_travel_map", contentMode: .fill)
                     .ignoresSafeArea()
             }
         }
@@ -72,7 +70,7 @@ struct RootTabView: View {
     private var contentBottomReserve: CGFloat {
         switch selectedTab {
         case .cabin:
-            58
+            0
         case .map:
             28
         case .mailbox:

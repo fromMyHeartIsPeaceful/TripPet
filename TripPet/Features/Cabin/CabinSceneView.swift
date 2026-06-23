@@ -55,66 +55,66 @@ struct CabinAnimalLayout {
             animalId: "xiaoman_hamster",
             floor: .top,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.315, y: 0.397),
-            heightRatio: 0.112
+            footPointRatio: CGPoint(x: 0.315, y: 0.505),
+            heightRatio: 0.062
         ),
         Slot(
             animalId: "moji_cat",
             floor: .top,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.485, y: 0.397),
-            heightRatio: 0.108
+            footPointRatio: CGPoint(x: 0.500, y: 0.435),
+            heightRatio: 0.060
         ),
         Slot(
             animalId: "dengdeng_rabbit",
             floor: .top,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.785, y: 0.385),
-            heightRatio: 0.105,
+            footPointRatio: CGPoint(x: 0.695, y: 0.505),
+            heightRatio: 0.062,
             isMirrored: true
         ),
         Slot(
             animalId: "tangyuan_puppy",
             floor: .middle,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.335, y: 0.672),
-            heightRatio: 0.116
+            footPointRatio: CGPoint(x: 0.195, y: 0.610),
+            heightRatio: 0.070
         ),
         Slot(
             animalId: "xiaolu_guinea_pig",
             floor: .middle,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.555, y: 0.674),
-            heightRatio: 0.111
+            footPointRatio: CGPoint(x: 0.395, y: 0.617),
+            heightRatio: 0.066
         ),
         Slot(
             animalId: "bear_visitor",
             floor: .middle,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.782, y: 0.655),
-            heightRatio: 0.107,
+            footPointRatio: CGPoint(x: 0.600, y: 0.617),
+            heightRatio: 0.068,
             isMirrored: true
         ),
         Slot(
             animalId: "deer_visitor",
             floor: .bottom,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.345, y: 0.960),
-            heightRatio: 0.116
+            footPointRatio: CGPoint(x: 0.805, y: 0.610),
+            heightRatio: 0.066
         ),
         Slot(
             animalId: "fox_visitor",
             floor: .bottom,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.555, y: 0.957),
-            heightRatio: 0.112
+            footPointRatio: CGPoint(x: 0.355, y: 0.668),
+            heightRatio: 0.070
         ),
         Slot(
             animalId: "feifei_parrot",
             floor: .bottom,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.802, y: 0.944),
-            heightRatio: 0.102
+            footPointRatio: CGPoint(x: 0.655, y: 0.668),
+            heightRatio: 0.066
         )
     ]
 
@@ -212,7 +212,7 @@ enum CabinAnimalAnimationCatalog {
 }
 
 struct CabinSceneView: View {
-    private let sceneAspectRatio: CGFloat = 1254.0 / 1455.0
+    private let sceneAspectRatio: CGFloat = 1254.0 / 2712.0
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isBreathing = false
@@ -220,6 +220,7 @@ struct CabinSceneView: View {
     var animals: [Animal]
     var isEmpty: Bool = false
     var cabinAssetName: String = "cabin_room_base_night_cutaway"
+    var cabinContentMode: ArtImage.ContentMode = .fit
     var preservesAspectRatio: Bool = true
 
     var body: some View {
@@ -250,7 +251,7 @@ struct CabinSceneView: View {
             let placements = CabinAnimalLayout.placements(for: Array(animals.prefix(9)))
 
             ZStack {
-                ArtImage(name: cabinAssetName, contentMode: .fit)
+                ArtImage(name: cabinAssetName, contentMode: cabinContentMode)
                     .frame(width: size.width, height: size.height)
 
                 if isEmpty == false {
