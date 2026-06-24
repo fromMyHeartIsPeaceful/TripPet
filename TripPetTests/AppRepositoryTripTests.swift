@@ -474,6 +474,59 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertTrue(restoredRepository.postcards.first?.isRead ?? false)
     }
 
+    func testMarkPostcardReadIsIdempotentAndSkipsUnneededPersistence() throws {
+        let seed = Self.makeSeed(postcards: [
+            Self.makePostcard(id: "postcard-unread", isRead: false)
+        ])
+        let store = CountingUserStateStore(state: AppUserState(seed: seed))
+        let repository = AppRepository(seed: seed, store: store)
+        let postcard = try XCTUnwrap(repository.postcards.first)
+
+        XCTAssertTrue(repository.markPostcardRead(postcard))
+        XCTAssertTrue(repository.postcards.first?.isRead ?? false)
+        XCTAssertEqual(store.markPostcardReadCount, 1)
+        XCTAssertEqual(store.saveCount, 0)
+
+        let readPostcard = try XCTUnwrap(repository.postcards.first)
+        XCTAssertFalse(repository.markPostcardRead(readPostcard))
+        XCTAssertFalse(repository.markPostcardRead(Self.makePostcard(id: "missing", isRead: false)))
+        XCTAssertEqual(store.markPostcardReadCount, 1)
+        XCTAssertEqual(store.saveCount, 0)
+    }
+
+    func testSwiftDataStoreTargetedPostcardReadUpdateKeepsOtherState() throws {
+        let store = try SwiftDataUserStateStore(inMemory: true)
+        let seed = Self.makeSeed()
+        let repository = AppRepository(seed: seed, store: store)
+        let scheduler = PostcardScheduler()
+        let destination = try XCTUnwrap(seed.destinations.first)
+
+        repository.completeOnboarding()
+        repository.dismissHealthGuide()
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(hour: 11))
+
+        let trip = try XCTUnwrap(repository.activeTrip)
+        let animal = try XCTUnwrap(repository.residentAnimal)
+        let postcard = scheduler.makePostcard(
+            for: trip,
+            animal: animal,
+            destination: destination,
+            on: Self.date(day: 4, hour: 8)
+        )
+        XCTAssertTrue(repository.completeTrip(trip, postcard: postcard))
+        XCTAssertTrue(repository.markPostcardRead(postcard))
+
+        let restoredRepository = AppRepository(seed: seed, store: store)
+
+        XCTAssertTrue(restoredRepository.userFlags.onboardingCompleted)
+        XCTAssertTrue(restoredRepository.userFlags.healthGuideDismissed)
+        XCTAssertEqual(restoredRepository.tickets.count, 1)
+        XCTAssertEqual(restoredRepository.trips.first?.status, .completed)
+        XCTAssertEqual(restoredRepository.travelWishes.first?.status, .completed)
+        XCTAssertEqual(restoredRepository.postcards.first?.tripId, trip.id)
+        XCTAssertTrue(restoredRepository.postcards.first?.isRead ?? false)
+    }
+
     func testSwiftDataStoreDoesNotHydrateSeedPostcardsForEmptyMailbox() throws {
         let store = try SwiftDataUserStateStore(inMemory: true)
         let seed = Self.makeSeed(postcards: SeedData.previewPostcards)
@@ -947,6 +1000,25 @@ final class AppRepositoryTripTests: XCTestCase {
         )
     }
 
+    private static func makePostcard(id: String, isRead: Bool) -> Postcard {
+        Postcard(
+            id: id,
+            tripId: "trip-\(id)",
+            destination: "巴黎",
+            title: "小猫寄来的巴黎早安",
+            body: "小猫在巴黎的街角停了一会儿。",
+            imageAssetName: "postcard_destination_paris",
+            templateAssetName: "postcard_template_classic",
+            destinationAssetName: "postcard_destination_paris",
+            stampAssetName: "postcard_stamp_paris",
+            animalAssetName: "animal_cat_selfie",
+            envelopeAssetName: "envelope_unread",
+            sentAt: date(day: 1, hour: 12),
+            subtitle: "旅途中寄来",
+            isRead: isRead
+        )
+    }
+
     private static func fixedScheduler() -> PostcardScheduler {
         PostcardScheduler(randomOffset: { $0.lowerBound })
     }
@@ -959,5 +1031,31 @@ final class AppRepositoryTripTests: XCTestCase {
             day: day,
             hour: hour
         ).date!
+    }
+}
+
+@MainActor
+private final class CountingUserStateStore: AppUserStateStore {
+    private var state: AppUserState
+    private(set) var saveCount = 0
+    private(set) var markPostcardReadCount = 0
+
+    init(state: AppUserState) {
+        self.state = state
+    }
+
+    func load(seed _: SeedData) -> AppUserState {
+        state
+    }
+
+    func save(_ state: AppUserState) {
+        saveCount += 1
+        self.state = state
+    }
+
+    func markPostcardRead(postcardId: String) {
+        guard let index = state.postcards.firstIndex(where: { $0.id == postcardId }) else { return }
+        markPostcardReadCount += 1
+        state.postcards[index].isRead = true
     }
 }

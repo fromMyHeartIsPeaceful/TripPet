@@ -16,9 +16,9 @@ final class CabinViewModelTests: XCTestCase {
             "feifei_parrot"
         ])
 
-        let backRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y < 0.63 }
-        let middleRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.63 && $0.footPointRatio.y < 0.70 }
-        let frontRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.70 }
+        let backRowSlots = CabinAnimalLayout.slots.filter { $0.floor == .top }
+        let middleRowSlots = CabinAnimalLayout.slots.filter { $0.floor == .middle }
+        let frontRowSlots = CabinAnimalLayout.slots.filter { $0.floor == .bottom }
 
         XCTAssertEqual(backRowSlots.count, 3)
         XCTAssertEqual(middleRowSlots.count, 4)
@@ -33,21 +33,114 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(CabinAnimalLayout.slot(for: "moji_cat")?.isMirrored, false)
     }
 
-    func testCabinAnimalLayoutAnchorsAnimalsToRoomSurfaces() {
-        let sceneSize = CGSize(width: 1254, height: 1455)
+    func testCabinAnimalLayoutUsesExpandedFullscreenCoordinates() {
+        let expected: [String: (CGPoint, CGFloat)] = [
+            "xiaoman_hamster": (CGPoint(x: 0.205, y: 0.478), 0.120),
+            "moji_cat": (CGPoint(x: 0.500, y: 0.452), 0.126),
+            "dengdeng_rabbit": (CGPoint(x: 0.749, y: 0.458), 0.120),
+            "tangyuan_puppy": (CGPoint(x: 0.125, y: 0.615), 0.120),
+            "xiaolu_guinea_pig": (CGPoint(x: 0.365, y: 0.635), 0.114),
+            "bear_visitor": (CGPoint(x: 0.635, y: 0.635), 0.120),
+            "deer_visitor": (CGPoint(x: 0.875, y: 0.646), 0.124),
+            "fox_visitor": (CGPoint(x: 0.260, y: 0.700), 0.138),
+            "feifei_parrot": (CGPoint(x: 0.740, y: 0.700), 0.116)
+        ]
 
-        for slot in CabinAnimalLayout.slots {
-            let frame = slot.frame(in: sceneSize, aspectRatio: 0.9)
-            let footPoint = slot.footPoint(in: sceneSize)
+        for (animalId, expectedValues) in expected {
+            let slot = CabinAnimalLayout.slot(for: animalId, in: CabinAnimalLayout.fullscreenDayRoom)
+            XCTAssertEqual(slot?.footPointRatio.x ?? 0, expectedValues.0.x, accuracy: 0.001)
+            XCTAssertEqual(slot?.footPointRatio.y ?? 0, expectedValues.0.y, accuracy: 0.001)
+            XCTAssertEqual(slot?.heightRatio ?? 0, expectedValues.1, accuracy: 0.001)
+        }
+
+        let cat = CabinAnimalLayout.slot(for: "moji_cat", in: CabinAnimalLayout.fullscreenDayRoom)
+        let hamster = CabinAnimalLayout.slot(for: "xiaoman_hamster", in: CabinAnimalLayout.fullscreenDayRoom)
+        let rabbit = CabinAnimalLayout.slot(for: "dengdeng_rabbit", in: CabinAnimalLayout.fullscreenDayRoom)
+        XCTAssertLessThan(cat?.footPointRatio.y ?? 1, hamster?.footPointRatio.y ?? 0)
+        XCTAssertLessThan(cat?.footPointRatio.y ?? 1, rabbit?.footPointRatio.y ?? 0)
+    }
+
+    func testCabinAnimalLayoutAnchorsAnimalsToRoomSurfaces() {
+        let profile = CabinAnimalLayout.fullscreenDayRoom
+        let sceneSize = profile.sourceSize
+        let renderedRect = profile.renderedRect(in: sceneSize, contentMode: .fit)
+
+        for slot in profile.slots {
+            let frame = slot.frame(in: renderedRect, aspectRatio: 0.9, verticalLiftRatio: 0)
+            let footPoint = slot.footPoint(in: renderedRect, verticalLiftRatio: 0)
 
             XCTAssertEqual(frame.maxY, footPoint.y, accuracy: 0.01)
             XCTAssertGreaterThanOrEqual(frame.minX, 0)
             XCTAssertLessThanOrEqual(frame.maxX, sceneSize.width)
             XCTAssertGreaterThanOrEqual(frame.height / sceneSize.height, 0.10)
-            XCTAssertLessThanOrEqual(frame.height / sceneSize.height, 0.13)
-            XCTAssertGreaterThanOrEqual(slot.footPointRatio.y, 0.56)
-            XCTAssertLessThanOrEqual(slot.footPointRatio.y, 0.75)
+            XCTAssertLessThanOrEqual(frame.height / sceneSize.height, 0.14)
+            XCTAssertGreaterThanOrEqual(slot.footPointRatio.y, 0.42)
+            XCTAssertLessThanOrEqual(slot.footPointRatio.y, 0.70)
         }
+    }
+
+    func testCabinAnimalLayoutKeepsRowsStaggeredInFullscreenProfile() {
+        let profile = CabinAnimalLayout.fullscreenDayRoom
+        let topSlots = profile.slots.filter { $0.floor == .top }
+        let middleSlots = profile.slots.filter { $0.floor == .middle }
+        let bottomSlots = profile.slots.filter { $0.floor == .bottom }
+
+        XCTAssertLessThan(topSlots.map(\.footPointRatio.y).max() ?? 1, middleSlots.map(\.footPointRatio.y).min() ?? 0)
+        XCTAssertLessThan(middleSlots.map(\.footPointRatio.y).max() ?? 1, bottomSlots.map(\.footPointRatio.y).min() ?? 0)
+
+        for slot in profile.slots {
+            XCTAssertGreaterThanOrEqual(slot.footPointRatio.x, 0.10)
+            XCTAssertLessThanOrEqual(slot.footPointRatio.x, 0.90)
+        }
+    }
+
+    func testCabinAnimalLayoutMapsSourceCoordinatesAfterFillCropping() {
+        let profile = CabinAnimalLayout.fullscreenDayRoom
+        let containerSizes = [
+            CGSize(width: 320, height: 568),
+            CGSize(width: 390, height: 844),
+            CGSize(width: 430, height: 932)
+        ]
+
+        for containerSize in containerSizes {
+            let renderedRect = profile.renderedRect(in: containerSize, contentMode: .fill)
+            XCTAssertLessThanOrEqual(renderedRect.minX, 0)
+            XCTAssertLessThanOrEqual(renderedRect.minY, 0)
+            XCTAssertGreaterThanOrEqual(renderedRect.maxX, containerSize.width)
+            XCTAssertGreaterThanOrEqual(renderedRect.maxY, containerSize.height)
+
+            for slot in profile.slots {
+                let footPoint = slot.footPoint(in: renderedRect, verticalLiftRatio: 0)
+                let mappedRatio = CGPoint(
+                    x: (footPoint.x - renderedRect.minX) / renderedRect.width,
+                    y: (footPoint.y - renderedRect.minY) / renderedRect.height
+                )
+                XCTAssertEqual(mappedRatio.x, slot.footPointRatio.x, accuracy: 0.001)
+                XCTAssertEqual(mappedRatio.y, slot.footPointRatio.y, accuracy: 0.001)
+            }
+        }
+    }
+
+    func testBottomChromePositionsActionCardAboveTabBar() {
+        XCTAssertEqual(BottomChromeMetrics.tabBarBottomPadding, 20)
+        XCTAssertEqual(BottomChromeMetrics.tabBarHeight, 60)
+        XCTAssertEqual(BottomChromeMetrics.actionCardToTabBarGap, 12)
+        XCTAssertEqual(BottomChromeMetrics.actionCardDistanceFromRootBottom, 92)
+
+        let metrics = BottomChromeMetrics(containerHeight: 844, bottomSafeAreaInset: 34)
+        XCTAssertEqual(metrics.actionCardBottomPadding, 58)
+        XCTAssertEqual(metrics.actionCardVerticalPadding(isWaitingForAnimal: true), 14)
+        XCTAssertEqual(metrics.actionCardVerticalPadding(isWaitingForAnimal: false), 10)
+    }
+
+    func testBottomChromeDoesNotAutoLiftAnimalGroup() {
+        let shortMetrics = BottomChromeMetrics(containerHeight: 568)
+        let mediumMetrics = BottomChromeMetrics(containerHeight: 760)
+        let tallMetrics = BottomChromeMetrics(containerHeight: 932)
+
+        XCTAssertEqual(shortMetrics.animalGroupLiftRatio, 0, accuracy: 0.001)
+        XCTAssertEqual(mediumMetrics.animalGroupLiftRatio, 0, accuracy: 0.001)
+        XCTAssertEqual(tallMetrics.animalGroupLiftRatio, 0, accuracy: 0.001)
     }
 
     func testCabinAnimalLayoutKeepsRemainingCanonicalAnimalsInFixedSlots() {
@@ -441,7 +534,9 @@ final class CabinViewModelTests: XCTestCase {
         await viewModel.connectHealth()
 
         XCTAssertEqual(environment.stepSnapshot.steps, 3_456)
-        XCTAssertTrue(viewModel.actionMessage.contains("3456 步"))
+        XCTAssertEqual(viewModel.stepStatusText, "Health 已连接")
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 3_456)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
     }
 
     func testSuccessfulHealthAuthorizationDoesNotFailWhenInitialStepReadFails() async throws {
@@ -480,9 +575,238 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
         XCTAssertNil(environment.stepSnapshot.steps)
-        XCTAssertNotNil(environment.stepSnapshot.errorMessage)
         XCTAssertEqual(viewModel.stepStatusText, "Health 已连接")
+        XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
         XCTAssertFalse(viewModel.actionMessage.contains("失败"))
+    }
+
+    func testRequestStepAuthorizationOnlyDoesNotReadStepsSynchronously() async throws {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .notDetermined, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(seed: seed, store: InMemoryUserStateStore()),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+
+        let didRequest = try await environment.requestStepAuthorizationOnly()
+
+        XCTAssertTrue(didRequest)
+        XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
+        XCTAssertNil(environment.stepSnapshot.steps)
+        XCTAssertEqual(stepProvider.stepReadCount, 0)
+
+        await environment.refreshStepsIfPossible()
+
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_321)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+    }
+
+    func testRequestStepAuthorizationAndRefreshStillReadsStepsSynchronously() async throws {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .notDetermined, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(seed: seed, store: InMemoryUserStateStore()),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+
+        let didRequest = try await environment.requestStepAuthorizationAndRefresh()
+
+        XCTAssertTrue(didRequest)
+        XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_321)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+    }
+
+    func testEnsureTodayStepsLoadedReadsStepsOnHomeEntry() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.ensureTodayStepsLoaded()
+
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_321)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+        XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+    }
+
+    func testEnsureTodayStepsLoadedRetriesOnceAfterInitialReadFailure() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(
+            status: .readPermissionRequested,
+            readResults: [
+                .failure(.unableToReadSteps),
+                .success(3_210)
+            ]
+        )
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.ensureTodayStepsLoaded()
+
+        XCTAssertEqual(environment.stepSnapshot.steps, 3_210)
+        XCTAssertEqual(stepProvider.stepReadCount, 2)
+        XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+    }
+
+    func testEnsureTodayStepsLoadedShowsReconnectAfterTwoReadFailures() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(
+            status: .readPermissionRequested,
+            readResults: [
+                .failure(.unableToReadSteps),
+                .failure(.unableToReadSteps)
+            ]
+        )
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.ensureTodayStepsLoaded()
+
+        XCTAssertNil(environment.stepSnapshot.steps)
+        XCTAssertEqual(stepProvider.stepReadCount, 2)
+        XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertTrue(viewModel.requiresHealthConnection)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthReconnectPrompt)
+    }
+
+    func testEnsureTodayStepsLoadedShowsReconnectWhenUnauthorized() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .notDetermined, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.ensureTodayStepsLoaded()
+
+        XCTAssertNil(environment.stepSnapshot.steps)
+        XCTAssertEqual(stepProvider.stepReadCount, 0)
+        XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertTrue(viewModel.requiresHealthConnection)
+    }
+
+    func testEnsureTodayStepsLoadedTreatsZeroStepsAsSuccessfulRead() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 0)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.ensureTodayStepsLoaded()
+
+        XCTAssertEqual(environment.stepSnapshot.steps, 0)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+        XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 0)
     }
 
     func testReadPermissionRequestedPreservesStepReadMessage() async {
@@ -499,6 +823,54 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.stepStatusText, "Health 已请求")
         XCTAssertTrue(viewModel.actionMessage.contains("2999 步"))
+    }
+}
+
+private final class CountingStepProvider: StepCountProvider {
+    var status: StepCountAuthorizationStatus
+    var steps: Int
+    var readResults: [Result<Int, StepCountProviderError>]
+    private(set) var authorizationRequestCount = 0
+    private(set) var stepReadCount = 0
+
+    init(status: StepCountAuthorizationStatus, steps: Int) {
+        self.status = status
+        self.steps = steps
+        self.readResults = []
+    }
+
+    init(status: StepCountAuthorizationStatus, readResults: [Result<Int, StepCountProviderError>]) {
+        self.status = status
+        self.steps = 0
+        self.readResults = readResults
+    }
+
+    var isHealthDataAvailable: Bool {
+        status != .unavailable
+    }
+
+    func authorizationStatus() -> StepCountAuthorizationStatus {
+        status
+    }
+
+    func requestAuthorization() async throws -> Bool {
+        authorizationRequestCount += 1
+        status = .sharingAuthorized
+        return true
+    }
+
+    func todayStepCount() async throws -> Int {
+        stepReadCount += 1
+        if readResults.isEmpty == false {
+            switch readResults.removeFirst() {
+            case .success(let steps):
+                self.steps = steps
+                return steps
+            case .failure(let error):
+                throw error
+            }
+        }
+        return steps
     }
 }
 

@@ -27,6 +27,41 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
     }
 
+    func testLaunchPolicyShowsLaunchStoryOnColdActivation() {
+        let now = Date(timeIntervalSince1970: 1_000)
+
+        XCTAssertTrue(
+            AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
+                previousActivationAt: nil,
+                now: now
+            )
+        )
+    }
+
+    func testLaunchPolicySkipsLaunchStoryWithinHotLaunchGraceInterval() {
+        let previousActivationAt = Date(timeIntervalSince1970: 1_000)
+        let now = previousActivationAt.addingTimeInterval(29.9)
+
+        XCTAssertFalse(
+            AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
+                previousActivationAt: previousActivationAt,
+                now: now
+            )
+        )
+    }
+
+    func testLaunchPolicyShowsLaunchStoryAtHotLaunchGraceBoundary() {
+        let previousActivationAt = Date(timeIntervalSince1970: 1_000)
+        let now = previousActivationAt.addingTimeInterval(30)
+
+        XCTAssertTrue(
+            AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
+                previousActivationAt: previousActivationAt,
+                now: now
+            )
+        )
+    }
+
     func testEnvironmentConsumesQueuedNotificationTabRequest() {
         let notificationService = RootTabNotificationService()
         let environment = AppEnvironment.preview(postcardNotificationService: notificationService)
@@ -36,6 +71,36 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
         XCTAssertNil(environment.consumeNotificationTabRequest())
         XCTAssertNil(notificationService.requestedTab)
+    }
+
+    func testEnvironmentQueuesNotificationTabRequestUntilRootConsumesIt() {
+        let notificationService = RootTabNotificationService()
+        let environment = AppEnvironment.preview(postcardNotificationService: notificationService)
+
+        environment.queueNotificationTabRequest(.mailbox)
+
+        XCTAssertEqual(environment.notificationRequestedTab, .mailbox)
+        XCTAssertEqual(notificationService.requestedTab, .mailbox)
+        XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
+        XCTAssertNil(environment.notificationRequestedTab)
+        XCTAssertNil(notificationService.requestedTab)
+    }
+
+    func testNotificationTabRequestSurvivesLaunchStoryBeforeRootConsumesIt() {
+        let notificationService = RootTabNotificationService()
+        let environment = AppEnvironment.preview(postcardNotificationService: notificationService)
+
+        environment.queueNotificationTabRequest(.mailbox)
+        XCTAssertTrue(
+            AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
+                previousActivationAt: nil,
+                now: Date(timeIntervalSince1970: 1_000)
+            )
+        )
+
+        XCTAssertEqual(environment.notificationRequestedTab, .mailbox)
+        XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
+        XCTAssertNil(environment.consumeNotificationTabRequest())
     }
 
     func testPostcardSenderFallbackParsesTitleSender() {
