@@ -1,5 +1,6 @@
 import XCTest
 @testable import TripPet
+import simd
 
 @MainActor
 final class RootTabViewTests: XCTestCase {
@@ -84,6 +85,87 @@ final class RootTabViewTests: XCTestCase {
         let projected = projection.project(GlobeCoordinate(latitude: 0, longitude: 180))
 
         XCTAssertEqual(projected?.isVisible, false)
+    }
+
+    func testGlobeTrackballDragChangesLongitudeHorizontally() {
+        let orientation = GlobeOrientation(centerLatitude: 0, centerLongitude: 0)
+            .applyingTrackballDrag(
+                from: CGPoint(x: 100, y: 100),
+                to: CGPoint(x: 140, y: 100),
+                center: CGPoint(x: 100, y: 100),
+                radius: 80
+            )
+
+        XCTAssertLessThan(orientation.centerLongitude, -20)
+        XCTAssertGreaterThanOrEqual(orientation.centerLongitude, -180)
+        XCTAssertLessThanOrEqual(orientation.centerLongitude, 180)
+    }
+
+    func testGlobeTrackballVerticalDragCanCrossClampedLatitudeLimit() {
+        let orientation = GlobeOrientation(centerLatitude: 0, centerLongitude: 0)
+            .applyingTrackballDrag(
+                from: CGPoint(x: 100, y: 100),
+                to: CGPoint(x: 100, y: 20),
+                center: CGPoint(x: 100, y: 100),
+                radius: 80
+            )
+
+        XCTAssertLessThan(orientation.centerLatitude, -70)
+    }
+
+    func testGlobeTrackballDiagonalDragKeepsProjectedPointsInsideCircle() {
+        let orientation = GlobeOrientation(centerLatitude: 0, centerLongitude: 0)
+            .applyingTrackballDrag(
+                from: CGPoint(x: 100, y: 100),
+                to: CGPoint(x: 134, y: 132),
+                center: CGPoint(x: 100, y: 100),
+                radius: 80
+            )
+        let projection = GlobeProjection(center: CGPoint(x: 100, y: 100), radius: 80, orientation: orientation)
+
+        let projected = projection.project(orientation.forward.coordinate)
+
+        XCTAssertGreaterThan(abs(orientation.centerLatitude), 10)
+        XCTAssertGreaterThan(abs(orientation.centerLongitude), 10)
+        XCTAssertEqual(projected?.point.x ?? 0, 100, accuracy: 0.001)
+        XCTAssertEqual(projected?.point.y ?? 0, 100, accuracy: 0.001)
+    }
+
+    func testGlobeTrackballRotationKeepsBasisNormalizedAndBackHemisphereHidden() {
+        let orientation = GlobeOrientation(centerLatitude: 18, centerLongitude: 56)
+            .applyingTrackballDrag(
+                from: CGPoint(x: 80, y: 86),
+                to: CGPoint(x: 148, y: 34),
+                center: CGPoint(x: 100, y: 100),
+                radius: 80
+            )
+        let projection = GlobeProjection(center: CGPoint(x: 100, y: 100), radius: 80, orientation: orientation)
+        let centerCoordinate = orientation.forward.coordinate
+        let backLongitude = centerCoordinate.longitude > 0 ?
+            centerCoordinate.longitude - 180 :
+            centerCoordinate.longitude + 180
+        let backCoordinate = GlobeCoordinate(
+            latitude: -centerCoordinate.latitude,
+            longitude: backLongitude
+        )
+
+        XCTAssertEqual(orientation.right.length, 1, accuracy: 0.001)
+        XCTAssertEqual(orientation.up.length, 1, accuracy: 0.001)
+        XCTAssertEqual(orientation.forward.length, 1, accuracy: 0.001)
+        XCTAssertEqual(orientation.right.dot(orientation.up), 0, accuracy: 0.001)
+        XCTAssertEqual(orientation.right.dot(orientation.forward), 0, accuracy: 0.001)
+        XCTAssertEqual(orientation.up.dot(orientation.forward), 0, accuracy: 0.001)
+        XCTAssertEqual(projection.project(backCoordinate)?.isVisible, false)
+    }
+
+    func testGlobeOrientationSceneKitTransformFacesCenteredCoordinateForward() {
+        let orientation = GlobeOrientation(centerLatitude: 30, centerLongitude: 112)
+        let vector = GlobeVector(coordinate: .cottage)
+        let transformed = orientation.sceneKitTransform * SIMD4(Float(vector.x), Float(vector.y), Float(vector.z), 1)
+
+        XCTAssertEqual(transformed.x, 0, accuracy: 0.001)
+        XCTAssertEqual(transformed.y, 0, accuracy: 0.001)
+        XCTAssertEqual(transformed.z, 1, accuracy: 0.001)
     }
 
     func testGreatCircleRouteClipsBackHemisphereSegments() {

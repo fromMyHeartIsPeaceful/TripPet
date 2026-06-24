@@ -195,7 +195,11 @@ extension PostcardNotificationService: UNUserNotificationCenterDelegate {
         }
 
         Task { @MainActor [weak self] in
-            guard let self else { return }
+            try? await Task.sleep(nanoseconds: 250_000_000)
+            guard let self else {
+                PostcardNotificationDiagnostics.record("didReceive skipped released service")
+                return
+            }
             PostcardNotificationDiagnostics.record("didReceive route tab=\(tab)")
             requestedTab = tab
             tabRequestHandler?(tab)

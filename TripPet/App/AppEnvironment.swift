@@ -117,7 +117,16 @@ final class AppEnvironment: ObservableObject {
         updateStepStatus()
 
         if didRequest, stepSnapshot.status.canAttemptStepRead {
-            _ = try await readTodaySteps()
+            do {
+                _ = try await readTodaySteps()
+            } catch {
+                stepSnapshot = StepCountSnapshot(
+                    status: stepCountProvider.authorizationStatus(),
+                    steps: stepSnapshot.steps,
+                    readAt: stepSnapshot.readAt,
+                    errorMessage: error.localizedDescription
+                )
+            }
         }
 
         return didRequest

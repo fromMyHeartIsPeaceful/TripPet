@@ -17,8 +17,8 @@ final class CabinViewModelTests: XCTestCase {
         ])
 
         let backRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y < 0.63 }
-        let middleRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.63 && $0.footPointRatio.y < 0.82 }
-        let frontRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.82 }
+        let middleRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.63 && $0.footPointRatio.y < 0.70 }
+        let frontRowSlots = CabinAnimalLayout.slots.filter { $0.footPointRatio.y >= 0.70 }
 
         XCTAssertEqual(backRowSlots.count, 3)
         XCTAssertEqual(middleRowSlots.count, 4)
@@ -43,10 +43,10 @@ final class CabinViewModelTests: XCTestCase {
             XCTAssertEqual(frame.maxY, footPoint.y, accuracy: 0.01)
             XCTAssertGreaterThanOrEqual(frame.minX, 0)
             XCTAssertLessThanOrEqual(frame.maxX, sceneSize.width)
-            XCTAssertGreaterThanOrEqual(frame.height / sceneSize.height, 0.15)
-            XCTAssertLessThanOrEqual(frame.height / sceneSize.height, 0.19)
+            XCTAssertGreaterThanOrEqual(frame.height / sceneSize.height, 0.10)
+            XCTAssertLessThanOrEqual(frame.height / sceneSize.height, 0.13)
             XCTAssertGreaterThanOrEqual(slot.footPointRatio.y, 0.56)
-            XCTAssertLessThanOrEqual(slot.footPointRatio.y, 0.89)
+            XCTAssertLessThanOrEqual(slot.footPointRatio.y, 0.75)
         }
     }
 
@@ -442,6 +442,47 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertEqual(environment.stepSnapshot.steps, 3_456)
         XCTAssertTrue(viewModel.actionMessage.contains("3456 步"))
+    }
+
+    func testSuccessfulHealthAuthorizationDoesNotFailWhenInitialStepReadFails() async throws {
+        let seed = SeedData.preview
+        let repository = AppRepository(
+            seed: seed,
+            store: InMemoryUserStateStore(
+                savedState: AppUserState(
+                    seed: seed,
+                    flags: AppUserFlags(
+                        onboardingCompleted: true,
+                        healthGuideDismissed: true,
+                        firstImmediateTicketGifted: true
+                    )
+                )
+            )
+        )
+        let stepProvider = FakeStepCountProvider(
+            status: .notDetermined,
+            steps: 0,
+            requestSucceeds: true,
+            throwsOnStepRead: true
+        )
+        let environment = AppEnvironment(
+            repository: repository,
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.connectHealth()
+
+        XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
+        XCTAssertNil(environment.stepSnapshot.steps)
+        XCTAssertNotNil(environment.stepSnapshot.errorMessage)
+        XCTAssertEqual(viewModel.stepStatusText, "Health 已连接")
+        XCTAssertFalse(viewModel.actionMessage.contains("失败"))
     }
 
     func testReadPermissionRequestedPreservesStepReadMessage() async {

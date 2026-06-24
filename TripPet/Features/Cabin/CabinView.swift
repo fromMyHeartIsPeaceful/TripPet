@@ -9,7 +9,7 @@ private let cabinSceneHorizontalOffset: CGFloat = 0
 private let cabinSceneDayVerticalCorrection: CGFloat = 12
 private let compactActionCardHorizontalPadding: CGFloat = 28
 private let compactActionCardBottomPadding: CGFloat = 8
-private let fullscreenActionCardBottomPadding: CGFloat = 72
+private let fullscreenActionCardBottomPadding: CGFloat = 40
 private let cabinSceneImageHeightMultiplier: CGFloat = 1455.0 / 1254.0
 
 struct CabinView: View {
@@ -162,7 +162,7 @@ struct CabinView: View {
     }
 
     private var cabinHouseAssetName: String {
-        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_fullscreen"
+        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_night_window_clean_rug"
     }
 
     private var dayCabinSceneAnimals: [Animal] {

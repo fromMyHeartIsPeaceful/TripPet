@@ -1,4 +1,6 @@
+import SceneKit
 import SwiftUI
+import simd
 
 struct WorldMapView: View {
     @EnvironmentObject private var environment: AppEnvironment
@@ -119,7 +121,6 @@ struct TravelGlobeView: View {
     let routes: [TravelGlobeRoute]
 
     @State private var orientation = GlobeOrientation.defaultReadable
-    @State private var dragStartOrientation: GlobeOrientation?
 
     var body: some View {
         GeometryReader { proxy in
@@ -131,14 +132,14 @@ struct TravelGlobeView: View {
             TimelineView(.periodic(from: Date(), by: 30)) { timeline in
                 ZStack {
                     globeSurface(diameter: diameter)
-                    GlobeGridView(projection: projection)
                     routeLayer(projection: projection, date: timeline.date)
+                        .allowsHitTesting(false)
                     globeShading(diameter: diameter)
                     markerLayer(projection: projection, date: timeline.date)
+                        .allowsHitTesting(false)
                 }
                 .frame(width: diameter, height: diameter)
                 .contentShape(Circle())
-                .gesture(rotationGesture(diameter: diameter))
                 .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
             }
         }
@@ -159,6 +160,7 @@ struct TravelGlobeView: View {
                         endRadius: diameter * 0.62
                     )
                 )
+                .allowsHitTesting(false)
 
             Circle()
                 .fill(
@@ -172,6 +174,7 @@ struct TravelGlobeView: View {
                         endRadius: diameter * 0.42
                     )
                 )
+                .allowsHitTesting(false)
 
             Circle()
                 .fill(
@@ -185,18 +188,15 @@ struct TravelGlobeView: View {
                         endRadius: diameter * 0.45
                     )
                 )
+                .allowsHitTesting(false)
 
-            Image("world_travel_map")
-                .resizable()
-                .scaledToFill()
-                .frame(width: diameter * 2.30, height: diameter * 1.22)
-                .offset(x: textureOffset(width: diameter * 2.30))
+            SceneKitGlobeSurfaceView(orientation: $orientation)
+                .frame(width: diameter, height: diameter)
                 .saturation(1.08)
                 .contrast(1.10)
                 .brightness(-0.02)
-                .opacity(0.40)
+                .opacity(0.44)
                 .blendMode(.multiply)
-                .frame(width: diameter, height: diameter)
                 .clipShape(Circle())
 
             Circle()
@@ -212,6 +212,7 @@ struct TravelGlobeView: View {
                     )
                 )
                 .blendMode(.multiply)
+                .allowsHitTesting(false)
 
             Image("texture_paper_grain")
                 .resizable()
@@ -219,6 +220,7 @@ struct TravelGlobeView: View {
                 .frame(width: diameter, height: diameter)
                 .opacity(0.16)
                 .clipShape(Circle())
+                .allowsHitTesting(false)
         }
         .frame(width: diameter, height: diameter)
         .clipShape(Circle())
@@ -227,15 +229,18 @@ struct TravelGlobeView: View {
             Circle()
                 .stroke(Color(red: 0.18, green: 0.37, blue: 0.45).opacity(0.30), lineWidth: 9)
                 .blur(radius: 1.6)
+                .allowsHitTesting(false)
         }
         .overlay {
             Circle()
                 .stroke(AppTheme.paperWhite.opacity(0.82), lineWidth: 1.8)
+                .allowsHitTesting(false)
         }
         .overlay {
             Circle()
                 .stroke(Color(red: 0.73, green: 0.90, blue: 0.92).opacity(0.26), lineWidth: 14)
                 .blur(radius: 4)
+                .allowsHitTesting(false)
         }
         .shadow(color: Color(red: 0.03, green: 0.05, blue: 0.10).opacity(0.28), radius: 18, x: 0, y: 14)
     }
@@ -328,68 +333,199 @@ struct TravelGlobeView: View {
             .allowsHitTesting(false)
     }
 
-    private func rotationGesture(diameter: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 2)
-            .onChanged { value in
-                if dragStartOrientation == nil {
-                    dragStartOrientation = orientation
-                }
-                guard let start = dragStartOrientation else { return }
-                orientation = start.applyingDrag(value.translation, diameter: diameter)
-            }
-            .onEnded { value in
-                guard let start = dragStartOrientation else { return }
-                orientation = start.applyingDrag(value.translation, diameter: diameter)
-                dragStartOrientation = nil
-            }
-    }
-
-    private func textureOffset(width: CGFloat) -> CGFloat {
-        let normalized = CGFloat((orientation.centerLongitude + 180) / 360)
-        return (0.5 - normalized) * width * 0.46
-    }
 }
 
-private struct GlobeGridView: View {
-    let projection: GlobeProjection
+private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
+    @Binding var orientation: GlobeOrientation
 
-    var body: some View {
-        ZStack {
-            ForEach([-60, -30, 0, 30, 60], id: \.self) { latitude in
-                gridPath(coordinates: stride(from: -180, through: 180, by: 4).map {
-                    GlobeCoordinate(latitude: Double(latitude), longitude: Double($0))
-                })
-                .stroke(AppTheme.paperWhite.opacity(latitude == 0 ? 0.34 : 0.20), lineWidth: latitude == 0 ? 0.9 : 0.62)
-            }
-
-            ForEach(stride(from: -150, through: 180, by: 30).map { $0 }, id: \.self) { longitude in
-                gridPath(coordinates: stride(from: -84, through: 84, by: 4).map {
-                    GlobeCoordinate(latitude: Double($0), longitude: Double(longitude))
-                })
-                .stroke(AppTheme.paperWhite.opacity(0.17), lineWidth: 0.58)
-            }
-        }
-        .clipShape(Circle())
-        .allowsHitTesting(false)
+    func makeCoordinator() -> Coordinator {
+        Coordinator(orientation: orientation, orientationBinding: $orientation)
     }
 
-    private func gridPath(coordinates: [GlobeCoordinate]) -> Path {
-        Path { path in
-            var currentSegmentHasPoint = false
+    func makeUIView(context: Context) -> SCNView {
+        let view = SCNView(frame: .zero)
+        view.backgroundColor = .clear
+        view.isOpaque = false
+        view.allowsCameraControl = false
+        view.antialiasingMode = .multisampling4X
+        view.preferredFramesPerSecond = 60
+        view.rendersContinuously = true
 
-            for coordinate in coordinates {
-                guard let projected = projection.project(coordinate), projected.isVisible else {
-                    currentSegmentHasPoint = false
-                    continue
+        let scene = SCNScene()
+        scene.background.contents = UIColor.clear
+        view.scene = scene
+
+        let cameraNode = SCNNode()
+        let camera = SCNCamera()
+        camera.usesOrthographicProjection = true
+        camera.orthographicScale = 2.08
+        camera.zNear = 0.1
+        camera.zFar = 20
+        cameraNode.camera = camera
+        cameraNode.position = SCNVector3(0, 0, 4)
+        scene.rootNode.addChildNode(cameraNode)
+
+        let sphere = SCNSphere(radius: 1)
+        sphere.segmentCount = 160
+
+        let material = SCNMaterial()
+        material.diffuse.contents = UIImage(named: "world_travel_map")
+        material.lightingModel = .constant
+        material.isDoubleSided = false
+        material.diffuse.wrapS = .repeat
+        material.diffuse.wrapT = .clamp
+        material.diffuse.magnificationFilter = .linear
+        material.diffuse.minificationFilter = .linear
+        sphere.firstMaterial = material
+
+        let sphereNode = SCNNode(geometry: sphere)
+        scene.rootNode.addChildNode(sphereNode)
+
+        context.coordinator.sphereNode = sphereNode
+        context.coordinator.applyCurrentOrientationToNode()
+
+        let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
+        pan.maximumNumberOfTouches = 1
+        pan.cancelsTouchesInView = true
+        view.addGestureRecognizer(pan)
+        context.coordinator.view = view
+
+        return view
+    }
+
+    func updateUIView(_ view: SCNView, context: Context) {
+        context.coordinator.orientationBinding = $orientation
+        context.coordinator.view = view
+        context.coordinator.syncExternalOrientation(orientation)
+    }
+
+    static func dismantleUIView(_ uiView: SCNView, coordinator: Coordinator) {
+        coordinator.invalidateMomentum()
+    }
+
+    final class Coordinator: NSObject {
+        var orientationBinding: Binding<GlobeOrientation>
+        weak var view: SCNView?
+        weak var sphereNode: SCNNode?
+
+        private var orientation: GlobeOrientation
+        private var lastLocation: CGPoint?
+        private var velocity: CGPoint = .zero
+        private var displayLink: CADisplayLink?
+        private var isInteracting = false
+
+        init(orientation: GlobeOrientation, orientationBinding: Binding<GlobeOrientation>) {
+            self.orientation = orientation
+            self.orientationBinding = orientationBinding
+        }
+
+        deinit {
+            invalidateMomentum()
+        }
+
+        func syncExternalOrientation(_ newOrientation: GlobeOrientation) {
+            guard !isInteracting, displayLink == nil, newOrientation != orientation else { return }
+            orientation = newOrientation
+            applyCurrentOrientationToNode()
+        }
+
+        func applyCurrentOrientationToNode() {
+            sphereNode?.simdTransform = orientation.sceneKitTransform
+        }
+
+        @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
+            guard let view else { return }
+
+            let location = recognizer.location(in: view)
+            let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
+            let radius = min(view.bounds.width, view.bounds.height) * 0.49
+
+            switch recognizer.state {
+            case .began:
+                invalidateMomentum()
+                isInteracting = true
+                lastLocation = location
+                velocity = .zero
+            case .changed:
+                guard let previousLocation = lastLocation else {
+                    lastLocation = location
+                    return
                 }
 
-                if currentSegmentHasPoint {
-                    path.addLine(to: projected.point)
-                } else {
-                    path.move(to: projected.point)
-                    currentSegmentHasPoint = true
-                }
+                setOrientation(
+                    orientation.applyingTrackballDrag(
+                        from: previousLocation,
+                        to: location,
+                        center: center,
+                        radius: radius
+                    )
+                )
+                lastLocation = location
+                velocity = recognizer.velocity(in: view)
+            case .ended, .cancelled, .failed:
+                isInteracting = false
+                lastLocation = nil
+                velocity = recognizer.velocity(in: view).clamped(maxLength: 4_200)
+                startMomentumIfNeeded(in: view)
+            default:
+                break
             }
+        }
+
+        private func setOrientation(_ newOrientation: GlobeOrientation) {
+            orientation = newOrientation
+            applyCurrentOrientationToNode()
+            orientationBinding.wrappedValue = newOrientation
+        }
+
+        private func startMomentumIfNeeded(in view: SCNView) {
+            guard hypot(velocity.x, velocity.y) > 40 else {
+                velocity = .zero
+                return
+            }
+
+            invalidateMomentum()
+            let link = CADisplayLink(target: self, selector: #selector(momentumTick(_:)))
+            link.preferredFrameRateRange = CAFrameRateRange(minimum: 45, maximum: 60, preferred: 60)
+            link.add(to: .main, forMode: .common)
+            displayLink = link
+        }
+
+        @objc private func momentumTick(_ link: CADisplayLink) {
+            guard let view else {
+                invalidateMomentum()
+                return
+            }
+
+            let speed = hypot(velocity.x, velocity.y)
+            guard speed > 8 else {
+                invalidateMomentum()
+                velocity = .zero
+                return
+            }
+
+            let dt = min(max(link.duration, 1.0 / 120.0), 1.0 / 30.0)
+            let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
+            let radius = min(view.bounds.width, view.bounds.height) * 0.49
+            let delta = CGSize(width: velocity.x * dt, height: velocity.y * dt)
+            let nextPoint = CGPoint(x: center.x + delta.width, y: center.y + delta.height)
+
+            setOrientation(
+                orientation.applyingTrackballDrag(
+                    from: center,
+                    to: nextPoint,
+                    center: center,
+                    radius: radius
+                )
+            )
+
+            let decay = pow(0.84, dt * 60)
+            velocity = CGPoint(x: velocity.x * decay, y: velocity.y * decay)
+        }
+
+        func invalidateMomentum() {
+            displayLink?.invalidate()
+            displayLink = nil
         }
     }
 }
@@ -527,25 +663,15 @@ struct GlobeProjection {
     let orientation: GlobeOrientation
 
     func project(_ coordinate: GlobeCoordinate) -> GlobeProjectedPoint? {
-        let latitude = coordinate.latitude.radians
-        let longitude = coordinate.longitude.radians
-        let centerLatitude = orientation.centerLatitude.radians
-        let centerLongitude = orientation.centerLongitude.radians
-        let deltaLongitude = longitude - centerLongitude
-
-        let cosAngularDistance = sin(centerLatitude) * sin(latitude) +
-            cos(centerLatitude) * cos(latitude) * cos(deltaLongitude)
-
-        let x = radius * CGFloat(cos(latitude) * sin(deltaLongitude))
-        let y = -radius * CGFloat(
-            cos(centerLatitude) * sin(latitude) -
-                sin(centerLatitude) * cos(latitude) * cos(deltaLongitude)
-        )
+        let vector = GlobeVector(coordinate: coordinate)
+        let depth = vector.dot(orientation.forward)
+        let x = radius * CGFloat(vector.dot(orientation.right))
+        let y = -radius * CGFloat(vector.dot(orientation.up))
 
         return GlobeProjectedPoint(
             point: CGPoint(x: center.x + x, y: center.y + y),
-            depth: cosAngularDistance,
-            isVisible: cosAngularDistance >= -0.0001
+            depth: depth,
+            isVisible: depth >= -0.0001
         )
     }
 }
@@ -559,19 +685,96 @@ struct GlobeProjectedPoint: Equatable {
 typealias WorldMapDestinationCoordinate = GlobeCoordinate
 
 struct GlobeOrientation: Equatable {
-    var centerLatitude: Double
-    var centerLongitude: Double
+    private(set) var right: GlobeVector
+    private(set) var up: GlobeVector
+    private(set) var forward: GlobeVector
 
     static let defaultReadable = GlobeOrientation(centerLatitude: 18, centerLongitude: 56)
 
-    func applyingDrag(_ translation: CGSize, diameter: CGFloat) -> GlobeOrientation {
-        let safeDiameter = max(Double(diameter), 1)
-        let longitudeDelta = Double(translation.width) / safeDiameter * -180
-        let latitudeDelta = Double(translation.height) / safeDiameter * 92
+    init(centerLatitude: Double, centerLongitude: Double) {
+        let forward = GlobeVector(coordinate: GlobeCoordinate(latitude: centerLatitude, longitude: centerLongitude))
+        let worldNorth = GlobeVector(x: 0, y: 0, z: 1)
+        let east = worldNorth.cross(forward)
+        let right = east.length > 0.000001 ? east.normalized : GlobeVector(x: 1, y: 0, z: 0)
+        let up = forward.cross(right)
+        self.init(right: right, up: up, forward: forward)
+    }
+
+    private init(right: GlobeVector, up: GlobeVector, forward: GlobeVector) {
+        let normalizedForward = forward.normalized
+        var normalizedRight = (right - normalizedForward.scaled(by: right.dot(normalizedForward))).normalized
+
+        if normalizedRight.length < 0.000001 {
+            let fallback = abs(normalizedForward.z) > 0.98 ?
+                GlobeVector(x: 1, y: 0, z: 0) :
+                GlobeVector(x: 0, y: 0, z: 1).cross(normalizedForward)
+            normalizedRight = fallback.normalized
+        }
+
+        self.forward = normalizedForward
+        self.right = normalizedRight
+        self.up = normalizedForward.cross(normalizedRight).normalized
+    }
+
+    var centerLatitude: Double {
+        forward.coordinate.latitude
+    }
+
+    var centerLongitude: Double {
+        forward.coordinate.longitude
+    }
+
+    var sceneKitTransform: simd_float4x4 {
+        simd_float4x4(columns: (
+            SIMD4(Float(right.x), Float(up.x), Float(forward.x), 0),
+            SIMD4(Float(right.y), Float(up.y), Float(forward.y), 0),
+            SIMD4(Float(right.z), Float(up.z), Float(forward.z), 0),
+            SIMD4(0, 0, 0, 1)
+        ))
+    }
+
+    func applyingTrackballDrag(
+        from startLocation: CGPoint,
+        to currentLocation: CGPoint,
+        center: CGPoint,
+        radius: CGFloat
+    ) -> GlobeOrientation {
+        guard radius > 0 else { return self }
+
+        let currentVector = Self.trackballVector(at: currentLocation, center: center, radius: radius)
+        let startVector = Self.trackballVector(at: startLocation, center: center, radius: radius)
+        let rotationAxis = currentVector.cross(startVector)
+        let axisLength = rotationAxis.length
+        guard axisLength > 0.000001 else { return self }
+
+        let angle = atan2(axisLength, currentVector.dot(startVector).clamped(to: -1...1))
+        let worldAxis = localToWorld(rotationAxis).normalized
+
         return GlobeOrientation(
-            centerLatitude: (centerLatitude + latitudeDelta).clamped(to: -55...55),
-            centerLongitude: (centerLongitude + longitudeDelta).normalizedLongitude
+            right: right.rotated(around: worldAxis, by: angle),
+            up: up.rotated(around: worldAxis, by: angle),
+            forward: forward.rotated(around: worldAxis, by: angle)
         )
+    }
+
+    private static func trackballVector(at point: CGPoint, center: CGPoint, radius: CGFloat) -> GlobeVector {
+        let safeRadius = max(Double(radius), 1)
+        let x = Double(point.x - center.x) / safeRadius
+        let y = Double(center.y - point.y) / safeRadius
+        let distanceSquared = x * x + y * y
+
+        if distanceSquared <= 1 {
+            return GlobeVector(x: x, y: y, z: sqrt(1 - distanceSquared)).normalized
+        }
+
+        let distance = max(sqrt(distanceSquared), 0.000001)
+        return GlobeVector(x: x / distance, y: y / distance, z: 0)
+    }
+
+    private func localToWorld(_ localVector: GlobeVector) -> GlobeVector {
+        right.scaled(by: localVector.x) +
+            up.scaled(by: localVector.y) +
+            forward.scaled(by: localVector.z)
     }
 }
 
@@ -632,7 +835,7 @@ struct GlobeCoordinate: Equatable {
     }
 }
 
-private struct GlobeVector {
+struct GlobeVector: Equatable {
     let x: Double
     let y: Double
     let z: Double
@@ -656,6 +859,10 @@ private struct GlobeVector {
         return GlobeVector(x: x / length, y: y / length, z: z / length)
     }
 
+    var length: Double {
+        sqrt(x * x + y * y + z * z)
+    }
+
     var coordinate: GlobeCoordinate {
         GlobeCoordinate(
             latitude: asin(z).degrees,
@@ -665,6 +872,35 @@ private struct GlobeVector {
 
     func dot(_ other: GlobeVector) -> Double {
         x * other.x + y * other.y + z * other.z
+    }
+
+    func cross(_ other: GlobeVector) -> GlobeVector {
+        GlobeVector(
+            x: y * other.z - z * other.y,
+            y: z * other.x - x * other.z,
+            z: x * other.y - y * other.x
+        )
+    }
+
+    func scaled(by scale: Double) -> GlobeVector {
+        GlobeVector(x: x * scale, y: y * scale, z: z * scale)
+    }
+
+    func rotated(around axis: GlobeVector, by angle: Double) -> GlobeVector {
+        let normalizedAxis = axis.normalized
+        let cosAngle = cos(angle)
+        let sinAngle = sin(angle)
+        return scaled(by: cosAngle) +
+            normalizedAxis.cross(self).scaled(by: sinAngle) +
+            normalizedAxis.scaled(by: normalizedAxis.dot(self) * (1 - cosAngle))
+    }
+
+    static func + (left: GlobeVector, right: GlobeVector) -> GlobeVector {
+        GlobeVector(x: left.x + right.x, y: left.y + right.y, z: left.z + right.z)
+    }
+
+    static func - (left: GlobeVector, right: GlobeVector) -> GlobeVector {
+        GlobeVector(x: left.x - right.x, y: left.y - right.y, z: left.z - right.z)
     }
 }
 
@@ -690,6 +926,15 @@ private extension Double {
 
     func clamped(to range: ClosedRange<Double>) -> Double {
         min(max(self, range.lowerBound), range.upperBound)
+    }
+}
+
+private extension CGPoint {
+    func clamped(maxLength: CGFloat) -> CGPoint {
+        let length = hypot(x, y)
+        guard length > maxLength, length > 0 else { return self }
+        let scale = maxLength / length
+        return CGPoint(x: x * scale, y: y * scale)
     }
 }
 

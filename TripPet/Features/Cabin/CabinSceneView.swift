@@ -55,66 +55,66 @@ struct CabinAnimalLayout {
             animalId: "xiaoman_hamster",
             floor: .top,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.315, y: 0.505),
-            heightRatio: 0.062
+            footPointRatio: CGPoint(x: 0.200, y: 0.580),
+            heightRatio: 0.116
         ),
         Slot(
             animalId: "moji_cat",
             floor: .top,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.500, y: 0.435),
-            heightRatio: 0.060
+            footPointRatio: CGPoint(x: 0.500, y: 0.565),
+            heightRatio: 0.120
         ),
         Slot(
             animalId: "dengdeng_rabbit",
             floor: .top,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.695, y: 0.505),
-            heightRatio: 0.062,
+            footPointRatio: CGPoint(x: 0.800, y: 0.580),
+            heightRatio: 0.116,
             isMirrored: true
         ),
         Slot(
             animalId: "tangyuan_puppy",
             floor: .middle,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.195, y: 0.610),
-            heightRatio: 0.070
+            footPointRatio: CGPoint(x: 0.105, y: 0.665),
+            heightRatio: 0.116
         ),
         Slot(
             animalId: "xiaolu_guinea_pig",
             floor: .middle,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.395, y: 0.617),
-            heightRatio: 0.066
+            footPointRatio: CGPoint(x: 0.355, y: 0.690),
+            heightRatio: 0.110
         ),
         Slot(
             animalId: "bear_visitor",
             floor: .middle,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.600, y: 0.617),
-            heightRatio: 0.068,
+            footPointRatio: CGPoint(x: 0.645, y: 0.690),
+            heightRatio: 0.116,
             isMirrored: true
         ),
         Slot(
             animalId: "deer_visitor",
-            floor: .bottom,
+            floor: .middle,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.805, y: 0.610),
-            heightRatio: 0.066
+            footPointRatio: CGPoint(x: 0.895, y: 0.665),
+            heightRatio: 0.112
         ),
         Slot(
             animalId: "fox_visitor",
             floor: .bottom,
             side: .leftLarge,
-            footPointRatio: CGPoint(x: 0.355, y: 0.668),
-            heightRatio: 0.070
+            footPointRatio: CGPoint(x: 0.230, y: 0.718),
+            heightRatio: 0.102
         ),
         Slot(
             animalId: "feifei_parrot",
             floor: .bottom,
             side: .rightSmall,
-            footPointRatio: CGPoint(x: 0.655, y: 0.668),
-            heightRatio: 0.066
+            footPointRatio: CGPoint(x: 0.770, y: 0.718),
+            heightRatio: 0.100
         )
     ]
 
