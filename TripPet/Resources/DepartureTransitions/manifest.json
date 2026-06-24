@@ -7,7 +7,89 @@
       "filename": "generic_airport_departure.mp4",
       "duration": 6.042,
       "pixelWidth": 720,
-      "pixelHeight": 1280
+      "pixelHeight": 1280,
+      "containsAnimal": false
+    },
+    {
+      "id": "animal_departure_xiaoman_hamster",
+      "animalId": "xiaoman_hamster",
+      "filename": "animal_departure_xiaoman_hamster.mp4",
+      "duration": 6.000,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_tangyuan_puppy",
+      "animalId": "tangyuan_puppy",
+      "filename": "animal_departure_tangyuan_puppy.mp4",
+      "duration": 5.583,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_moji_cat",
+      "animalId": "moji_cat",
+      "filename": "animal_departure_moji_cat.mp4",
+      "duration": 5.875,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_dengdeng_rabbit",
+      "animalId": "dengdeng_rabbit",
+      "filename": "animal_departure_dengdeng_rabbit.mp4",
+      "duration": 5.750,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_feifei_parrot",
+      "animalId": "feifei_parrot",
+      "filename": "animal_departure_feifei_parrot.mp4",
+      "duration": 6.000,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_xiaolu_guinea_pig",
+      "animalId": "xiaolu_guinea_pig",
+      "filename": "animal_departure_xiaolu_guinea_pig.mp4",
+      "duration": 5.708,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_deer_visitor",
+      "animalId": "deer_visitor",
+      "filename": "animal_departure_deer_visitor.mp4",
+      "duration": 5.833,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_fox_visitor",
+      "animalId": "fox_visitor",
+      "filename": "animal_departure_fox_visitor.mp4",
+      "duration": 5.542,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
+    },
+    {
+      "id": "animal_departure_bear_visitor",
+      "animalId": "bear_visitor",
+      "filename": "animal_departure_bear_visitor.mp4",
+      "duration": 5.875,
+      "pixelWidth": 720,
+      "pixelHeight": 1280,
+      "containsAnimal": true
     }
   ]
 }
