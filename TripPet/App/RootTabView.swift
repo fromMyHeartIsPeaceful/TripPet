@@ -4,7 +4,6 @@ struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: AppTab = .cabin
-    @State private var mapInstanceID = UUID()
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -31,10 +30,6 @@ struct RootTabView: View {
         .onChange(of: environment.notificationRequestedTab) { _, _ in
             applyPendingNotificationTabRequest()
         }
-        .onChange(of: selectedTab) { _, tab in
-            guard tab == .map else { return }
-            mapInstanceID = UUID()
-        }
     }
 
     @ViewBuilder
@@ -46,7 +41,6 @@ struct RootTabView: View {
             MailboxView()
         case .map:
             WorldMapView()
-                .id(mapInstanceID)
         }
     }
 
@@ -79,7 +73,7 @@ struct RootTabView: View {
     }
 
     private var tabBarBottomPadding: CGFloat {
-        8
+        BottomChromeMetrics.tabBarBottomPadding
     }
 }
 
@@ -100,6 +94,7 @@ private struct RootBottomTabBar: View {
             tabButton(tab: .map, title: AppCopy.Tabs.map, iconName: "icon_map")
         }
         .padding(6)
+        .frame(height: BottomChromeMetrics.tabBarHeight)
         .frame(maxWidth: 252)
         .background(AppTheme.paperWhite)
         .clipShape(Capsule(style: .continuous))

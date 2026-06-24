@@ -18,12 +18,14 @@ struct FullScreenDepartureTransitionView: View {
 
     @State private var didStart = false
     @State private var shimmer = false
-
-    private let duration: UInt64 = 6_050_000_000
+    @State private var mistRevealed = false
+    @State private var mistClosing = false
 
     var body: some View {
+        let video = reduceMotion ? nil : DepartureTransitionCatalog.video(for: context.animalId)
+
         ZStack {
-            departureBackground
+            departureBackground(video: video)
 
             LinearGradient(
                 colors: [
@@ -37,28 +39,50 @@ struct FullScreenDepartureTransitionView: View {
             .ignoresSafeArea()
             .allowsHitTesting(false)
 
-            animalLayer
+            if video?.containsAnimal != true {
+                animalLayer
+            }
+
+            DepartureTransitionMistOverlay(
+                isRevealed: mistRevealed,
+                isClosing: mistClosing
+            )
         }
         .ignoresSafeArea()
         .task {
             guard didStart == false else { return }
             didStart = true
 
-            withAnimation(.easeInOut(duration: reduceMotion ? 0.01 : 4.8)) {
-                shimmer = true
+            if video?.containsAnimal != true {
+                withAnimation(.easeInOut(duration: reduceMotion ? 0.01 : 4.8)) {
+                    shimmer = true
+                }
             }
 
-            let playbackDuration = reduceMotion ? 1_200_000_000 : duration
-            try? await Task.sleep(nanoseconds: playbackDuration)
+            withAnimation(.easeInOut(duration: reduceMotion ? 0.01 : 0.62)) {
+                mistRevealed = true
+            }
+
+            let playbackDuration = reduceMotion ? 1.2 : (video?.duration ?? DepartureTransitionCatalog.genericDuration)
+            let closingDuration = reduceMotion ? 0.01 : 0.55
+            let visibleDuration = max(0, playbackDuration - closingDuration)
+
+            try? await Task.sleep(nanoseconds: UInt64(visibleDuration * 1_000_000_000))
+
+            withAnimation(.easeInOut(duration: closingDuration)) {
+                mistClosing = true
+            }
+
+            try? await Task.sleep(nanoseconds: UInt64(closingDuration * 1_000_000_000))
             onComplete()
         }
         .accessibilityLabel("\(context.animalName)出发了")
     }
 
     @ViewBuilder
-    private var departureBackground: some View {
-        if reduceMotion == false,
-           let url = DepartureTransitionCatalog.genericVideoURL() {
+    private func departureBackground(video: DepartureTransitionVideo?) -> some View {
+        if let video,
+           let url = DepartureTransitionCatalog.videoURL(for: video) {
             DepartureTransitionVideoView(url: url)
         } else {
             LinearGradient(
@@ -138,13 +162,161 @@ struct FullScreenDepartureTransitionView: View {
 
 private enum DepartureTransitionCatalog {
     private static let resourceSubdirectory = "DepartureTransitions"
+    static let genericDuration: Double = 6.05
 
-    static func genericVideoURL(bundle: Bundle = .main) -> URL? {
-        bundle.url(
-            forResource: "generic_airport_departure",
-            withExtension: "mp4",
+    private static let genericVideo = DepartureTransitionVideo(
+        id: "generic_airport_departure",
+        filename: "generic_airport_departure.mp4",
+        duration: 6.05,
+        containsAnimal: false
+    )
+
+    private static let animalVideos: [String: DepartureTransitionVideo] = [
+        "xiaoman_hamster": DepartureTransitionVideo(
+            id: "animal_departure_xiaoman_hamster",
+            filename: "animal_departure_xiaoman_hamster.mp4",
+            duration: 6.00,
+            containsAnimal: true
+        ),
+        "tangyuan_puppy": DepartureTransitionVideo(
+            id: "animal_departure_tangyuan_puppy",
+            filename: "animal_departure_tangyuan_puppy.mp4",
+            duration: 5.58,
+            containsAnimal: true
+        ),
+        "moji_cat": DepartureTransitionVideo(
+            id: "animal_departure_moji_cat",
+            filename: "animal_departure_moji_cat.mp4",
+            duration: 5.88,
+            containsAnimal: true
+        ),
+        "dengdeng_rabbit": DepartureTransitionVideo(
+            id: "animal_departure_dengdeng_rabbit",
+            filename: "animal_departure_dengdeng_rabbit.mp4",
+            duration: 5.75,
+            containsAnimal: true
+        ),
+        "feifei_parrot": DepartureTransitionVideo(
+            id: "animal_departure_feifei_parrot",
+            filename: "animal_departure_feifei_parrot.mp4",
+            duration: 6.00,
+            containsAnimal: true
+        ),
+        "xiaolu_guinea_pig": DepartureTransitionVideo(
+            id: "animal_departure_xiaolu_guinea_pig",
+            filename: "animal_departure_xiaolu_guinea_pig.mp4",
+            duration: 5.71,
+            containsAnimal: true
+        ),
+        "deer_visitor": DepartureTransitionVideo(
+            id: "animal_departure_deer_visitor",
+            filename: "animal_departure_deer_visitor.mp4",
+            duration: 5.83,
+            containsAnimal: true
+        ),
+        "fox_visitor": DepartureTransitionVideo(
+            id: "animal_departure_fox_visitor",
+            filename: "animal_departure_fox_visitor.mp4",
+            duration: 5.54,
+            containsAnimal: true
+        ),
+        "bear_visitor": DepartureTransitionVideo(
+            id: "animal_departure_bear_visitor",
+            filename: "animal_departure_bear_visitor.mp4",
+            duration: 5.88,
+            containsAnimal: true
+        )
+    ]
+
+    static func video(for animalId: String, bundle: Bundle = .main) -> DepartureTransitionVideo? {
+        if let animalVideo = animalVideos[animalId],
+           videoURL(for: animalVideo, bundle: bundle) != nil {
+            return animalVideo
+        }
+
+        guard videoURL(for: genericVideo, bundle: bundle) != nil else {
+            return nil
+        }
+
+        return genericVideo
+    }
+
+    static func videoURL(for video: DepartureTransitionVideo, bundle: Bundle = .main) -> URL? {
+        let resourceName = (video.filename as NSString).deletingPathExtension
+        let fileExtension = (video.filename as NSString).pathExtension
+        return bundle.url(
+            forResource: resourceName,
+            withExtension: fileExtension,
             subdirectory: resourceSubdirectory
         )
+    }
+}
+
+private struct DepartureTransitionVideo: Equatable {
+    var id: String
+    var filename: String
+    var duration: Double
+    var containsAnimal: Bool
+}
+
+private struct DepartureTransitionMistOverlay: View {
+    var isRevealed: Bool
+    var isClosing: Bool
+
+    private var coverOpacity: Double {
+        if isClosing { return 0.92 }
+        return isRevealed ? 0 : 0.88
+    }
+
+    private var drift: CGFloat {
+        if isClosing { return 0 }
+        return isRevealed ? -170 : 0
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let height = proxy.size.height
+
+            ZStack {
+                Color(red: 1.00, green: 0.95, blue: 0.84)
+                    .opacity(coverOpacity)
+
+                mistBand(width: width * 1.45, height: height * 0.30)
+                    .offset(x: -width * 0.16, y: -height * 0.31 + drift)
+
+                mistBand(width: width * 1.30, height: height * 0.24)
+                    .rotationEffect(.degrees(-6))
+                    .offset(x: width * 0.13, y: height * 0.10 - drift * 0.45)
+
+                mistBand(width: width * 1.55, height: height * 0.36)
+                    .rotationEffect(.degrees(5))
+                    .offset(x: -width * 0.08, y: height * 0.36 - drift * 0.25)
+            }
+            .frame(width: width, height: height)
+        }
+        .blendMode(.screen)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func mistBand(width: CGFloat, height: CGFloat) -> some View {
+        Capsule()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0.0),
+                        Color.white.opacity(isClosing ? 0.95 : 0.78),
+                        AppTheme.paperWhite.opacity(isClosing ? 0.86 : 0.64),
+                        Color.white.opacity(0.0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(width: width, height: height)
+            .blur(radius: 32)
+            .opacity(isRevealed && isClosing == false ? 0.18 : 1.0)
     }
 }
 

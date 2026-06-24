@@ -8,9 +8,32 @@ private let cabinSceneWidthScale: CGFloat = 1.0
 private let cabinSceneHorizontalOffset: CGFloat = 0
 private let cabinSceneDayVerticalCorrection: CGFloat = 12
 private let compactActionCardHorizontalPadding: CGFloat = 28
-private let compactActionCardBottomPadding: CGFloat = 8
-private let fullscreenActionCardBottomPadding: CGFloat = 40
 private let cabinSceneImageHeightMultiplier: CGFloat = 1455.0 / 1254.0
+
+struct BottomChromeMetrics: Equatable {
+    static let tabBarBottomPadding: CGFloat = 20
+    static let tabBarHeight: CGFloat = 60
+    static let actionCardToTabBarGap: CGFloat = 12
+
+    static var actionCardDistanceFromRootBottom: CGFloat {
+        tabBarBottomPadding + tabBarHeight + actionCardToTabBarGap
+    }
+
+    var containerHeight: CGFloat
+    var bottomSafeAreaInset: CGFloat = 0
+
+    var actionCardBottomPadding: CGFloat {
+        max(Self.actionCardDistanceFromRootBottom - bottomSafeAreaInset, 0)
+    }
+
+    var animalGroupLiftRatio: CGFloat {
+        return 0
+    }
+
+    func actionCardVerticalPadding(isWaitingForAnimal: Bool) -> CGFloat {
+        isWaitingForAnimal ? 14 : 10
+    }
+}
 
 struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
@@ -21,25 +44,30 @@ struct CabinView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottom) {
-                if isSystemDark {
-                    cabinBackground
-                    nightCabinScene
-                } else {
-                    fullscreenDayCabinScene
+            GeometryReader { proxy in
+                let chromeMetrics = BottomChromeMetrics(
+                    containerHeight: proxy.size.height,
+                    bottomSafeAreaInset: proxy.safeAreaInsets.bottom
+                )
+
+                ZStack(alignment: .bottom) {
+                    if isSystemDark {
+                        cabinBackground
+                        nightCabinScene
+                    } else {
+                        fullscreenDayCabinScene(animalGroupLiftRatio: chromeMetrics.animalGroupLiftRatio)
+                    }
+
+                    actionCard(metrics: chromeMetrics)
+                        .padding(.horizontal, actionCardHorizontalPadding)
+                        .padding(.bottom, chromeMetrics.actionCardBottomPadding)
                 }
-
-                actionCard
-                    .padding(.horizontal, actionCardHorizontalPadding)
-                    .padding(.bottom, actionCardBottomPadding)
-
             }
             .navigationBarHidden(true)
             .task {
                 viewModel.bind(environment: environment)
                 environment.revealEligiblePostcards()
-                await environment.refreshStepsIfPossible()
-                await viewModel.refresh()
+                await viewModel.ensureTodayStepsLoaded()
             }
             .sheet(
                 item: $viewModel.pendingGiftConfirmation,
@@ -83,13 +111,15 @@ struct CabinView: View {
         }
     }
 
-    private var fullscreenDayCabinScene: some View {
+    private func fullscreenDayCabinScene(animalGroupLiftRatio: CGFloat) -> some View {
         GeometryReader { proxy in
             CabinSceneView(
                 animals: dayCabinSceneAnimals,
                 isEmpty: dayCabinSceneAnimals.isEmpty,
                 cabinAssetName: cabinHouseAssetName,
                 cabinContentMode: .fill,
+                layoutProfile: CabinAnimalLayout.fullscreenDayRoom,
+                animalGroupLiftRatio: animalGroupLiftRatio,
                 preservesAspectRatio: false
             )
             .frame(
@@ -112,6 +142,7 @@ struct CabinView: View {
                     animals: environment.repository.cabinAnimals,
                     isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit,
                     cabinAssetName: cabinHouseAssetName,
+                    layoutProfile: CabinAnimalLayout.nightCutawayRoom,
                     preservesAspectRatio: false
                 )
                 .frame(width: sceneWidth, height: sceneHeight)
@@ -153,16 +184,12 @@ struct CabinView: View {
         compactActionCardHorizontalPadding
     }
 
-    private var actionCardBottomPadding: CGFloat {
-        isSystemDark ? compactActionCardBottomPadding : fullscreenActionCardBottomPadding
-    }
-
     private var cabinBackgroundAssetName: String {
         isSystemDark ? "cabin_bg_night_full" : "cabin_bg_day_full"
     }
 
     private var cabinHouseAssetName: String {
-        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_night_window_clean_rug"
+        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_fullscreen"
     }
 
     private var dayCabinSceneAnimals: [Animal] {
@@ -185,7 +212,7 @@ struct CabinView: View {
         )
     }
 
-    private var actionCard: some View {
+    private func actionCard(metrics: BottomChromeMetrics) -> some View {
         let isWaitingForAnimal = environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit
         let canGiftTicket = viewModel.canGiftAvailableSteps
 
@@ -276,16 +303,10 @@ struct CabinView: View {
                     )
                 }
 
-                if viewModel.requiresHealthConnection {
-                    Button(AppCopy.Cabin.keepLookingButton) {
-                        viewModel.keepLookingAroundCabin()
-                    }
-                    .buttonStyle(OutlineButtonStyle())
-                }
             }
         }
         .padding(.horizontal, 18)
-        .padding(.vertical, isWaitingForAnimal ? 14 : 10)
+        .padding(.vertical, metrics.actionCardVerticalPadding(isWaitingForAnimal: isWaitingForAnimal))
         .paperCard(cornerRadius: 22)
     }
 
@@ -293,11 +314,14 @@ struct CabinView: View {
         if viewModel.isWorking {
             return viewModel.requiresHealthConnection ? AppCopy.Cabin.connectingHealthButton : AppCopy.Cabin.readingStepsButton
         }
-        return viewModel.requiresHealthConnection ? AppCopy.Cabin.connectButton : AppCopy.Cabin.giftButton
+        if viewModel.isAutoReadingSteps {
+            return AppCopy.Cabin.readingStepsButton
+        }
+        return viewModel.requiresHealthConnection ? AppCopy.Cabin.reconnectButton : AppCopy.Cabin.giftButton
     }
 
     private var isPrimaryButtonDisabled: Bool {
-        if viewModel.isWorking { return true }
+        if viewModel.isWorking || viewModel.isAutoReadingSteps { return true }
         if viewModel.requiresHealthConnection { return false }
         return environment.repository.cabinAnimals.isEmpty
     }

@@ -121,11 +121,12 @@ struct TravelGlobeView: View {
     let routes: [TravelGlobeRoute]
 
     @State private var orientation = GlobeOrientation.defaultReadable
+    fileprivate static let visibleGlobeRadiusRatio: CGFloat = 0.475
 
     var body: some View {
         GeometryReader { proxy in
             let diameter = min(proxy.size.width, proxy.size.height)
-            let radius = diameter * 0.49
+            let radius = diameter * Self.visibleGlobeRadiusRatio
             let center = CGPoint(x: diameter / 2, y: diameter / 2)
             let projection = GlobeProjection(center: center, radius: radius, orientation: orientation)
 
@@ -134,7 +135,6 @@ struct TravelGlobeView: View {
                     globeSurface(diameter: diameter)
                     routeLayer(projection: projection, date: timeline.date)
                         .allowsHitTesting(false)
-                    globeShading(diameter: diameter)
                     markerLayer(projection: projection, date: timeline.date)
                         .allowsHitTesting(false)
                 }
@@ -146,103 +146,14 @@ struct TravelGlobeView: View {
     }
 
     private func globeSurface(diameter: CGFloat) -> some View {
-        ZStack {
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            AppTheme.paperWhite.opacity(0.98),
-                            Color(red: 0.62, green: 0.82, blue: 0.82).opacity(0.94),
-                            Color(red: 0.34, green: 0.67, blue: 0.76)
-                        ],
-                        center: .topLeading,
-                        startRadius: diameter * 0.08,
-                        endRadius: diameter * 0.62
-                    )
-                )
-                .allowsHitTesting(false)
-
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color(red: 0.77, green: 0.91, blue: 0.83).opacity(0.30),
-                            Color.clear
-                        ],
-                        center: UnitPoint(x: 0.34, y: 0.28),
-                        startRadius: 4,
-                        endRadius: diameter * 0.42
-                    )
-                )
-                .allowsHitTesting(false)
-
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color(red: 0.28, green: 0.55, blue: 0.67).opacity(0.22),
-                            Color.clear
-                        ],
-                        center: UnitPoint(x: 0.76, y: 0.78),
-                        startRadius: 8,
-                        endRadius: diameter * 0.45
-                    )
-                )
-                .allowsHitTesting(false)
-
-            SceneKitGlobeSurfaceView(orientation: $orientation)
-                .frame(width: diameter, height: diameter)
-                .saturation(1.08)
-                .contrast(1.10)
-                .brightness(-0.02)
-                .opacity(0.44)
-                .blendMode(.multiply)
-                .clipShape(Circle())
-
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.clear,
-                            Color(red: 0.61, green: 0.79, blue: 0.74).opacity(0.16)
-                        ],
-                        center: .center,
-                        startRadius: diameter * 0.16,
-                        endRadius: diameter * 0.54
-                    )
-                )
-                .blendMode(.multiply)
-                .allowsHitTesting(false)
-
-            Image("texture_paper_grain")
-                .resizable()
-                .scaledToFill()
-                .frame(width: diameter, height: diameter)
-                .opacity(0.16)
-                .clipShape(Circle())
-                .allowsHitTesting(false)
-        }
-        .frame(width: diameter, height: diameter)
-        .clipShape(Circle())
-        .compositingGroup()
-        .overlay {
-            Circle()
-                .stroke(Color(red: 0.18, green: 0.37, blue: 0.45).opacity(0.30), lineWidth: 9)
-                .blur(radius: 1.6)
-                .allowsHitTesting(false)
-        }
-        .overlay {
-            Circle()
-                .stroke(AppTheme.paperWhite.opacity(0.82), lineWidth: 1.8)
-                .allowsHitTesting(false)
-        }
-        .overlay {
-            Circle()
-                .stroke(Color(red: 0.73, green: 0.90, blue: 0.92).opacity(0.26), lineWidth: 14)
-                .blur(radius: 4)
-                .allowsHitTesting(false)
-        }
-        .shadow(color: Color(red: 0.03, green: 0.05, blue: 0.10).opacity(0.28), radius: 18, x: 0, y: 14)
+        SceneKitGlobeSurfaceView(orientation: $orientation)
+            .frame(width: diameter, height: diameter)
+            .saturation(1.06)
+            .contrast(1.06)
+            .frame(width: diameter, height: diameter)
+            .clipShape(Circle())
+            .compositingGroup()
+            .shadow(color: Color(red: 0.03, green: 0.05, blue: 0.10).opacity(0.28), radius: 18, x: 0, y: 14)
     }
 
     private func routeLayer(projection: GlobeProjection, date: Date) -> some View {
@@ -294,45 +205,6 @@ struct TravelGlobeView: View {
         .frame(width: projection.center.x * 2, height: projection.center.y * 2)
     }
 
-    private func globeShading(diameter: CGFloat) -> some View {
-        Circle()
-            .fill(
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.32),
-                        Color.white.opacity(0.04),
-                        Color(red: 0.06, green: 0.12, blue: 0.18).opacity(0.30)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .blendMode(.multiply)
-            .overlay {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                Color.clear,
-                                Color(red: 0.04, green: 0.09, blue: 0.14).opacity(0.24)
-                            ],
-                            center: UnitPoint(x: 0.82, y: 0.82),
-                            startRadius: diameter * 0.10,
-                            endRadius: diameter * 0.56
-                        )
-                    )
-            }
-            .overlay(alignment: .topLeading) {
-                Circle()
-                    .fill(Color.white.opacity(0.26))
-                    .frame(width: diameter * 0.36, height: diameter * 0.20)
-                    .blur(radius: 12)
-                    .offset(x: diameter * 0.18, y: diameter * 0.16)
-            }
-            .frame(width: diameter, height: diameter)
-            .allowsHitTesting(false)
-    }
-
 }
 
 private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
@@ -358,19 +230,35 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
         let cameraNode = SCNNode()
         let camera = SCNCamera()
         camera.usesOrthographicProjection = true
-        camera.orthographicScale = 2.08
+        camera.orthographicScale = 1.06
         camera.zNear = 0.1
         camera.zFar = 20
         cameraNode.camera = camera
         cameraNode.position = SCNVector3(0, 0, 4)
         scene.rootNode.addChildNode(cameraNode)
+        view.pointOfView = cameraNode
+
+        let ambientLight = SCNLight()
+        ambientLight.type = .ambient
+        ambientLight.intensity = 560
+        let ambientNode = SCNNode()
+        ambientNode.light = ambientLight
+        scene.rootNode.addChildNode(ambientNode)
+
+        let keyLight = SCNLight()
+        keyLight.type = .directional
+        keyLight.intensity = 720
+        let keyLightNode = SCNNode()
+        keyLightNode.light = keyLight
+        keyLightNode.eulerAngles = SCNVector3(-0.58, -0.72, 0.0)
+        scene.rootNode.addChildNode(keyLightNode)
 
         let sphere = SCNSphere(radius: 1)
         sphere.segmentCount = 160
 
         let material = SCNMaterial()
         material.diffuse.contents = UIImage(named: "world_travel_map")
-        material.lightingModel = .constant
+        material.lightingModel = .lambert
         material.isDoubleSided = false
         material.diffuse.wrapS = .repeat
         material.diffuse.wrapT = .clamp
@@ -383,6 +271,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
 
         context.coordinator.sphereNode = sphereNode
         context.coordinator.applyCurrentOrientationToNode()
+        view.setNeedsDisplay()
 
         let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
         pan.maximumNumberOfTouches = 1
@@ -431,6 +320,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
 
         func applyCurrentOrientationToNode() {
             sphereNode?.simdTransform = orientation.sceneKitTransform
+            view?.setNeedsDisplay()
         }
 
         @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
@@ -438,7 +328,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
 
             let location = recognizer.location(in: view)
             let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
-            let radius = min(view.bounds.width, view.bounds.height) * 0.49
+            let radius = min(view.bounds.width, view.bounds.height) * TravelGlobeView.visibleGlobeRadiusRatio
 
             switch recognizer.state {
             case .began:
@@ -506,7 +396,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
 
             let dt = min(max(link.duration, 1.0 / 120.0), 1.0 / 30.0)
             let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
-            let radius = min(view.bounds.width, view.bounds.height) * 0.49
+            let radius = min(view.bounds.width, view.bounds.height) * TravelGlobeView.visibleGlobeRadiusRatio
             let delta = CGSize(width: velocity.x * dt, height: velocity.y * dt)
             let nextPoint = CGPoint(x: center.x + delta.width, y: center.y + delta.height)
 

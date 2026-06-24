@@ -3,6 +3,54 @@ import SwiftUI
 import UIKit
 
 struct CabinAnimalLayout {
+    struct LayoutProfile: Equatable {
+        var sourceSize: CGSize
+        var slots: [Slot]
+
+        func renderedRect(in containerSize: CGSize, contentMode: ArtImage.ContentMode) -> CGRect {
+            Self.renderedRect(
+                sourceSize: sourceSize,
+                containerSize: containerSize,
+                contentMode: contentMode
+            )
+        }
+
+        static func renderedRect(
+            sourceSize: CGSize,
+            containerSize: CGSize,
+            contentMode: ArtImage.ContentMode
+        ) -> CGRect {
+            guard sourceSize.width > 0,
+                  sourceSize.height > 0,
+                  containerSize.width > 0,
+                  containerSize.height > 0 else {
+                return CGRect(origin: .zero, size: containerSize)
+            }
+
+            let widthScale = containerSize.width / sourceSize.width
+            let heightScale = containerSize.height / sourceSize.height
+            let scale: CGFloat
+            switch contentMode {
+            case .fit:
+                scale = min(widthScale, heightScale)
+            case .fill:
+                scale = max(widthScale, heightScale)
+            }
+
+            let renderedSize = CGSize(
+                width: sourceSize.width * scale,
+                height: sourceSize.height * scale
+            )
+
+            return CGRect(
+                x: (containerSize.width - renderedSize.width) / 2,
+                y: (containerSize.height - renderedSize.height) / 2,
+                width: renderedSize.width,
+                height: renderedSize.height
+            )
+        }
+    }
+
     enum Floor: Int, CaseIterable {
         case top
         case middle
@@ -42,6 +90,27 @@ struct CabinAnimalLayout {
                 height: height
             )
         }
+
+        func footPoint(in renderedRect: CGRect, verticalLiftRatio: CGFloat) -> CGPoint {
+            let liftedRatioY = footPointRatio.y - verticalLiftRatio
+            return CGPoint(
+                x: renderedRect.minX + renderedRect.width * footPointRatio.x,
+                y: renderedRect.minY + renderedRect.height * liftedRatioY
+            )
+        }
+
+        func frame(in renderedRect: CGRect, aspectRatio: CGFloat, verticalLiftRatio: CGFloat) -> CGRect {
+            let height = renderedRect.height * heightRatio
+            let width = height * aspectRatio
+            let footPoint = footPoint(in: renderedRect, verticalLiftRatio: verticalLiftRatio)
+
+            return CGRect(
+                x: footPoint.x - width / 2,
+                y: footPoint.y - height,
+                width: width,
+                height: height
+            )
+        }
     }
 
     struct Placement: Identifiable {
@@ -50,7 +119,80 @@ struct CabinAnimalLayout {
         var slot: Slot
     }
 
-    static let slots: [Slot] = [
+    static let fullscreenDayRoom = LayoutProfile(
+        sourceSize: CGSize(width: 1254, height: 2712),
+        slots: [
+            Slot(
+                animalId: "xiaoman_hamster",
+                floor: .top,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.205, y: 0.478),
+                heightRatio: 0.120
+            ),
+            Slot(
+                animalId: "moji_cat",
+                floor: .top,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.500, y: 0.452),
+                heightRatio: 0.126
+            ),
+            Slot(
+                animalId: "dengdeng_rabbit",
+                floor: .top,
+                side: .rightSmall,
+                footPointRatio: CGPoint(x: 0.749, y: 0.458),
+                heightRatio: 0.120,
+                isMirrored: true
+            ),
+            Slot(
+                animalId: "tangyuan_puppy",
+                floor: .middle,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.125, y: 0.615),
+                heightRatio: 0.120
+            ),
+            Slot(
+                animalId: "xiaolu_guinea_pig",
+                floor: .middle,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.365, y: 0.635),
+                heightRatio: 0.114
+            ),
+            Slot(
+                animalId: "bear_visitor",
+                floor: .middle,
+                side: .rightSmall,
+                footPointRatio: CGPoint(x: 0.635, y: 0.635),
+                heightRatio: 0.120,
+                isMirrored: true
+            ),
+            Slot(
+                animalId: "deer_visitor",
+                floor: .middle,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.875, y: 0.646),
+                heightRatio: 0.124
+            ),
+            Slot(
+                animalId: "fox_visitor",
+                floor: .bottom,
+                side: .leftLarge,
+                footPointRatio: CGPoint(x: 0.260, y: 0.700),
+                heightRatio: 0.138
+            ),
+            Slot(
+                animalId: "feifei_parrot",
+                floor: .bottom,
+                side: .rightSmall,
+                footPointRatio: CGPoint(x: 0.740, y: 0.700),
+                heightRatio: 0.116
+            )
+        ]
+    )
+
+    static let nightCutawayRoom = LayoutProfile(
+        sourceSize: CGSize(width: 1254, height: 1455),
+        slots: [
         Slot(
             animalId: "xiaoman_hamster",
             floor: .top,
@@ -117,13 +259,19 @@ struct CabinAnimalLayout {
             heightRatio: 0.100
         )
     ]
+    )
 
-    static func slot(for animalId: String) -> Slot? {
-        slots.first { $0.animalId == animalId }
+    static var slots: [Slot] {
+        fullscreenDayRoom.slots
     }
 
-    static func placements(for animals: [Animal]) -> [Placement] {
+    static func slot(for animalId: String, in profile: LayoutProfile = fullscreenDayRoom) -> Slot? {
+        profile.slots.first { $0.animalId == animalId }
+    }
+
+    static func placements(for animals: [Animal], in profile: LayoutProfile = fullscreenDayRoom) -> [Placement] {
         let animalsById = Dictionary(animals.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let slots = profile.slots
         let knownPlacements = slots.compactMap { slot -> Placement? in
             guard let animal = animalsById[slot.animalId] else { return nil }
             return Placement(animal: animal, slot: slot)
@@ -212,8 +360,6 @@ enum CabinAnimalAnimationCatalog {
 }
 
 struct CabinSceneView: View {
-    private let sceneAspectRatio: CGFloat = 1254.0 / 2712.0
-
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isBreathing = false
 
@@ -221,6 +367,8 @@ struct CabinSceneView: View {
     var isEmpty: Bool = false
     var cabinAssetName: String = "cabin_room_base_night_cutaway"
     var cabinContentMode: ArtImage.ContentMode = .fit
+    var layoutProfile: CabinAnimalLayout.LayoutProfile = CabinAnimalLayout.nightCutawayRoom
+    var animalGroupLiftRatio: CGFloat = 0
     var preservesAspectRatio: Bool = true
 
     var body: some View {
@@ -238,7 +386,7 @@ struct CabinSceneView: View {
         if preservesAspectRatio {
             sceneContent
                 .frame(maxWidth: .infinity)
-                .aspectRatio(sceneAspectRatio, contentMode: .fit)
+                .aspectRatio(layoutProfile.sourceSize.width / layoutProfile.sourceSize.height, contentMode: .fit)
         } else {
             sceneContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -248,7 +396,9 @@ struct CabinSceneView: View {
     private var sceneContent: some View {
         GeometryReader { geometry in
             let size = geometry.size
-            let placements = CabinAnimalLayout.placements(for: Array(animals.prefix(9)))
+            let renderedRect = layoutProfile.renderedRect(in: size, contentMode: cabinContentMode)
+            let placements = CabinAnimalLayout.placements(for: Array(animals.prefix(9)), in: layoutProfile)
+            let verticalLiftRatio = min(max(animalGroupLiftRatio, 0), 0.025)
 
             ZStack {
                 ArtImage(name: cabinAssetName, contentMode: cabinContentMode)
@@ -258,7 +408,11 @@ struct CabinSceneView: View {
                     ForEach(placements) { placement in
                         let animationEntry = CabinAnimalAnimationCatalog.entry(for: placement.animal.id)
                         let aspectRatio = animationEntry?.aspectRatio ?? 1
-                        let frame = placement.slot.frame(in: size, aspectRatio: aspectRatio)
+                        let frame = placement.slot.frame(
+                            in: renderedRect,
+                            aspectRatio: aspectRatio,
+                            verticalLiftRatio: verticalLiftRatio
+                        )
 
                         cabinAnimalView(
                             for: placement.animal,
