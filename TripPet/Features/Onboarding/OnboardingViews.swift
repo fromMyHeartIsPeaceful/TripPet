@@ -2,37 +2,90 @@ import SwiftUI
 
 struct AppRootView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @Environment(\.scenePhase) private var scenePhase
     @State private var isPreparing = true
+    @State private var isShowingLaunchOverlay = false
+    @State private var didStartInitialLaunch = false
+    @State private var lastForegroundedAt: Date?
 
     var body: some View {
-        Group {
-            if isPreparing {
+        ZStack {
+            Group {
+                if isPreparing {
+                    LoadingStoryView()
+                } else if environment.repository.userFlags.onboardingCompleted == false {
+                    OnboardingView(
+                        onFinished: {
+                            environment.repository.completeOnboarding()
+                        }
+                    )
+                } else if environment.repository.userFlags.healthGuideDismissed == false {
+                    HealthConnectView(
+                        onFinished: {
+                            environment.repository.dismissHealthGuide()
+                        }
+                    )
+                } else {
+                    RootTabView()
+                        .task {
+                            environment.revealEligiblePostcards()
+                        }
+                }
+            }
+
+            if isShowingLaunchOverlay {
                 LoadingStoryView()
-            } else if environment.repository.userFlags.onboardingCompleted == false {
-                OnboardingView(
-                    onFinished: {
-                        environment.repository.completeOnboarding()
-                    }
-                )
-            } else if environment.repository.userFlags.healthGuideDismissed == false {
-                HealthConnectView(
-                    onFinished: {
-                        environment.repository.dismissHealthGuide()
-                    }
-                )
-            } else {
-                RootTabView()
-                    .task {
-                        environment.revealEligiblePostcards()
-                    }
+                    .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.22), value: environment.repository.userFlags)
+        .animation(.easeInOut(duration: 0.18), value: isShowingLaunchOverlay)
         .task {
-            await environment.refreshStepsIfPossible()
-            try? await Task.sleep(nanoseconds: 2_500_000_000)
-            isPreparing = false
+            guard didStartInitialLaunch == false else { return }
+            didStartInitialLaunch = true
+            lastForegroundedAt = Date()
+            await displayInitialLaunchStory()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            handleForegroundActivation()
+        }
+    }
+
+    private func displayInitialLaunchStory() async {
+        try? await Task.sleep(nanoseconds: AppLaunchPresentationPolicy.launchStoryDurationNanoseconds)
+        isPreparing = false
+    }
+
+    private func handleForegroundActivation(now: Date = Date()) {
+        let shouldShowLaunchStory = AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
+            previousActivationAt: lastForegroundedAt,
+            now: now
+        )
+        lastForegroundedAt = now
+
+        guard didStartInitialLaunch, isPreparing == false, shouldShowLaunchStory else { return }
+        guard isShowingLaunchOverlay == false else { return }
+
+        isShowingLaunchOverlay = true
+        Task {
+            try? await Task.sleep(nanoseconds: AppLaunchPresentationPolicy.launchStoryDurationNanoseconds)
+            isShowingLaunchOverlay = false
+        }
+    }
+}
+
+struct AppLaunchPresentationPolicy {
+    static let launchStoryDuration: TimeInterval = 2.5
+    static let hotLaunchGraceInterval: TimeInterval = 30
+    static let launchStoryDurationNanoseconds: UInt64 = 2_500_000_000
+
+    static func shouldPresentLaunchStoryOnActivation(
+        previousActivationAt: Date?,
+        now: Date
+    ) -> Bool {
+        guard let previousActivationAt else { return true }
+        return now.timeIntervalSince(previousActivationAt) >= hotLaunchGraceInterval
     }
 }
 
@@ -198,10 +251,13 @@ struct HealthConnectView: View {
                 refreshStatus()
                 onFinished()
             } else {
-                let didRequest = try await environment.requestStepAuthorizationAndRefresh()
+                let didRequest = try await environment.requestStepAuthorizationOnly()
                 refreshStatus()
-                if environment.stepSnapshot.steps != nil {
+                if didRequest {
                     onFinished()
+                    Task {
+                        await environment.refreshStepsIfPossible()
+                    }
                 } else if didRequest == false {
                     message = AppCopy.Health.requestUnchanged
                 }

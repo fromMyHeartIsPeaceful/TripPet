@@ -55,7 +55,7 @@ final class AppEnvironment: ObservableObject {
             .store(in: &cancellables)
 
         self.postcardNotificationService.tabRequestHandler = { [weak self] tab in
-            self?.notificationRequestedTab = tab
+            self?.queueNotificationTabRequest(tab)
         }
     }
 
@@ -113,8 +113,7 @@ final class AppEnvironment: ObservableObject {
 
     @discardableResult
     func requestStepAuthorizationAndRefresh() async throws -> Bool {
-        let didRequest = try await stepCountProvider.requestAuthorization()
-        updateStepStatus()
+        let didRequest = try await requestStepAuthorizationOnly()
 
         if didRequest, stepSnapshot.status.canAttemptStepRead {
             do {
@@ -129,6 +128,13 @@ final class AppEnvironment: ObservableObject {
             }
         }
 
+        return didRequest
+    }
+
+    @discardableResult
+    func requestStepAuthorizationOnly() async throws -> Bool {
+        let didRequest = try await stepCountProvider.requestAuthorization()
+        updateStepStatus()
         return didRequest
     }
 
@@ -246,6 +252,11 @@ final class AppEnvironment: ObservableObject {
     func clearNotificationTabRequest() {
         notificationRequestedTab = nil
         postcardNotificationService.requestedTab = nil
+    }
+
+    func queueNotificationTabRequest(_ tab: AppTab) {
+        notificationRequestedTab = tab
+        postcardNotificationService.requestedTab = tab
     }
 
     func consumeNotificationTabRequest() -> AppTab? {

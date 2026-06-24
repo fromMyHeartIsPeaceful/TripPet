@@ -107,6 +107,7 @@ struct CabinLodgingState: Equatable {
 protocol AppUserStateStore {
     func load(seed: SeedData) -> AppUserState
     func save(_ state: AppUserState)
+    func markPostcardRead(postcardId: String)
 }
 
 @MainActor
@@ -118,11 +119,22 @@ final class InMemoryUserStateStore: AppUserStateStore {
     }
 
     func load(seed: SeedData) -> AppUserState {
-        savedState ?? AppUserState(seed: seed)
+        if let savedState {
+            return savedState
+        }
+
+        let state = AppUserState(seed: seed)
+        savedState = state
+        return state
     }
 
     func save(_ state: AppUserState) {
         savedState = state
+    }
+
+    func markPostcardRead(postcardId: String) {
+        guard let index = savedState?.postcards.firstIndex(where: { $0.id == postcardId }) else { return }
+        savedState?.postcards[index].isRead = true
     }
 }
 
@@ -435,6 +447,17 @@ final class SwiftDataUserStateStore: AppUserStateStore {
             PersistedCabinLodgingState(state: state.cabinLodging)
         ])
         replace(PersistedConsumedPostcardText.self, with: state.consumedPostcardTextIds.map(PersistedConsumedPostcardText.init(id:)))
+        try? context.save()
+    }
+
+    func markPostcardRead(postcardId: String) {
+        let descriptor = FetchDescriptor<PersistedPostcard>(
+            predicate: #Predicate { postcard in
+                postcard.id == postcardId
+            }
+        )
+        guard let postcard = try? context.fetch(descriptor).first else { return }
+        postcard.isRead = true
         try? context.save()
     }
 

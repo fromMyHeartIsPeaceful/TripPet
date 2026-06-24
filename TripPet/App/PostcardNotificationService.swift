@@ -195,7 +195,6 @@ extension PostcardNotificationService: UNUserNotificationCenterDelegate {
         }
 
         Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 250_000_000)
             guard let self else {
                 PostcardNotificationDiagnostics.record("didReceive skipped released service")
                 return

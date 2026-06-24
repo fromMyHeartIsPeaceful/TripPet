@@ -236,10 +236,16 @@ final class AppRepository: ObservableObject {
         return true
     }
 
-    func markPostcardRead(_ postcard: Postcard) {
-        guard let index = postcards.firstIndex(where: { $0.id == postcard.id }) else { return }
+    @discardableResult
+    func markPostcardRead(_ postcard: Postcard) -> Bool {
+        guard let index = postcards.firstIndex(where: { $0.id == postcard.id }),
+              postcards[index].isRead == false else {
+            return false
+        }
+
         postcards[index].isRead = true
-        saveState()
+        store.markPostcardRead(postcardId: postcard.id)
+        return true
     }
 
     private func ensureFirstAirportPostcardIfNeeded() {
