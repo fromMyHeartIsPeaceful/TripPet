@@ -201,7 +201,7 @@ final class CabinViewModel: ObservableObject {
         }
 
         if didReadOnFirstAttempt == false {
-            try? await Task.sleep(nanoseconds: 750_000_000)
+            await Task.yield()
             do {
                 _ = try await environment.readTodaySteps()
             } catch {

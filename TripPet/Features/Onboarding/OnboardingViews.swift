@@ -6,7 +6,7 @@ struct AppRootView: View {
     @State private var isPreparing = true
     @State private var isShowingLaunchOverlay = false
     @State private var didStartInitialLaunch = false
-    @State private var lastForegroundedAt: Date?
+    @State private var lastBackgroundedAt: Date?
 
     var body: some View {
         ZStack {
@@ -43,12 +43,10 @@ struct AppRootView: View {
         .task {
             guard didStartInitialLaunch == false else { return }
             didStartInitialLaunch = true
-            lastForegroundedAt = Date()
             await displayInitialLaunchStory()
         }
         .onChange(of: scenePhase) { _, newPhase in
-            guard newPhase == .active else { return }
-            handleForegroundActivation()
+            handleScenePhaseChange(newPhase)
         }
     }
 
@@ -57,12 +55,30 @@ struct AppRootView: View {
         isPreparing = false
     }
 
+    private func handleScenePhaseChange(_ phase: ScenePhase, now: Date = Date()) {
+        switch phase {
+        case .active:
+            handleForegroundActivation(now: now)
+        case .background:
+            recordBackgroundTransition(now: now)
+        case .inactive:
+            break
+        @unknown default:
+            break
+        }
+    }
+
+    private func recordBackgroundTransition(now: Date = Date()) {
+        guard didStartInitialLaunch, isPreparing == false else { return }
+        lastBackgroundedAt = now
+    }
+
     private func handleForegroundActivation(now: Date = Date()) {
         let shouldShowLaunchStory = AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
-            previousActivationAt: lastForegroundedAt,
+            previousBackgroundedAt: lastBackgroundedAt,
             now: now
         )
-        lastForegroundedAt = now
+        lastBackgroundedAt = nil
 
         guard didStartInitialLaunch, isPreparing == false, shouldShowLaunchStory else { return }
         guard isShowingLaunchOverlay == false else { return }
@@ -81,11 +97,11 @@ struct AppLaunchPresentationPolicy {
     static let launchStoryDurationNanoseconds: UInt64 = 2_500_000_000
 
     static func shouldPresentLaunchStoryOnActivation(
-        previousActivationAt: Date?,
+        previousBackgroundedAt: Date?,
         now: Date
     ) -> Bool {
-        guard let previousActivationAt else { return true }
-        return now.timeIntervalSince(previousActivationAt) >= hotLaunchGraceInterval
+        guard let previousBackgroundedAt else { return false }
+        return now.timeIntervalSince(previousBackgroundedAt) >= hotLaunchGraceInterval
     }
 }
 

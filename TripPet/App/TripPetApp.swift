@@ -6,6 +6,7 @@ import SwiftUI
 struct TripPetApp: App {
     @StateObject private var environment = AppEnvironment.live()
     @Environment(\.scenePhase) private var scenePhase
+    @State private var didEnterBackground = false
 
     init() {
         BundledFontRegistrar.registerFonts()
@@ -22,12 +23,22 @@ struct TripPetApp: App {
                     environment.startStepObservationIfPossible()
                 }
                 .onChange(of: scenePhase) { _, newPhase in
-                    guard newPhase == .active else { return }
-                    Task {
-                        environment.revealEligiblePostcards()
-                        await environment.refreshStepsIfPossible()
-                        await environment.schedulePendingPostcardNotificationsForActiveTrips()
-                        environment.startStepObservationIfPossible()
+                    switch newPhase {
+                    case .background:
+                        didEnterBackground = true
+                    case .active:
+                        guard didEnterBackground else { return }
+                        didEnterBackground = false
+                        Task {
+                            environment.revealEligiblePostcards()
+                            await environment.refreshStepsIfPossible()
+                            await environment.schedulePendingPostcardNotificationsForActiveTrips()
+                            environment.startStepObservationIfPossible()
+                        }
+                    case .inactive:
+                        break
+                    @unknown default:
+                        break
                     }
                 }
         }

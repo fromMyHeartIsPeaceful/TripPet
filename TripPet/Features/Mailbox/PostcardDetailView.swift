@@ -32,9 +32,10 @@ struct PostcardDetailView: View {
             Button {
                 guard isHandlingReturn == false else { return }
                 isHandlingReturn = true
+                dismiss()
                 Task {
+                    await Task.yield()
                     await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
-                    dismiss()
                 }
             } label: {
                 HStack(spacing: 6) {

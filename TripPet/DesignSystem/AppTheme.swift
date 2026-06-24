@@ -11,6 +11,7 @@ enum AppTheme {
     static let oliveInk = Color(red: 0.239, green: 0.263, blue: 0.22)
     static let pencilGray = Color(red: 0.455, green: 0.463, blue: 0.435)
     static let paperGray = Color(red: 0.871, green: 0.839, blue: 0.78)
+    static let mapRouteBlue = Color(red: 0.07, green: 0.16, blue: 0.36)
 
     static let ink = oliveInk
     static let paper = paperWhite

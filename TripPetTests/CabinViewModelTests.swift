@@ -625,6 +625,32 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(stepProvider.stepReadCount, 1)
     }
 
+    func testConcurrentStepReadsShareInFlightProviderRequest() async throws {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(
+            status: .readPermissionRequested,
+            steps: 4_567,
+            readDelayNanoseconds: 50_000_000
+        )
+        let environment = AppEnvironment(
+            repository: AppRepository(seed: seed, store: InMemoryUserStateStore()),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+
+        async let firstRead = environment.readTodaySteps()
+        async let secondRead = environment.readTodaySteps()
+        let values = try await (firstRead, secondRead)
+
+        XCTAssertEqual(values.0, 4_567)
+        XCTAssertEqual(values.1, 4_567)
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_567)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+    }
+
     func testEnsureTodayStepsLoadedReadsStepsOnHomeEntry() async {
         let seed = SeedData.preview
         let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 4_321)
@@ -830,19 +856,22 @@ private final class CountingStepProvider: StepCountProvider {
     var status: StepCountAuthorizationStatus
     var steps: Int
     var readResults: [Result<Int, StepCountProviderError>]
+    var readDelayNanoseconds: UInt64
     private(set) var authorizationRequestCount = 0
     private(set) var stepReadCount = 0
 
-    init(status: StepCountAuthorizationStatus, steps: Int) {
+    init(status: StepCountAuthorizationStatus, steps: Int, readDelayNanoseconds: UInt64 = 0) {
         self.status = status
         self.steps = steps
         self.readResults = []
+        self.readDelayNanoseconds = readDelayNanoseconds
     }
 
-    init(status: StepCountAuthorizationStatus, readResults: [Result<Int, StepCountProviderError>]) {
+    init(status: StepCountAuthorizationStatus, readResults: [Result<Int, StepCountProviderError>], readDelayNanoseconds: UInt64 = 0) {
         self.status = status
         self.steps = 0
         self.readResults = readResults
+        self.readDelayNanoseconds = readDelayNanoseconds
     }
 
     var isHealthDataAvailable: Bool {
@@ -861,6 +890,9 @@ private final class CountingStepProvider: StepCountProvider {
 
     func todayStepCount() async throws -> Int {
         stepReadCount += 1
+        if readDelayNanoseconds > 0 {
+            try? await Task.sleep(nanoseconds: readDelayNanoseconds)
+        }
         if readResults.isEmpty == false {
             switch readResults.removeFirst() {
             case .success(let steps):

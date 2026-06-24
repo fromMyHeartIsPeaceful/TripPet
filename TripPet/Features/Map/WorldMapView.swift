@@ -4,6 +4,7 @@ import simd
 
 struct WorldMapView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    var isActive: Bool = true
 
     var body: some View {
         GeometryReader { proxy in
@@ -22,7 +23,7 @@ struct WorldMapView: View {
                     Spacer()
                         .frame(height: topReserve)
 
-                    TravelGlobeView(routes: globeRoutes)
+                    TravelGlobeView(routes: globeRoutes, isActive: isActive)
                         .frame(width: globeDiameter, height: globeDiameter)
                         .accessibilityLabel(accessibilitySummary)
 
@@ -119,6 +120,7 @@ private struct MapCosmicBackground: View {
 
 struct TravelGlobeView: View {
     let routes: [TravelGlobeRoute]
+    var isActive: Bool = true
 
     @State private var orientation = GlobeOrientation.defaultReadable
     fileprivate static let visibleGlobeRadiusRatio: CGFloat = 0.475
@@ -146,7 +148,7 @@ struct TravelGlobeView: View {
     }
 
     private func globeSurface(diameter: CGFloat) -> some View {
-        SceneKitGlobeSurfaceView(orientation: $orientation)
+        SceneKitGlobeSurfaceView(orientation: $orientation, isActive: isActive)
             .frame(width: diameter, height: diameter)
             .saturation(1.06)
             .contrast(1.06)
@@ -167,10 +169,10 @@ struct TravelGlobeView: View {
                         segments[index].dropFirst().forEach { path.addLine(to: $0) }
                     }
                     .stroke(
-                        route.tint.opacity(0.78),
+                        route.tint.opacity(0.92),
                         style: StrokeStyle(lineWidth: 2.7, lineCap: .round, lineJoin: .round, dash: [7, 6])
                     )
-                    .shadow(color: route.tint.opacity(0.22), radius: 5, x: 0, y: 2)
+                    .shadow(color: route.tint.opacity(0.30), radius: 5, x: 0, y: 2)
                 }
             }
         }
@@ -209,9 +211,10 @@ struct TravelGlobeView: View {
 
 private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
     @Binding var orientation: GlobeOrientation
+    var isActive: Bool
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(orientation: orientation, orientationBinding: $orientation)
+        Coordinator(orientation: orientation, orientationBinding: $orientation, isActive: isActive)
     }
 
     func makeUIView(context: Context) -> SCNView {
@@ -221,7 +224,8 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
         view.allowsCameraControl = false
         view.antialiasingMode = .multisampling4X
         view.preferredFramesPerSecond = 60
-        view.rendersContinuously = true
+        view.rendersContinuously = false
+        view.isUserInteractionEnabled = isActive
 
         let scene = SCNScene()
         scene.background.contents = UIColor.clear
@@ -285,6 +289,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
     func updateUIView(_ view: SCNView, context: Context) {
         context.coordinator.orientationBinding = $orientation
         context.coordinator.view = view
+        context.coordinator.setActive(isActive)
         context.coordinator.syncExternalOrientation(orientation)
     }
 
@@ -297,15 +302,17 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
         weak var view: SCNView?
         weak var sphereNode: SCNNode?
 
+        private var isActive: Bool
         private var orientation: GlobeOrientation
         private var lastLocation: CGPoint?
         private var velocity: CGPoint = .zero
         private var displayLink: CADisplayLink?
         private var isInteracting = false
 
-        init(orientation: GlobeOrientation, orientationBinding: Binding<GlobeOrientation>) {
+        init(orientation: GlobeOrientation, orientationBinding: Binding<GlobeOrientation>, isActive: Bool) {
             self.orientation = orientation
             self.orientationBinding = orientationBinding
+            self.isActive = isActive
         }
 
         deinit {
@@ -318,13 +325,24 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
             applyCurrentOrientationToNode()
         }
 
+        func setActive(_ newIsActive: Bool) {
+            isActive = newIsActive
+            view?.isUserInteractionEnabled = newIsActive
+            if newIsActive == false {
+                isInteracting = false
+                lastLocation = nil
+                velocity = .zero
+                invalidateMomentum()
+            }
+        }
+
         func applyCurrentOrientationToNode() {
             sphereNode?.simdTransform = orientation.sceneKitTransform
             view?.setNeedsDisplay()
         }
 
         @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
-            guard let view else { return }
+            guard isActive, let view else { return }
 
             let location = recognizer.location(in: view)
             let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
@@ -369,6 +387,7 @@ private struct SceneKitGlobeSurfaceView: UIViewRepresentable {
         }
 
         private func startMomentumIfNeeded(in view: SCNView) {
+            guard isActive else { return }
             guard hypot(velocity.x, velocity.y) > 40 else {
                 velocity = .zero
                 return
@@ -488,11 +507,7 @@ struct TravelGlobeRoute: Identifiable {
     let tint: Color
 
     static let palette: [Color] = [
-        AppTheme.ochre,
-        AppTheme.peach,
-        AppTheme.deepSage,
-        Color(red: 0.47, green: 0.62, blue: 0.84),
-        Color(red: 0.72, green: 0.54, blue: 0.76)
+        AppTheme.mapRouteBlue
     ]
 
     func travelProgress(at date: Date) -> Double {

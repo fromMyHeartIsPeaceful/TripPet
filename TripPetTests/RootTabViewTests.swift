@@ -27,36 +27,36 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
     }
 
-    func testLaunchPolicyShowsLaunchStoryOnColdActivation() {
+    func testLaunchPolicySkipsLaunchStoryWithoutBackgroundTimestamp() {
         let now = Date(timeIntervalSince1970: 1_000)
 
-        XCTAssertTrue(
+        XCTAssertFalse(
             AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
-                previousActivationAt: nil,
+                previousBackgroundedAt: nil,
                 now: now
             )
         )
     }
 
     func testLaunchPolicySkipsLaunchStoryWithinHotLaunchGraceInterval() {
-        let previousActivationAt = Date(timeIntervalSince1970: 1_000)
-        let now = previousActivationAt.addingTimeInterval(29.9)
+        let previousBackgroundedAt = Date(timeIntervalSince1970: 1_000)
+        let now = previousBackgroundedAt.addingTimeInterval(29.9)
 
         XCTAssertFalse(
             AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
-                previousActivationAt: previousActivationAt,
+                previousBackgroundedAt: previousBackgroundedAt,
                 now: now
             )
         )
     }
 
     func testLaunchPolicyShowsLaunchStoryAtHotLaunchGraceBoundary() {
-        let previousActivationAt = Date(timeIntervalSince1970: 1_000)
-        let now = previousActivationAt.addingTimeInterval(30)
+        let previousBackgroundedAt = Date(timeIntervalSince1970: 1_000)
+        let now = previousBackgroundedAt.addingTimeInterval(30)
 
         XCTAssertTrue(
             AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
-                previousActivationAt: previousActivationAt,
+                previousBackgroundedAt: previousBackgroundedAt,
                 now: now
             )
         )
@@ -93,7 +93,7 @@ final class RootTabViewTests: XCTestCase {
         environment.queueNotificationTabRequest(.mailbox)
         XCTAssertTrue(
             AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
-                previousActivationAt: nil,
+                previousBackgroundedAt: Date(timeIntervalSince1970: 960),
                 now: Date(timeIntervalSince1970: 1_000)
             )
         )
@@ -265,6 +265,10 @@ final class RootTabViewTests: XCTestCase {
             GlobeCoordinate.coordinate(for: "paris", destination: nil),
             GlobeCoordinate(latitude: 48.8566, longitude: 2.3522)
         )
+    }
+
+    func testTravelGlobeRoutesUseSingleDeepBlueTint() {
+        XCTAssertEqual(TravelGlobeRoute.palette.count, 1)
     }
 
     private func makePostcard(

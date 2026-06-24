@@ -22,7 +22,7 @@ final class AppEnvironment: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     private var notifiedPostcardIds: Set<String> = []
     private var didRequestPostcardReturnNotificationAuthorization = false
-    private var isRefreshingSteps = false
+    private var stepReadTask: Task<Int, Error>?
     private var isObservingStepChanges = false
 
     init(
@@ -142,7 +142,6 @@ final class AppEnvironment: ObservableObject {
         repository.refreshCabinLodging(on: currentDate)
         updateStepStatus()
         guard stepSnapshot.status.canAttemptStepRead else { return }
-        guard isRefreshingSteps == false else { return }
 
         do {
             _ = try await readTodaySteps()
@@ -158,14 +157,21 @@ final class AppEnvironment: ObservableObject {
 
     @discardableResult
     func readTodaySteps() async throws -> Int {
-        guard isRefreshingSteps == false else {
-            return stepSnapshot.steps ?? 0
+        if let stepReadTask {
+            return try await stepReadTask.value
         }
 
-        isRefreshingSteps = true
-        defer { isRefreshingSteps = false }
+        let task = Task { @MainActor [weak self] in
+            guard let self else { throw CancellationError() }
+            return try await self.stepCountProvider.todayStepCount()
+        }
+        stepReadTask = task
 
-        let providerSteps = try await stepCountProvider.todayStepCount()
+        defer {
+            stepReadTask = nil
+        }
+
+        let providerSteps = try await task.value
         let steps = providerSteps
         stepSnapshot = StepCountSnapshot(
             status: stepCountProvider.authorizationStatus(),
