@@ -252,13 +252,16 @@ struct HealthConnectView: View {
                 onFinished()
             } else {
                 let didRequest = try await environment.requestStepAuthorizationOnly()
-                refreshStatus()
                 if didRequest {
-                    onFinished()
-                    Task {
-                        await environment.refreshStepsIfPossible()
+                    await environment.refreshStepsIfPossible()
+                    refreshStatus()
+                    if environment.stepSnapshot.steps != nil {
+                        onFinished()
+                    } else {
+                        message = AppCopy.Health.requestUnchanged
                     }
                 } else if didRequest == false {
+                    refreshStatus()
                     message = AppCopy.Health.requestUnchanged
                 }
             }

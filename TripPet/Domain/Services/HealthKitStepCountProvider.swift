@@ -13,23 +13,14 @@ final class HealthKitStepCountProvider: StepCountProvider {
     #endif
 
     var isHealthDataAvailable: Bool {
-        #if DEBUG && targetEnvironment(simulator)
-        return true
-        #else
         #if canImport(HealthKit)
         return HKHealthStore.isHealthDataAvailable()
         #else
         return false
         #endif
-        #endif
     }
 
     func authorizationStatus() -> StepCountAuthorizationStatus {
-        #if DEBUG && targetEnvironment(simulator)
-        return UserDefaults.standard.bool(forKey: Self.readPermissionRequestedKey)
-            ? .readPermissionRequested
-            : .notDetermined
-        #else
         #if canImport(HealthKit)
         guard isHealthDataAvailable,
               HKObjectType.quantityType(forIdentifier: .stepCount) != nil else {
@@ -44,14 +35,9 @@ final class HealthKitStepCountProvider: StepCountProvider {
         #else
         return .unavailable
         #endif
-        #endif
     }
 
     func requestAuthorization() async throws -> Bool {
-        #if DEBUG && targetEnvironment(simulator)
-        UserDefaults.standard.set(true, forKey: Self.readPermissionRequestedKey)
-        return true
-        #else
         #if canImport(HealthKit)
         guard isHealthDataAvailable else {
             throw StepCountProviderError.unavailable
@@ -75,13 +61,9 @@ final class HealthKitStepCountProvider: StepCountProvider {
         #else
         throw StepCountProviderError.unavailable
         #endif
-        #endif
     }
 
     func todayStepCount() async throws -> Int {
-        #if DEBUG && targetEnvironment(simulator)
-        return 0
-        #else
         #if canImport(HealthKit)
         guard isHealthDataAvailable else {
             throw StepCountProviderError.unavailable
@@ -120,13 +102,9 @@ final class HealthKitStepCountProvider: StepCountProvider {
         #else
         throw StepCountProviderError.unavailable
         #endif
-        #endif
     }
 
     func startObservingStepChanges(onChange: @escaping @MainActor @Sendable () async -> Void) throws {
-        #if DEBUG && targetEnvironment(simulator)
-        return
-        #else
         #if canImport(HealthKit)
         guard isHealthDataAvailable else {
             throw StepCountProviderError.unavailable
@@ -150,7 +128,6 @@ final class HealthKitStepCountProvider: StepCountProvider {
         healthStore.execute(query)
         #else
         throw StepCountProviderError.unavailable
-        #endif
         #endif
     }
 }
