@@ -52,8 +52,7 @@ struct CabinView: View {
 
                 ZStack(alignment: .bottom) {
                     if isSystemDark {
-                        cabinBackground
-                        nightCabinScene
+                        fullscreenDayCabinScene(animalGroupLiftRatio: chromeMetrics.animalGroupLiftRatio)
                     } else {
                         fullscreenDayCabinScene(animalGroupLiftRatio: chromeMetrics.animalGroupLiftRatio)
                     }
@@ -189,7 +188,7 @@ struct CabinView: View {
     }
 
     private var cabinHouseAssetName: String {
-        isSystemDark ? "cabin_house_night_lit" : "cabin_room_day_fullscreen"
+        isSystemDark ? "cabin_room_day_night_window_clean_rug" : "cabin_room_day_fullscreen"
     }
 
     private var dayCabinSceneAnimals: [Animal] {
