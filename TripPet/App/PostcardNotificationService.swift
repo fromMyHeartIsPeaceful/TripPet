@@ -3,7 +3,7 @@ import UserNotifications
 
 enum AppTab: Hashable {
     case cabin
-    case mailbox
+    case achievements
     case map
 }
 
@@ -91,7 +91,7 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
         guard userInfo[targetKey] as? String == mailboxTarget else {
             return nil
         }
-        return .mailbox
+        return .achievements
     }
 
     private nonisolated static func canScheduleNotification(for status: UNAuthorizationStatus) -> Bool {

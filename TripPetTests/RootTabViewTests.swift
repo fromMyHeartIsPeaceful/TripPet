@@ -3,25 +3,14 @@ import XCTest
 
 @MainActor
 final class RootTabViewTests: XCTestCase {
-    func testMailboxBadgeCountsOnlyUnreadPostcards() {
-        let postcards = [
-            makePostcard(id: "unread", isRead: false),
-            makePostcard(id: "read", isRead: true)
-        ]
-
-        XCTAssertEqual(RootTabView.unreadMailboxBadgeCount(in: postcards), 1)
+    func testSecondTabUsesAchievementCopy() {
+        XCTAssertEqual(AppCopy.Tabs.achievements, "成就")
     }
 
-    func testMailboxBadgeClearsWhenPostcardIsRead() {
-        let postcard = makePostcard(id: "postcard", isRead: true)
-
-        XCTAssertEqual(RootTabView.unreadMailboxBadgeCount(in: [postcard]), 0)
-    }
-
-    func testPostcardNotificationPayloadRoutesToMailboxTab() {
+    func testPostcardNotificationPayloadRoutesToAchievementsTab() {
         XCTAssertEqual(
             PostcardNotificationService.targetTab(from: ["target": "mailbox", "postcardId": "postcard-1"]),
-            .mailbox
+            .achievements
         )
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
     }

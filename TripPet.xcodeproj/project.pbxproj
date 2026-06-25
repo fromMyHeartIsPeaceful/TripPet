@@ -47,6 +47,10 @@
 		B00000000000000000000026 /* PostcardTextLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000029 /* PostcardTextLibrary.swift */; };
 		B00000000000000000000027 /* LocationDestinationCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002A /* LocationDestinationCatalog.json */; };
 		B00000000000000000000028 /* PostcardNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PostcardNotificationService.swift */; };
+		B00000000000000000000029 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* Achievement.swift */; };
+		B0000000000000000000002A /* AchievementEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002D /* AchievementEngine.swift */; };
+		B0000000000000000000002B /* TravelAchievementWallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002E /* TravelAchievementWallView.swift */; };
+		B0000000000000000000002C /* AchievementEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002F /* AchievementEngineTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +107,10 @@
 		F00000000000000000000029 /* PostcardTextLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PostcardTextLibrary.swift; sourceTree = "<group>"; };
 		F0000000000000000000002A /* LocationDestinationCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LocationDestinationCatalog.json; sourceTree = "<group>"; };
 		F0000000000000000000002B /* PostcardNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardNotificationService.swift; sourceTree = "<group>"; };
+		F0000000000000000000002C /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Achievement.swift; sourceTree = "<group>"; };
+		F0000000000000000000002D /* AchievementEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/AchievementEngine.swift; sourceTree = "<group>"; };
+		F0000000000000000000002E /* TravelAchievementWallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievements/TravelAchievementWallView.swift; sourceTree = "<group>"; };
+		F0000000000000000000002F /* AchievementEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementEngineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,12 +182,14 @@
 				F00000000000000000000006 /* Ticket.swift */,
 				F00000000000000000000007 /* Trip.swift */,
 				F00000000000000000000008 /* Postcard.swift */,
+				F0000000000000000000002C /* Achievement.swift */,
 				F00000000000000000000009 /* StepCountProvider.swift */,
 				F0000000000000000000000A /* HealthKitStepCountProvider.swift */,
 				F0000000000000000000000B /* TicketRuleEngine.swift */,
 				F0000000000000000000000C /* AnimalVisitService.swift */,
 				F0000000000000000000000D /* PostcardScheduler.swift */,
 				F00000000000000000000029 /* PostcardTextLibrary.swift */,
+				F0000000000000000000002D /* AchievementEngine.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -235,6 +245,7 @@
 				F00000000000000000000018 /* SettingsView.swift */,
 				F00000000000000000000019 /* TravelService.swift */,
 				F00000000000000000000028 /* WorldMapView.swift */,
+				F0000000000000000000002E /* TravelAchievementWallView.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -256,6 +267,7 @@
 				F00000000000000000000022 /* AppRepositoryTripTests.swift */,
 				F00000000000000000000026 /* CabinViewModelTests.swift */,
 				F00000000000000000000027 /* RootTabViewTests.swift */,
+				F0000000000000000000002F /* AchievementEngineTests.swift */,
 			);
 			path = TripPetTests;
 			sourceTree = "<group>";
@@ -375,12 +387,14 @@
 				B00000000000000000000006 /* Ticket.swift in Sources */,
 				B00000000000000000000007 /* Trip.swift in Sources */,
 				B00000000000000000000008 /* Postcard.swift in Sources */,
+				B00000000000000000000029 /* Achievement.swift in Sources */,
 				B00000000000000000000009 /* StepCountProvider.swift in Sources */,
 				B0000000000000000000000A /* HealthKitStepCountProvider.swift in Sources */,
 				B0000000000000000000000B /* TicketRuleEngine.swift in Sources */,
 				B0000000000000000000000C /* AnimalVisitService.swift in Sources */,
 				B0000000000000000000000D /* PostcardScheduler.swift in Sources */,
 				B00000000000000000000026 /* PostcardTextLibrary.swift in Sources */,
+				B0000000000000000000002A /* AchievementEngine.swift in Sources */,
 				B0000000000000000000000E /* AppRepository.swift in Sources */,
 				B0000000000000000000000F /* SeedData.swift in Sources */,
 				B0000000000000000000001D /* ContentManifest.swift in Sources */,
@@ -399,6 +413,7 @@
 				B00000000000000000000018 /* SettingsView.swift in Sources */,
 				B00000000000000000000019 /* TravelService.swift in Sources */,
 				B00000000000000000000025 /* WorldMapView.swift in Sources */,
+				B0000000000000000000002B /* TravelAchievementWallView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +425,7 @@
 				B0000000000000000000001F /* AppRepositoryTripTests.swift in Sources */,
 				B00000000000000000000023 /* CabinViewModelTests.swift in Sources */,
 				B00000000000000000000024 /* RootTabViewTests.swift in Sources */,
+				B0000000000000000000002C /* AchievementEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

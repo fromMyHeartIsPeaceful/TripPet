@@ -3,6 +3,7 @@ import Foundation
 enum AppCopy {
     enum Tabs {
         static let cabin = "小屋"
+        static let achievements = "成就"
         static let mailbox = "邮箱"
         static let map = "地图"
     }

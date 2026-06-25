@@ -5,6 +5,7 @@ struct Ticket: Identifiable, Equatable {
     var date: Date
     var sourceSteps: Int
     var ticketCount: Int
+    var animalId: String? = nil
     var giftedAt: Date
 }
 

@@ -180,6 +180,7 @@ final class AppRepository: ObservableObject {
             date: date,
             sourceSteps: sourceSteps,
             ticketCount: ticketCount,
+            animalId: animal.id,
             giftedAt: date
         )
         tickets.append(ticket)

@@ -12,12 +12,13 @@ struct RootTabView: View {
                 }
                 .tag(AppTab.cabin)
 
-            MailboxView()
+            AchievementWallView {
+                selectedTab = .cabin
+            }
                 .tabItem {
-                    Label(AppCopy.Tabs.mailbox, image: "icon_mail")
+                    Label(AppCopy.Tabs.achievements, image: "icon_collection")
                 }
-                .badge(unreadMailboxBadgeCount)
-                .tag(AppTab.mailbox)
+                .tag(AppTab.achievements)
 
             WorldMapView()
                 .tabItem {
@@ -31,13 +32,5 @@ struct RootTabView: View {
             selectedTab = requestedTab
             environment.clearNotificationTabRequest()
         }
-    }
-
-    var unreadMailboxBadgeCount: Int {
-        Self.unreadMailboxBadgeCount(in: environment.repository.postcards)
-    }
-
-    static func unreadMailboxBadgeCount(in postcards: [Postcard]) -> Int {
-        postcards.filter { $0.isRead == false }.count
     }
 }
