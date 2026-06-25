@@ -577,7 +577,42 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertNil(environment.stepSnapshot.steps)
         XCTAssertEqual(viewModel.stepStatusText, "Health 已连接")
         XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
-        XCTAssertFalse(viewModel.actionMessage.contains("失败"))
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.stepReadFailed)
+    }
+
+    func testConnectHealthRetriesStepReadWithoutRequestingAuthorizationWhenPermissionWasAlreadyRequested() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.connectHealth()
+
+        XCTAssertEqual(stepProvider.authorizationRequestCount, 0)
+        XCTAssertEqual(stepProvider.stepReadCount, 1)
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_321)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
     }
 
     func testRequestStepAuthorizationOnlyDoesNotReadStepsSynchronously() async throws {
@@ -763,7 +798,7 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(stepProvider.stepReadCount, 2)
         XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
         XCTAssertTrue(viewModel.requiresHealthConnection)
-        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthReconnectPrompt)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.stepReadFailed)
     }
 
     func testEnsureTodayStepsLoadedShowsReconnectWhenUnauthorized() async {

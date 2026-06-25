@@ -316,7 +316,12 @@ struct CabinView: View {
         if viewModel.isAutoReadingSteps {
             return AppCopy.Cabin.readingStepsButton
         }
-        return viewModel.requiresHealthConnection ? AppCopy.Cabin.reconnectButton : AppCopy.Cabin.giftButton
+        if viewModel.requiresHealthConnection {
+            return viewModel.healthAuthorizationStatus.canAttemptStepRead
+                ? AppCopy.Cabin.retryReadButton
+                : AppCopy.Cabin.reconnectButton
+        }
+        return AppCopy.Cabin.giftButton
     }
 
     private var isPrimaryButtonDisabled: Bool {

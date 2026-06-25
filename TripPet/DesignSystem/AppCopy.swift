@@ -56,6 +56,7 @@ enum AppCopy {
         static let firstTicketGiftedSummary = "已使用首张机票"
         static let connectButton = "连接 Apple 健康"
         static let reconnectButton = "重新连接 Apple 健康"
+        static let retryReadButton = "重试读取今日步数"
         static let giftButton = "赠送今日脚步，让它出发"
         static let firstTicketGiftButton = "赠送第一张机票，让它出发"
         static let readingStepsButton = "正在读取今日脚步"

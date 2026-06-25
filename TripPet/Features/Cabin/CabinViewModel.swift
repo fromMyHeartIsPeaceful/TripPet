@@ -126,7 +126,9 @@ final class CabinViewModel: ObservableObject {
         }
 
         if shouldShowHealthReconnectCard, isFirstImmediateTicketAvailable == false {
-            actionMessage = AppCopy.Cabin.healthReconnectPrompt
+            actionMessage = healthAuthorizationStatus.canAttemptStepRead
+                ? AppCopy.Cabin.stepReadFailed
+                : AppCopy.Cabin.healthReconnectPrompt
         }
 
         if isFirstImmediateTicketAvailable {
@@ -148,6 +150,12 @@ final class CabinViewModel: ObservableObject {
         }
 
         do {
+            await refresh()
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                await ensureTodayStepsLoaded()
+                return
+            }
+
             let didRequest = try await environment.requestStepAuthorizationOnly()
             guard didRequest else {
                 shouldShowHealthReconnectCard = true

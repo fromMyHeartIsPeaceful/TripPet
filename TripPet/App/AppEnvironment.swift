@@ -171,7 +171,19 @@ final class AppEnvironment: ObservableObject {
             stepReadTask = nil
         }
 
-        let providerSteps = try await task.value
+        let providerSteps: Int
+        do {
+            providerSteps = try await task.value
+        } catch {
+            stepSnapshot = StepCountSnapshot(
+                status: stepCountProvider.authorizationStatus(),
+                steps: stepSnapshot.steps,
+                readAt: stepSnapshot.readAt,
+                errorMessage: error.localizedDescription
+            )
+            throw error
+        }
+
         let steps = providerSteps
         stepSnapshot = StepCountSnapshot(
             status: stepCountProvider.authorizationStatus(),
