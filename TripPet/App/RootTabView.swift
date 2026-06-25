@@ -4,18 +4,31 @@ struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: AppTab = .cabin
+    @State private var departureTransitionContext: DepartureTransitionContext?
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            selectedContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.bottom, contentBottomReserve)
+            ZStack(alignment: .bottom) {
+                selectedContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, contentBottomReserve)
 
-            RootBottomTabBar(
-                selectedTab: $selectedTab,
-                unreadMailboxBadgeCount: unreadMailboxBadgeCount,
-                bottomPadding: tabBarBottomPadding
-            )
+                RootBottomTabBar(
+                    selectedTab: $selectedTab,
+                    unreadMailboxBadgeCount: unreadMailboxBadgeCount,
+                    bottomPadding: tabBarBottomPadding
+                )
+            }
+            .blur(radius: isDepartureTransitionPresented ? 2.6 : 0)
+            .scaleEffect(isDepartureTransitionPresented ? 0.995 : 1)
+            .animation(.easeOut(duration: 0.20), value: isDepartureTransitionPresented)
+
+            if let departureTransitionContext {
+                DepartureCardTransitionOverlay(context: departureTransitionContext) {
+                    self.departureTransitionContext = nil
+                }
+                .zIndex(10)
+            }
         }
         .background {
             if selectedTab == .cabin && colorScheme == .dark {
@@ -36,7 +49,9 @@ struct RootTabView: View {
     private var selectedContent: some View {
         switch selectedTab {
         case .cabin:
-            CabinView()
+            CabinView { context in
+                departureTransitionContext = context
+            }
         case .mailbox:
             MailboxView()
         case .map:
@@ -74,6 +89,10 @@ struct RootTabView: View {
 
     private var tabBarBottomPadding: CGFloat {
         BottomChromeMetrics.tabBarBottomPadding
+    }
+
+    private var isDepartureTransitionPresented: Bool {
+        departureTransitionContext != nil
     }
 }
 

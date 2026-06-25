@@ -143,6 +143,28 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(tallMetrics.animalGroupLiftRatio, 0, accuracy: 0.001)
     }
 
+    func testDepartureCardTransitionLayoutKeepsVideoCardInsideScreen() {
+        let containerSizes = [
+            CGSize(width: 320, height: 568),
+            CGSize(width: 390, height: 844),
+            CGSize(width: 430, height: 932)
+        ]
+
+        for containerSize in containerSizes {
+            let cardSize = DepartureCardTransitionLayout.cardSize(in: containerSize)
+
+            XCTAssertLessThanOrEqual(cardSize.width, containerSize.width * DepartureCardTransitionLayout.widthRatio + 0.01)
+            XCTAssertLessThanOrEqual(cardSize.width, DepartureCardTransitionLayout.maxWidth + 0.01)
+            XCTAssertLessThanOrEqual(cardSize.height, containerSize.height * DepartureCardTransitionLayout.maxHeightRatio + 0.01)
+            XCTAssertEqual(cardSize.width / cardSize.height, DepartureCardTransitionLayout.videoAspectRatio, accuracy: 0.001)
+        }
+    }
+
+    func testDepartureCardTransitionMaskIsStrongEnoughToFocusHome() {
+        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.50)
+        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.56)
+    }
+
     func testCabinAnimalLayoutKeepsRemainingCanonicalAnimalsInFixedSlots() {
         let animals = SeedData.preview.animals.filter { $0.id != "xiaoman_hamster" }
         let placements = CabinAnimalLayout.placements(for: animals)

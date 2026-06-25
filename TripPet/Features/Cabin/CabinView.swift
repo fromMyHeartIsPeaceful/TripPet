@@ -39,8 +39,8 @@ struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @StateObject private var viewModel = CabinViewModel()
-    @State private var departureTransitionContext: DepartureTransitionContext?
     @State private var queuedDepartureTransitionContext: DepartureTransitionContext?
+    var onDepartureTransitionReady: (DepartureTransitionContext) -> Void = { _ in }
 
     var body: some View {
         NavigationStack {
@@ -75,7 +75,7 @@ struct CabinView: View {
                     viewModel.finishGiftFlow()
                     if let context = queuedDepartureTransitionContext {
                         queuedDepartureTransitionContext = nil
-                        departureTransitionContext = context
+                        onDepartureTransitionReady(context)
                     }
                 }
             ) { confirmation in
@@ -102,11 +102,6 @@ struct CabinView: View {
                 )
                 .presentationDetents([.height(ticketGiftSheetHeight)])
                 .presentationDragIndicator(.visible)
-            }
-            .fullScreenCover(item: $departureTransitionContext) { context in
-                FullScreenDepartureTransitionView(context: context) {
-                    departureTransitionContext = nil
-                }
             }
         }
     }
