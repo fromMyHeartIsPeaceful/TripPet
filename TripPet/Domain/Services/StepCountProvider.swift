@@ -1,5 +1,13 @@
 import Foundation
 
+#if DEBUG
+func healthDebugLog(_ message: String) {
+    print("[HealthDebug] \(message)")
+}
+#else
+func healthDebugLog(_ message: String) {}
+#endif
+
 enum StepCountAuthorizationStatus: Equatable {
     case unavailable
     case notDetermined

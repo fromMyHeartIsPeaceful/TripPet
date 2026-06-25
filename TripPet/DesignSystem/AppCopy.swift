@@ -23,6 +23,7 @@ enum AppCopy {
         static let readPermissionRequested = "已经请求过步数读取权限。接下来会直接尝试读取今日步数，如果系统里关闭了权限，可以到 iPhone 设置或健康 App 中重新打开。"
         static let requestFailed = "暂时没有连上。可以先进入小屋，之后在设置里再试一次。"
         static let requestUnchanged = "还没有取得 Health 步数权限。可以先进入小屋，之后在设置里再试一次。"
+        static let stepReadWillContinue = "Apple 健康已连接。今天的步数会在小屋里继续读取，如果暂时没显示，可以稍后再试。"
         static let laterButton = "稍后再说"
         static let enterCabinButton = "进入小屋"
         static let retryReadButton = "重试读取今日步数"

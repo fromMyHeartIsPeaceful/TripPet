@@ -113,18 +113,28 @@ final class AppEnvironment: ObservableObject {
 
     @discardableResult
     func requestStepAuthorizationAndRefresh() async throws -> Bool {
-        let didRequest = try await requestStepAuthorizationOnly()
+        healthDebugLog("requestStepAuthorizationAndRefresh begin status=\(stepSnapshot.status) steps=\(String(describing: stepSnapshot.steps))")
+        let didRequest = try await stepCountProvider.requestAuthorization()
+        updateStepStatus()
+        healthDebugLog("requestStepAuthorizationAndRefresh didRequest=\(didRequest) status=\(stepSnapshot.status)")
 
-        if didRequest, stepSnapshot.status.canAttemptStepRead {
+        if stepSnapshot.status.canAttemptStepRead {
             do {
                 _ = try await readTodaySteps()
             } catch {
-                stepSnapshot = StepCountSnapshot(
-                    status: stepCountProvider.authorizationStatus(),
-                    steps: stepSnapshot.steps,
-                    readAt: stepSnapshot.readAt,
-                    errorMessage: error.localizedDescription
-                )
+                healthDebugLog("requestStepAuthorizationAndRefresh first read failed=\(error.localizedDescription)")
+                try? await Task.sleep(nanoseconds: 750_000_000)
+                do {
+                    _ = try await readTodaySteps()
+                } catch {
+                    healthDebugLog("requestStepAuthorizationAndRefresh second read failed=\(error.localizedDescription)")
+                    stepSnapshot = StepCountSnapshot(
+                        status: stepCountProvider.authorizationStatus(),
+                        steps: stepSnapshot.steps,
+                        readAt: stepSnapshot.readAt,
+                        errorMessage: error.localizedDescription
+                    )
+                }
             }
         }
 
@@ -141,11 +151,13 @@ final class AppEnvironment: ObservableObject {
     func refreshStepsIfPossible() async {
         repository.refreshCabinLodging(on: currentDate)
         updateStepStatus()
+        healthDebugLog("refreshStepsIfPossible status=\(stepSnapshot.status) steps=\(String(describing: stepSnapshot.steps))")
         guard stepSnapshot.status.canAttemptStepRead else { return }
 
         do {
             _ = try await readTodaySteps()
         } catch {
+            healthDebugLog("refreshStepsIfPossible failed=\(error.localizedDescription)")
             stepSnapshot = StepCountSnapshot(
                 status: stepCountProvider.authorizationStatus(),
                 steps: stepSnapshot.steps,
@@ -158,9 +170,11 @@ final class AppEnvironment: ObservableObject {
     @discardableResult
     func readTodaySteps() async throws -> Int {
         if let stepReadTask {
+            healthDebugLog("readTodaySteps reuse in-flight task")
             return try await stepReadTask.value
         }
 
+        healthDebugLog("readTodaySteps begin status=\(stepSnapshot.status)")
         let task = Task { @MainActor [weak self] in
             guard let self else { throw CancellationError() }
             return try await self.stepCountProvider.todayStepCount()
@@ -179,6 +193,7 @@ final class AppEnvironment: ObservableObject {
             readAt: currentDate,
             errorMessage: nil
         )
+        healthDebugLog("readTodaySteps success steps=\(steps) status=\(stepSnapshot.status)")
         startStepObservationIfPossible()
         return steps
     }

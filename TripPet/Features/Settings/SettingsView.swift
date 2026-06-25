@@ -162,31 +162,47 @@ struct SettingsView: View {
         case .sharingDenied:
             healthStatus = AppCopy.Health.settingsDenied
         case .sharingAuthorized:
-            if let errorMessage = environment.stepSnapshot.errorMessage {
-                healthStatus = errorMessage
-            } else if let steps = environment.stepSnapshot.steps {
+            if let steps = environment.stepSnapshot.steps {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
-                healthStatus = AppCopy.Health.settingsAuthorized
+                healthStatus = environment.stepSnapshot.errorMessage == nil
+                    ? AppCopy.Health.settingsAuthorized
+                    : AppCopy.Health.stepReadWillContinue
             }
         case .readPermissionRequested:
-            if let errorMessage = environment.stepSnapshot.errorMessage {
-                healthStatus = errorMessage
-            } else if let steps = environment.stepSnapshot.steps {
+            if let steps = environment.stepSnapshot.steps {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
-                healthStatus = AppCopy.Health.settingsReadPermissionRequested
+                healthStatus = environment.stepSnapshot.errorMessage == nil
+                    ? AppCopy.Health.settingsReadPermissionRequested
+                    : AppCopy.Health.stepReadWillContinue
             }
         }
     }
 
     private func requestHealthPermission() async {
         do {
-            _ = try await environment.requestStepAuthorizationAndRefresh()
+            _ = try await environment.requestStepAuthorizationOnly()
             updateHealthStatus()
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                healthStatus = AppCopy.Health.stepReadWillContinue
+                startStepRefreshInBackground()
+            }
         } catch {
             updateHealthStatus()
-            healthStatus = error.localizedDescription
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                healthStatus = AppCopy.Health.stepReadWillContinue
+                startStepRefreshInBackground()
+            } else {
+                healthStatus = error.localizedDescription
+            }
+        }
+    }
+
+    private func startStepRefreshInBackground() {
+        Task {
+            await environment.refreshStepsIfPossible()
+            updateHealthStatus()
         }
     }
 }

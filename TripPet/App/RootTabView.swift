@@ -4,18 +4,32 @@ struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: AppTab = .cabin
+    @State private var retainedTabs: Set<AppTab> = [.cabin]
+    @State private var departureTransitionContext: DepartureTransitionContext?
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            selectedContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.bottom, contentBottomReserve)
+            ZStack(alignment: .bottom) {
+                retainedContentStack
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, contentBottomReserve)
 
-            RootBottomTabBar(
-                selectedTab: $selectedTab,
-                unreadMailboxBadgeCount: unreadMailboxBadgeCount,
-                bottomPadding: tabBarBottomPadding
-            )
+                RootBottomTabBar(
+                    selectedTab: $selectedTab,
+                    unreadMailboxBadgeCount: unreadMailboxBadgeCount,
+                    bottomPadding: tabBarBottomPadding
+                )
+            }
+            .blur(radius: isDepartureTransitionPresented ? 2.6 : 0)
+            .scaleEffect(isDepartureTransitionPresented ? 0.995 : 1)
+            .animation(.easeOut(duration: 0.20), value: isDepartureTransitionPresented)
+
+            if let departureTransitionContext {
+                DepartureCardTransitionOverlay(context: departureTransitionContext) {
+                    self.departureTransitionContext = nil
+                }
+                .zIndex(10)
+            }
         }
         .background {
             if selectedTab == .cabin && colorScheme == .dark {
@@ -27,26 +41,54 @@ struct RootTabView: View {
         .task {
             applyPendingNotificationTabRequest()
         }
+        .onChange(of: selectedTab) { _, newTab in
+            retainedTabs.insert(newTab)
+        }
         .onChange(of: environment.notificationRequestedTab) { _, _ in
             applyPendingNotificationTabRequest()
         }
     }
 
     @ViewBuilder
-    private var selectedContent: some View {
-        switch selectedTab {
-        case .cabin:
-            CabinView()
-        case .mailbox:
-            MailboxView()
-        case .map:
-            WorldMapView()
+    private var retainedContentStack: some View {
+        ZStack {
+            retainedContent(.cabin) {
+                CabinView { context in
+                    departureTransitionContext = context
+                }
+            }
+
+            if shouldBuildTab(.mailbox) {
+                retainedContent(.mailbox) {
+                    MailboxView()
+                }
+            }
+
+            if shouldBuildTab(.map) {
+                retainedContent(.map) {
+                    WorldMapView(isActive: selectedTab == .map)
+                }
+            }
         }
     }
 
     private func applyPendingNotificationTabRequest() {
         guard let requestedTab = environment.consumeNotificationTabRequest() else { return }
         selectedTab = requestedTab
+    }
+
+    private func shouldBuildTab(_ tab: AppTab) -> Bool {
+        retainedTabs.contains(tab) || selectedTab == tab
+    }
+
+    private func retainedContent<Content: View>(
+        _ tab: AppTab,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .opacity(selectedTab == tab ? 1 : 0)
+            .allowsHitTesting(selectedTab == tab)
+            .accessibilityHidden(selectedTab != tab)
     }
 
     var unreadMailboxBadgeCount: Int {
@@ -74,6 +116,10 @@ struct RootTabView: View {
 
     private var tabBarBottomPadding: CGFloat {
         BottomChromeMetrics.tabBarBottomPadding
+    }
+
+    private var isDepartureTransitionPresented: Bool {
+        departureTransitionContext != nil
     }
 }
 

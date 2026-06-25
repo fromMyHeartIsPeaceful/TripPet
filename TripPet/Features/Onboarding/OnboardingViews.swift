@@ -253,7 +253,9 @@ struct HealthConnectView: View {
     }
 
     private func connectHealth() async {
+        healthDebugLog("HealthConnectView tap status=\(status) snapshotStatus=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps))")
         if environment.stepSnapshot.steps != nil {
+            healthDebugLog("HealthConnectView finish existing steps")
             onFinished()
             return
         }
@@ -262,30 +264,44 @@ struct HealthConnectView: View {
         defer { isWorking = false }
 
         do {
-            if status.canAttemptStepRead {
+            if environment.stepSnapshot.status.canAttemptStepRead {
                 _ = try await environment.readTodaySteps()
                 refreshStatus()
-                onFinished()
-            } else {
-                let didRequest = try await environment.requestStepAuthorizationOnly()
-                if didRequest {
-                    await environment.refreshStepsIfPossible()
-                    refreshStatus()
-                    if environment.stepSnapshot.steps != nil {
-                        onFinished()
-                    } else {
-                        message = AppCopy.Health.requestUnchanged
-                    }
-                } else if didRequest == false {
-                    refreshStatus()
-                    message = AppCopy.Health.requestUnchanged
+                if environment.stepSnapshot.steps != nil {
+                    healthDebugLog("HealthConnectView finish after read steps=\(String(describing: environment.stepSnapshot.steps))")
+                    onFinished()
+                } else {
+                    message = AppCopy.Health.stepReadWillContinue
+                    onFinished()
                 }
+                return
+            }
+
+            let didRequest = try await environment.requestStepAuthorizationOnly()
+            refreshStatus()
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                message = AppCopy.Health.stepReadWillContinue
+                startStepRefreshInBackground()
+                onFinished()
+            } else if didRequest == false {
+                message = AppCopy.Health.requestUnchanged
             }
         } catch {
+            healthDebugLog("HealthConnectView failed=\(error.localizedDescription)")
             refreshStatus()
             message = status == .readPermissionRequested
-                ? AppCopy.Health.settingsRequestFailed
+                ? AppCopy.Health.stepReadWillContinue
                 : error.localizedDescription
+            if status.canAttemptStepRead {
+                startStepRefreshInBackground()
+                onFinished()
+            }
+        }
+    }
+
+    private func startStepRefreshInBackground() {
+        Task {
+            await environment.refreshStepsIfPossible()
         }
     }
 }

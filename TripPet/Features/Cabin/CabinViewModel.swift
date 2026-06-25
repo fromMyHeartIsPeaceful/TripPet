@@ -142,20 +142,32 @@ final class CabinViewModel: ObservableObject {
 
     func connectHealth() async {
         guard let environment else { return }
+        healthDebugLog("Cabin connectHealth tap status=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps))")
         isWorking = true
         defer {
             isWorking = false
         }
 
         do {
-            let didRequest = try await environment.requestStepAuthorizationOnly()
+            await refresh()
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                await ensureTodayStepsLoaded()
+                return
+            }
+
+            let didRequest = try await environment.requestStepAuthorizationAndRefresh()
             guard didRequest else {
                 shouldShowHealthReconnectCard = true
                 actionMessage = AppCopy.Cabin.healthReconnectPrompt
                 await refresh()
                 return
             }
-            await ensureTodayStepsLoaded()
+            if environment.stepSnapshot.steps == nil {
+                await ensureTodayStepsLoaded()
+            } else {
+                shouldShowHealthReconnectCard = false
+                await refresh()
+            }
         } catch {
             shouldShowHealthReconnectCard = true
             actionMessage = AppCopy.Cabin.healthReconnectPrompt
@@ -165,6 +177,7 @@ final class CabinViewModel: ObservableObject {
 
     func ensureTodayStepsLoaded() async {
         guard let environment else { return }
+        healthDebugLog("Cabin ensureTodayStepsLoaded begin status=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps)) firstImmediate=\(isFirstImmediateTicketAvailable)")
 
         if isFirstImmediateTicketAvailable {
             await refresh()
@@ -197,14 +210,16 @@ final class CabinViewModel: ObservableObject {
             _ = try await environment.readTodaySteps()
             didReadOnFirstAttempt = environment.stepSnapshot.steps != nil
         } catch {
+            healthDebugLog("Cabin ensureTodayStepsLoaded first read failed=\(error.localizedDescription)")
             didReadOnFirstAttempt = false
         }
 
         if didReadOnFirstAttempt == false {
-            await Task.yield()
+            try? await Task.sleep(nanoseconds: 750_000_000)
             do {
                 _ = try await environment.readTodaySteps()
             } catch {
+                healthDebugLog("Cabin ensureTodayStepsLoaded second read failed=\(error.localizedDescription)")
                 shouldShowHealthReconnectCard = true
             }
         }
@@ -213,6 +228,7 @@ final class CabinViewModel: ObservableObject {
             shouldShowHealthReconnectCard = true
         }
 
+        healthDebugLog("Cabin ensureTodayStepsLoaded end status=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps)) reconnect=\(shouldShowHealthReconnectCard)")
         await refresh()
     }
 
@@ -314,6 +330,7 @@ final class CabinViewModel: ObservableObject {
             return nil
         }
 
+        let wasFirstImmediateTicket = pendingIsFirstImmediateTicket
         guard let trip = await environment.giftTicket(
             sourceSteps: steps,
             ticketCount: ticketCount,
@@ -327,7 +344,11 @@ final class CabinViewModel: ObservableObject {
         }
         confirmedGiftTrip = trip
         actionMessage = AppCopy.Cabin.gifted
-        await refresh()
+        if wasFirstImmediateTicket {
+            await ensureTodayStepsLoaded()
+        } else {
+            await refresh()
+        }
         return trip
     }
 

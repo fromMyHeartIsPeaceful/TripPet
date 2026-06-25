@@ -143,6 +143,28 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(tallMetrics.animalGroupLiftRatio, 0, accuracy: 0.001)
     }
 
+    func testDepartureCardTransitionLayoutKeepsVideoCardInsideScreen() {
+        let containerSizes = [
+            CGSize(width: 320, height: 568),
+            CGSize(width: 390, height: 844),
+            CGSize(width: 430, height: 932)
+        ]
+
+        for containerSize in containerSizes {
+            let cardSize = DepartureCardTransitionLayout.cardSize(in: containerSize)
+
+            XCTAssertLessThanOrEqual(cardSize.width, containerSize.width * DepartureCardTransitionLayout.widthRatio + 0.01)
+            XCTAssertLessThanOrEqual(cardSize.width, DepartureCardTransitionLayout.maxWidth + 0.01)
+            XCTAssertLessThanOrEqual(cardSize.height, containerSize.height * DepartureCardTransitionLayout.maxHeightRatio + 0.01)
+            XCTAssertEqual(cardSize.width / cardSize.height, DepartureCardTransitionLayout.videoAspectRatio, accuracy: 0.001)
+        }
+    }
+
+    func testDepartureCardTransitionMaskIsStrongEnoughToFocusHome() {
+        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.50)
+        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.56)
+    }
+
     func testCabinAnimalLayoutKeepsRemainingCanonicalAnimalsInFixedSlots() {
         let animals = SeedData.preview.animals.filter { $0.id != "xiaoman_hamster" }
         let placements = CabinAnimalLayout.placements(for: animals)
@@ -157,6 +179,27 @@ final class CabinViewModelTests: XCTestCase {
             placements.first { $0.animal.id == "bear_visitor" }?.slot.side,
             .rightSmall
         )
+    }
+
+    func testCabinScenePlacementsExcludeDepartedAnimalAfterGift() {
+        let repository = AppRepository(seed: .preview, randomDestinationIndex: { _ in 0 })
+
+        let trip = repository.giftTicket(
+            sourceSteps: 0,
+            ticketCount: 1,
+            animalId: "moji_cat",
+            isFirstImmediateTicket: true
+        )
+        let sceneAnimals = repository.cabinAnimals
+        let placements = CabinAnimalLayout.placements(
+            for: sceneAnimals,
+            in: CabinAnimalLayout.fullscreenDayRoom
+        )
+
+        XCTAssertEqual(trip?.animalId, "moji_cat")
+        XCTAssertFalse(sceneAnimals.map(\.id).contains("moji_cat"))
+        XCTAssertFalse(placements.map { $0.animal.id }.contains("moji_cat"))
+        XCTAssertEqual(placements.count, 8)
     }
 
     func testCabinAnimalAnimationsMapEveryCanonicalAnimalToGif() {
@@ -259,6 +302,25 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertNil(viewModel.pendingGiftConfirmation)
         XCTAssertNil(viewModel.confirmedGiftTrip)
+    }
+
+    func testFirstImmediateTicketBackfillsReadableHealthStepsAfterGift() async {
+        let environment = AppEnvironment.preview(
+            stepStatus: .readPermissionRequested,
+            steps: 4_200
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.prepareGiftConfirmation()
+        let animalId = viewModel.pendingGiftConfirmation?.animalOptions.first?.animalId
+        let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId)
+
+        XCTAssertNotNil(trip)
+        XCTAssertEqual(environment.stepSnapshot.steps, 4_200)
+        XCTAssertEqual(viewModel.availableStepsForDisplay, 4_200)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
     }
 
     func testFirstImmediateTicketDoesNotRequestAuthorizationButSchedulesTripNotificationsWhenAuthorized() async {
