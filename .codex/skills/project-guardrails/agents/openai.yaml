@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Guardrails"
+  short_description: "Read this before working in this project."
+  default_prompt: "Apply this project guardrail skill before editing, debugging, generating art assets, or using git."
