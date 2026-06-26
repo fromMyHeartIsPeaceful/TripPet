@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 @testable import TripPet
 
@@ -187,6 +188,91 @@ final class AchievementEngineTests: XCTestCase {
 
     func testAchievementCategoriesKeepExpectedDefaultOrder() {
         XCTAssertEqual(AchievementCategory.allCases.map(\.buttonTitle), ["旅行", "脚步", "明信片"])
+    }
+
+    func testAllTiersExposeFormalArtAssets() {
+        XCTAssertEqual(
+            AchievementEngine.travelTiers.map(\.medalAssetName),
+            [
+                "achievement_medal_travel_tier_001",
+                "achievement_medal_travel_tier_002",
+                "achievement_medal_travel_tier_003",
+                "achievement_medal_travel_tier_004",
+                "achievement_medal_travel_tier_005",
+                "achievement_medal_travel_tier_006"
+            ]
+        )
+        XCTAssertEqual(
+            AchievementEngine.stepTiers.map(\.medalAssetName),
+            [
+                "achievement_medal_steps_tier_001",
+                "achievement_medal_steps_tier_002",
+                "achievement_medal_steps_tier_003",
+                "achievement_medal_steps_tier_004",
+                "achievement_medal_steps_tier_005",
+                "achievement_medal_steps_tier_006",
+                "achievement_medal_steps_tier_007",
+                "achievement_medal_steps_tier_008",
+                "achievement_medal_steps_tier_009",
+                "achievement_medal_steps_tier_010",
+                "achievement_medal_steps_tier_011",
+                "achievement_medal_steps_tier_012",
+                "achievement_medal_steps_tier_013",
+                "achievement_medal_steps_tier_014"
+            ]
+        )
+        XCTAssertEqual(
+            AchievementEngine.postcardTiers.map(\.medalAssetName),
+            [
+                "achievement_medal_postcards_tier_001",
+                "achievement_medal_postcards_tier_002",
+                "achievement_medal_postcards_tier_003",
+                "achievement_medal_postcards_tier_004",
+                "achievement_medal_postcards_tier_005",
+                "achievement_medal_postcards_tier_006",
+                "achievement_medal_postcards_tier_007",
+                "achievement_medal_postcards_tier_008",
+                "achievement_medal_postcards_tier_009"
+            ]
+        )
+    }
+
+    func testFormalAchievementMedalAssetsExistInBundle() {
+        let assetNames = [
+            "achievement_medal_travel_tier_001",
+            "achievement_medal_travel_tier_002",
+            "achievement_medal_travel_tier_003",
+            "achievement_medal_travel_tier_004",
+            "achievement_medal_travel_tier_005",
+            "achievement_medal_travel_tier_006",
+            "achievement_medal_steps_tier_001",
+            "achievement_medal_steps_tier_002",
+            "achievement_medal_steps_tier_003",
+            "achievement_medal_steps_tier_004",
+            "achievement_medal_steps_tier_005",
+            "achievement_medal_steps_tier_006",
+            "achievement_medal_steps_tier_007",
+            "achievement_medal_steps_tier_008",
+            "achievement_medal_steps_tier_009",
+            "achievement_medal_steps_tier_010",
+            "achievement_medal_steps_tier_011",
+            "achievement_medal_steps_tier_012",
+            "achievement_medal_steps_tier_013",
+            "achievement_medal_steps_tier_014",
+            "achievement_medal_postcards_tier_001",
+            "achievement_medal_postcards_tier_002",
+            "achievement_medal_postcards_tier_003",
+            "achievement_medal_postcards_tier_004",
+            "achievement_medal_postcards_tier_005",
+            "achievement_medal_postcards_tier_006",
+            "achievement_medal_postcards_tier_007",
+            "achievement_medal_postcards_tier_008",
+            "achievement_medal_postcards_tier_009"
+        ]
+
+        for assetName in assetNames {
+            XCTAssertNotNil(UIImage(named: assetName), "Missing achievement medal asset: \(assetName)")
+        }
     }
 
     private static let animals = [

@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_travel_tier_005",
+  "call_id": "ig_05638d59f5f7bd3a016a3e444e68a881909124a907e60317ad",
+  "line_number": 1223,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_travel_tier_005.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2129198,
+  "sha256": "59765b0cad09baf3c0b225b6cad0b6d06aea2a94ade6498d1ec21cd508639742",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, transparent PNG source after chroma-key removal\nAsset name: achievement_medal_travel_tier_005\nPrimary request: Create one standalone watercolor travel journal achievement medal for the fifth travel tier, adventurous but still gentle.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal; uniform color only, no shadows, gradients, texture, floor plane, or lighting variation.\nSubject: circular cream paper medal base with handmade scalloped edge, delicate pencil outline and watercolor texture. Center elements: vintage hiking backpack, rolled map, small lantern, compass needle, dotted mountain-route line, tiny stamp shapes without symbols or text. No people, no animals.\nStyle/medium: cozy TripPet watercolor scrapbook collectible, low-saturation with strong readable contrast, hand-painted, fine pencil linework.\nComposition/framing: exactly one centered medal, full object visible, generous padding, square composition, readable in a small UI. Center objects must be visually stronger than the pale base.\nColor palette: ivory base, ochre backpack, dusty teal map, muted sage details, warm amber lantern, small coral accents. Avoid pure #00ff00 in the subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese, no labels, no watermark, no cast shadow, no reflection, do not create multiple medals."
+}

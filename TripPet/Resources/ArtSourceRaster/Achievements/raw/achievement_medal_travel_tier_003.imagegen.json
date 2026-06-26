@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_travel_tier_003",
+  "call_id": "ig_0dbe74738003aaa3016a3e1cbf62c48197b63d33dd71be85c2",
+  "line_number": 88,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_travel_tier_003.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2461872,
+  "sha256": "05192fd35c1debc365b991554a2f5e489cdf8b46c5ba52555df11c8032a78572",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, app-facing raster asset\nPrimary request: Create one standalone watercolor travel journal achievement medal for the third travel tier. It should be richer than tier two but still small UI readable, with strong contrast between the pale paper medal base and travel objects.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation.\nSubject: circular paper medal base with handmade scalloped edge, delicate pencil outline, gentle cream paper texture, watercolor washes. Center elements: a compact globe/map circle, small ochre suitcase charm, compass rosette, layered tickets, and a clear curved travel route. No animals and no people.\nStyle/medium: soft watercolor travel scrapbook, hand-painted, low-saturation TripPet palette, delicate pencil linework, cozy polished mobile game collectible.\nComposition/framing: centered single medal, full object visible, generous padding around medal, square composition, readable at small 62pt UI size. The central icon cluster should be visually crisp and darker than the medal base.\nColor palette: warm cream paper base, ochre and golden travel accents, dusty blue globe/map, muted sage leaves, small coral dots; avoid pure #00ff00 anywhere in the subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese text, no labels, no watermark, no cast shadow, no contact shadow, no reflection. Do not create multiple medals; exactly one medal only. Keep subject fully separated from the flat green background with crisp edges."
+}

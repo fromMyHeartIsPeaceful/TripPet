@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_wall_album_background",
+  "call_id": "ig_03e7f84bb122db0d016a3e2e63d9148191a5cf50512a3ef824",
+  "line_number": 648,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_wall_album_background.raw.png",
+  "width": 941,
+  "height": 1672,
+  "has_alpha": false,
+  "byte_count": 1890693,
+  "sha256": "ac4cab3129096a67c4290c390d572086056a0498727a6aba42017a04a0762071",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement wall full-page background raster asset, vertical portrait 9:16.\nPrimary request: Create a clean warm-white photo album collectible page background for an achievement medal wall. It should feel like an ivory album page where medals can be displayed clearly.\nScene/backdrop: full-page album sheet, warm white and ivory paper, subtle fine paper grain, very light gray album-page edge, faint stitched or pressed border near the outer edges, soft photographic album margin feeling.\nComposition: vertical 9:16 portrait, clean center and middle area reserved for UI medals and text, most decorative details confined to the outer 8-10% margins. Use a gentle page frame and very sparse corner details only. Avoid any busy objects in the center.\nPalette: ivory white, warm white, very light neutral gray, tiny hints of pale sage and pale peach only near edges. Overall must read as white/album-like, not yellow.\nStyle: refined watercolor paper texture, low saturation TripPet handmade stationery style, quiet collectible album feeling, soft tactile paper, elegant and restrained.\nConstraints: no text, no letters, no numbers, no watermark, no animals, no people, no medals, no icons, no stamps, no strong yellow, no large decorative objects, no dark or busy pattern, no UI mockup elements. Output should be suitable as a background behind colorful circular achievement medals."
+}

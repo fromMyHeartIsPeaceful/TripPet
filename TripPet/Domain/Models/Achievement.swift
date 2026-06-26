@@ -58,6 +58,21 @@ struct AchievementTier: Identifiable, Equatable {
     let threshold: Int
     let title: String
     let subtitle: String?
+    let medalAssetName: String?
+
+    init(
+        category: AchievementCategory,
+        threshold: Int,
+        title: String,
+        subtitle: String?,
+        medalAssetName: String? = nil
+    ) {
+        self.category = category
+        self.threshold = threshold
+        self.title = title
+        self.subtitle = subtitle
+        self.medalAssetName = medalAssetName
+    }
 
     var thresholdText: String {
         "\(formattedThreshold)\(category.unit)"

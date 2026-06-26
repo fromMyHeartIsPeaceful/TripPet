@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_steps_tier_001",
+  "call_id": "ig_03d96a498a14b437016a3e0b07f55c8191bbbaac1270cca0f4",
+  "line_number": 845,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T10-37-05-019f01c9-b848-7a83-81bd-bb209cee30c5.jsonl",
+  "raw_png": "achievement_medal_steps_tier_001.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 1989411,
+  "sha256": "4729c16a9a582654a2614bdb7c6fcc8510beb1267aa42f56c6565b537c14bfe3",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, app-facing raster asset\nPrimary request: Create one standalone watercolor travel journal achievement medal for the first steps tier. The medal should show soft paw-like footprints or walking footprints following a curved little path, plus a small torn ticket scrap.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation.\nSubject: circular paper medal base with handmade scalloped edge, pencil outline, gentle paper texture, watercolor washes. Center elements: dotted curved walking path with clear footprint marks, a small pale peach ticket fragment, tiny leaves and trail details. No animals and no people.\nStyle/medium: soft watercolor travel scrapbook, hand-painted, low-saturation TripPet palette, delicate pencil linework, cozy and polished mobile game collectible.\nComposition/framing: centered single medal, full object visible, generous padding around medal, square composition, readable at small 58pt UI size.\nColor palette: muted sage green, warm cream paper, pale peach, tiny mist-blue accents; avoid pure #00ff00 anywhere in the subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese text, no labels, no watermark, no cast shadow, no contact shadow, no reflection. Do not create multiple medals; exactly one medal only. Keep subject fully separated from the flat green background with crisp edges."
+}
