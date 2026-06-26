@@ -1,0 +1,14 @@
+{
+  "asset_name": "mailbox_forest_cabin_unread",
+  "call_id": "ig_03fa794e81b69b0d016a3e407fcb7081919aa482a4bcee093a",
+  "line_number": 660,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T15-19-39-019f02cc-6b30-7701-aeed-ebacbff5898f.jsonl",
+  "raw_png": "mailbox_forest_cabin_unread.raw.png",
+  "width": 884,
+  "height": 1780,
+  "has_alpha": false,
+  "byte_count": 2694179,
+  "sha256": "0f974b2e14a46001e1fafbe53c5b6322c1fa816b60f19a9aaec13222491e7523",
+  "revised_prompt": "Use the immediately previous generated mailbox scene as the visual reference and keep the same composition, framing, watercolor style, forest cabin placement, path, clean bottom 18%, and overall color palette.\n\nUse case: illustration-story\nAsset type: TripPet iOS mailbox page full-screen background, unread postcard state\nPrimary request: create the matching unread-mail state of the same forest cabin mailbox scene: the mailbox is naturally in front of the cottage near the fence/entrance, with its small red/orange flag raised and one cream postcard edge subtly visible from the mailbox slot. Add a gentle warm glow and a few tiny golden light motes around the mailbox to suggest a new postcard has arrived.\nScene/backdrop: cozy wooden forest cabin in the midground, layered forest with foreground/midground/background depth, soft atmospheric perspective.\nSubject: cream-colored rounded mailbox in the lower-middle/right foreground, the clearest focal point; raised flag and visible postcard edge should be readable but tasteful.\nStyle/medium: warm hand-painted watercolor, delicate ink linework, gentle mobile game art style.\nComposition/framing: portrait 9:16 mobile background; keep bottom 18% visually clean and low-detail for app navigation UI; keep important mailbox details above the bottom navigation zone; cabin behind mailbox slightly softened; trees in far background softened with depth of field.\nLighting/mood: warm late-afternoon sunlight; subtle arrival magic around mailbox only; cottage window light very subtle and weak.\nColor palette: richer than pale pastel, warm greens, honey wood, cream mailbox, soft golden highlights, restrained red/orange flag.\nMaterials/textures: watercolor paper grain, hand-painted foliage, wooden fence and mailbox post, flowers and grass around mailbox kept restrained and not crowded.\nConstraints: no text, no labels, no UI, no characters, no animals, no watermark, no red annotation boxes; bottom 18% clean; mailbox must not sit in the middle of the path; preserve the same scene identity as the previous empty-state image.\nAvoid: large obvious magical effects, crowded flowers around mailbox, washed-out colors, strong cabin window glow, flat background without depth, visible words on postcard or mailbox."
+}

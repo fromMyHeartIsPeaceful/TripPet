@@ -1,0 +1,4 @@
+interface:
+  display_name: "Art Asset Guard"
+  short_description: "Verify generated art reaches the running app."
+  default_prompt: "Use $art-asset-integration-guard to verify visible art assets are generated, installed, and shown in the app UI."

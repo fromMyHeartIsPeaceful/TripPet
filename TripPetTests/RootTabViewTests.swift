@@ -19,6 +19,114 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(RootTabView.unreadMailboxBadgeCount(in: [postcard]), 0)
     }
 
+    func testMailboxViewModelOpeningStackDoesNotMarkPostcardRead() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: [postcard])
+
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+        XCTAssertNil(viewModel.selectedPostcard)
+        XCTAssertFalse(postcard.isRead)
+    }
+
+    func testMailboxViewModelDoesNotMarkPostcardReadWhenShowingUnreadStackDetail() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [postcard]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        XCTAssertFalse(repository.postcards[0].isRead)
+
+        viewModel.showUnreadStackDetail(repository.postcards[0])
+
+        XCTAssertEqual(viewModel.selectedPostcard?.id, "unread")
+        XCTAssertEqual(viewModel.selectedPostcardSource, .unreadStack)
+        XCTAssertEqual(viewModel.pendingReadPostcardId, "unread")
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+    }
+
+    func testMailboxViewModelMarksPostcardReadWhenUnreadDetailDismisses() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [postcard]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        viewModel.showUnreadStackDetail(repository.postcards[0])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertTrue(repository.postcards[0].isRead)
+        XCTAssertFalse(viewModel.isStackPresented)
+        XCTAssertTrue(viewModel.openedStackPostcardIds.isEmpty)
+        XCTAssertNil(viewModel.selectedPostcard)
+        XCTAssertNil(viewModel.selectedPostcardSource)
+        XCTAssertNil(viewModel.pendingReadPostcardId)
+    }
+
+    func testMailboxViewModelKeepsUnreadStackAfterReadingOneOfManyPostcards() {
+        let first = makePostcard(id: "first", isRead: false)
+        let second = makePostcard(id: "second", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [first, second]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        viewModel.showNextPostcard(count: repository.postcards.count)
+        viewModel.showUnreadStackDetail(repository.postcards[1])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertTrue(repository.postcards[1].isRead)
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["first"])
+        XCTAssertEqual(viewModel.stackIndex, 0)
+    }
+
+    func testMailboxViewModelHistoryDetailDismissDoesNotMarkUnreadPostcardRead() {
+        let unread = makePostcard(id: "unread", isRead: false)
+        let read = makePostcard(id: "read", isRead: true)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [unread, read]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: [repository.postcards[0]])
+        viewModel.showHistoryDetail(repository.postcards[1])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertTrue(repository.postcards[1].isRead)
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+    }
+
     func testPostcardNotificationPayloadRoutesToMailboxTab() {
         XCTAssertEqual(
             PostcardNotificationService.targetTab(from: ["target": "mailbox", "postcardId": "postcard-1"]),
