@@ -1,0 +1,14 @@
+{
+  "asset_name": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28",
+  "call_id": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28",
+  "line_number": 144,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/29/rollout-2026-06-29T15-34-01-019f124c-a799-7c93-950c-074afbc379a2.jsonl",
+  "raw_png": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2918862,
+  "sha256": "fe4f26dc0d1d11d0b04a55cea3e32c2ceb2870026e24fce93eaef4079d4e268d",
+  "revised_prompt": "Use case: logo-brand\nAsset type: final pure raster PNG for iOS app icon and App Store icon, square 1024x1024\nPrimary request: Create a clean final app icon for the Chinese iOS app \"步履小屋\". The icon must be a full square image with no inner rounded rectangle.\nSubject: One very large cozy tiny cabin filling most of the square image, with a warm lit door/window. Add exactly one pair of footprint marks near the lower foreground and one clean folded paper plane, enlarged, near the upper-right roof area. No other objects.\nStyle/medium: premium simplified watercolor travel-journal icon, iconic and readable, soft pencil outline, warm paper texture, crisp silhouette.\nComposition/framing: use the full square canvas efficiently. Full-bleed warm cream/paper background across the entire square, not a rounded card. Cabin should occupy about 80-88% of the image area while staying safe for iOS rounded-corner crop. Paper plane and footprints should be clearly visible at phone icon size. No tiny details.\nLighting/mood: warm, cozy, calm, inviting.\nColor palette: warm cream full-canvas background, honey yellow cabin light, warm brown roof/walls, muted sage/olive only on the roof if needed. Absolutely no blue, no purple, no dark navy.\nMaterials/textures: subtle watercolor and paper grain; clean crisp edges; not blurry.\nText: no text, no letters, no numbers.\nConstraints: pure square image; full-bleed background; no visible inner rounded rectangle, no white corner cutouts, no border, no exterior drop shadow. Exactly one pair of footprints; keep one paper plane. No leaves, flowers, grass, trees, plants, scenery, clouds, Apple logo, Health icon, watermark."
+}
