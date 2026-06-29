@@ -368,6 +368,33 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(route.travelProgress(at: Date(timeIntervalSince1970: 2_500)), 1)
     }
 
+    func testTravelCountdownFormatsRemainingTime() {
+        let remaining = TimeInterval((20 * 60 * 60) + (9 * 60) + 1)
+
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: remaining), "20:09:01")
+    }
+
+    func testTravelCountdownClampsAtZero() {
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 0), "00:00:00")
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: -12), "00:00:00")
+    }
+
+    func testTravelCountdownSupportsMoreThanOneDay() {
+        let remaining = TimeInterval((31 * 60 * 60) + (2 * 60) + 5)
+
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: remaining), "31:02:05")
+    }
+
+    func testTravelCountdownUsesExpectedReturnDate() {
+        let now = Date(timeIntervalSince1970: 1_000)
+        let expectedReturnAt = now.addingTimeInterval((4 * 60 * 60) + 42)
+
+        XCTAssertEqual(
+            TravelCountdownFormatter.timeString(until: expectedReturnAt, now: now),
+            "04:00:42"
+        )
+    }
+
     func testDestinationCoordinateUsesLegacyFallback() {
         XCTAssertEqual(
             GlobeCoordinate.coordinate(for: "paris", destination: nil),

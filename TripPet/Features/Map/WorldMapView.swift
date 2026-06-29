@@ -4,6 +4,7 @@ import simd
 
 struct WorldMapView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @State private var selectedTravelRoute: TravelGlobeRoute?
 
     var body: some View {
         GeometryReader { proxy in
@@ -22,7 +23,12 @@ struct WorldMapView: View {
                     Spacer()
                         .frame(height: topReserve)
 
-                    TravelGlobeView(routes: globeRoutes)
+                    TravelGlobeView(
+                        routes: globeRoutes,
+                        onSelectRoute: { route in
+                            selectedTravelRoute = route
+                        }
+                    )
                         .frame(width: globeDiameter, height: globeDiameter)
                         .accessibilityLabel(accessibilitySummary)
 
@@ -37,6 +43,11 @@ struct WorldMapView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationBarHidden(true)
+        .sheet(item: $selectedTravelRoute) { route in
+            TravelCountdownSheet(route: route)
+                .presentationDetents([.height(300)])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     private var activeTravelAnimalCount: Int {
@@ -119,6 +130,7 @@ private struct MapCosmicBackground: View {
 
 struct TravelGlobeView: View {
     let routes: [TravelGlobeRoute]
+    var onSelectRoute: (TravelGlobeRoute) -> Void = { _ in }
 
     @State private var orientation = GlobeOrientation.defaultReadable
     fileprivate static let visibleGlobeRadiusRatio: CGFloat = 0.475
@@ -136,7 +148,6 @@ struct TravelGlobeView: View {
                     routeLayer(projection: projection, date: timeline.date)
                         .allowsHitTesting(false)
                     markerLayer(projection: projection, date: timeline.date)
-                        .allowsHitTesting(false)
                 }
                 .frame(width: diameter, height: diameter)
                 .contentShape(Circle())
@@ -197,8 +208,14 @@ struct TravelGlobeView: View {
 
                 if let destinationPoint = projection.project(route.destinationCoordinate),
                    destinationPoint.isVisible {
-                    AnimalDestinationMarker(route: route)
-                        .position(destinationPoint.point)
+                    Button {
+                        onSelectRoute(route)
+                    } label: {
+                        AnimalDestinationMarker(route: route)
+                    }
+                    .buttonStyle(.plain)
+                    .contentShape(Circle())
+                    .position(destinationPoint.point)
                 }
             }
         }
@@ -473,6 +490,65 @@ private struct AnimalDestinationMarker: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(route.animalName)正在前往\(route.destination)")
+    }
+}
+
+private struct TravelCountdownSheet: View {
+    let route: TravelGlobeRoute
+
+    var body: some View {
+        TimelineView(.periodic(from: Date(), by: 1)) { timeline in
+            VStack(spacing: 18) {
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.paperWhite)
+                        .frame(width: 78, height: 78)
+                        .overlay(Circle().stroke(route.tint.opacity(0.85), lineWidth: 2))
+                        .shadow(color: AppTheme.oliveInk.opacity(0.12), radius: 10, x: 0, y: 5)
+
+                    ArtImage(name: route.animalAssetName)
+                        .frame(width: 58, height: 58)
+                        .clipShape(Circle())
+                }
+
+                VStack(spacing: 8) {
+                    Text("\(route.animalName)还有\(TravelCountdownFormatter.timeString(until: route.expectedReturnAt, now: timeline.date))回家")
+                        .font(.system(size: 24, weight: .heavy, design: .rounded))
+                        .foregroundStyle(AppTheme.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+
+                    Text("当前旅行地点：\(route.destination)")
+                        .font(AppTheme.body)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                }
+
+                Text("小屋正在等这趟远方脚步回来。")
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk.opacity(0.82))
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 26)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(PaperBackground())
+        }
+    }
+}
+
+enum TravelCountdownFormatter {
+    static func timeString(until expectedReturnAt: Date, now: Date) -> String {
+        timeString(remaining: expectedReturnAt.timeIntervalSince(now))
+    }
+
+    static func timeString(remaining: TimeInterval) -> String {
+        let totalSeconds = max(0, Int(ceil(remaining)))
+        let hours = totalSeconds / 3_600
+        let minutes = (totalSeconds % 3_600) / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }
 
