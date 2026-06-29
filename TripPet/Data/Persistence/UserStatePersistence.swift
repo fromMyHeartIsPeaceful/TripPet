@@ -140,45 +140,65 @@ final class InMemoryUserStateStore: AppUserStateStore {
 
 @Model
 final class PersistedTicket {
-    @Attribute(.unique) var id: UUID
-    var date: Date
-    var sourceSteps: Int
-    var ticketCount: Int
-    var giftedAt: Date
+    var id: UUID = UUID()
+    var date: Date = Date.distantPast
+    var ticketCount: Int = 0
+    var giftedAt: Date = Date.distantPast
+    var grantTypeRawValue: String = "stepFunded"
 
     init(ticket: Ticket) {
         id = ticket.id
         date = ticket.date
-        sourceSteps = ticket.sourceSteps
         ticketCount = ticket.ticketCount
         giftedAt = ticket.giftedAt
+        grantTypeRawValue = ticket.grantType.rawValue
     }
 
     var ticket: Ticket {
-        Ticket(
+        let grantType = TicketGrantType(rawValue: grantTypeRawValue) ?? .stepFunded
+        return Ticket(
             id: id,
             date: date,
-            sourceSteps: sourceSteps,
+            sourceSteps: grantType == .stepFunded ? 1 : 0,
             ticketCount: ticketCount,
-            giftedAt: giftedAt
+            giftedAt: giftedAt,
+            grantType: grantType
         )
+    }
+
+    func update(from ticket: Ticket) {
+        date = ticket.date
+        ticketCount = ticket.ticketCount
+        giftedAt = ticket.giftedAt
+        grantTypeRawValue = ticket.grantType.rawValue
     }
 }
 
 @Model
 final class PersistedTrip {
-    @Attribute(.unique) var id: String
-    var animalId: String
-    var destinationId: String
-    var destination: String
-    var departedAt: Date
-    var expectedReturnAt: Date
-    var statusRawValue: String
+    var id: String = ""
+    var animalId: String = ""
+    var destinationId: String = ""
+    var destination: String = ""
+    var departedAt: Date = Date.distantPast
+    var expectedReturnAt: Date = Date.distantPast
+    var statusRawValue: String = "traveling"
     var postcardPlanJSON: String?
     var completedAt: Date?
 
     init(trip: Trip) {
         id = trip.id
+        animalId = trip.animalId
+        destinationId = trip.destinationId
+        destination = trip.destination
+        departedAt = trip.departedAt
+        expectedReturnAt = trip.expectedReturnAt
+        statusRawValue = trip.status.rawValue
+        postcardPlanJSON = Self.encodePostcardPlan(trip.postcardPlan)
+        completedAt = trip.completedAt
+    }
+
+    func update(from trip: Trip) {
         animalId = trip.animalId
         destinationId = trip.destinationId
         destination = trip.destination
@@ -223,20 +243,20 @@ final class PersistedTrip {
 
 @Model
 final class PersistedPostcard {
-    @Attribute(.unique) var id: String
-    var tripId: String
-    var destination: String
-    var title: String
-    var body: String
-    var imageAssetName: String
-    var templateAssetName: String
-    var destinationAssetName: String
-    var stampAssetName: String
-    var animalAssetName: String
-    var envelopeAssetName: String
-    var sentAt: Date
-    var subtitle: String
-    var isRead: Bool
+    var id: String = ""
+    var tripId: String = ""
+    var destination: String = ""
+    var title: String = ""
+    var body: String = ""
+    var imageAssetName: String = ""
+    var templateAssetName: String = ""
+    var destinationAssetName: String = ""
+    var stampAssetName: String = ""
+    var animalAssetName: String = ""
+    var envelopeAssetName: String = ""
+    var sentAt: Date = Date.distantPast
+    var subtitle: String = ""
+    var isRead: Bool = false
 
     init(postcard: Postcard) {
         id = postcard.id
@@ -273,18 +293,34 @@ final class PersistedPostcard {
             isRead: isRead
         )
     }
+
+    func update(from postcard: Postcard) {
+        tripId = postcard.tripId
+        destination = postcard.destination
+        title = postcard.title
+        body = postcard.body
+        imageAssetName = postcard.imageAssetName
+        templateAssetName = postcard.templateAssetName
+        destinationAssetName = postcard.destinationAssetName
+        stampAssetName = postcard.stampAssetName
+        animalAssetName = postcard.animalAssetName
+        envelopeAssetName = postcard.envelopeAssetName
+        sentAt = postcard.sentAt
+        subtitle = postcard.subtitle
+        isRead = isRead || postcard.isRead
+    }
 }
 
 @Model
 final class PersistedTravelWishState {
-    @Attribute(.unique) var id: String
-    var animalId: String
-    var destinationId: String
-    var destination: String
-    var destinationAssetName: String
-    var requiredTickets: Int
-    var statusRawValue: String
-    var createdAt: Date
+    var id: String = ""
+    var animalId: String = ""
+    var destinationId: String = ""
+    var destination: String = ""
+    var destinationAssetName: String = ""
+    var requiredTickets: Int = 0
+    var statusRawValue: String = "waiting"
+    var createdAt: Date = Date.distantPast
 
     init(wish: TravelWish) {
         id = wish.id
@@ -309,24 +345,38 @@ final class PersistedTravelWishState {
             createdAt: createdAt
         )
     }
+
+    func update(from wish: TravelWish) {
+        animalId = wish.animalId
+        destinationId = wish.destinationId
+        destination = wish.destination
+        destinationAssetName = wish.destinationAssetName
+        requiredTickets = wish.requiredTickets
+        statusRawValue = wish.status.rawValue
+        createdAt = wish.createdAt
+    }
 }
 
 @Model
 final class PersistedAppFlag {
-    @Attribute(.unique) var key: String
-    var boolValue: Bool
+    var key: String = ""
+    var boolValue: Bool = false
 
     init(key: String, boolValue: Bool) {
         self.key = key
+        self.boolValue = boolValue
+    }
+
+    func update(boolValue: Bool) {
         self.boolValue = boolValue
     }
 }
 
 @Model
 final class PersistedCabinLodgingState {
-    @Attribute(.unique) var key: String
-    var statusDate: Date
-    var dispatchedCount: Int
+    var key: String = ""
+    var statusDate: Date = Date.distantPast
+    var dispatchedCount: Int = 0
     var currentAnimalId: String?
     var presentAnimalIdsJSON: String?
     var emptyUntil: Date?
@@ -349,6 +399,14 @@ final class PersistedCabinLodgingState {
         )
     }
 
+    func update(from state: CabinLodgingState) {
+        statusDate = state.statusDate
+        dispatchedCount = state.dispatchedCount
+        currentAnimalId = state.currentAnimalId
+        presentAnimalIdsJSON = Self.encodeAnimalIds(state.presentAnimalIds)
+        emptyUntil = state.emptyUntil
+    }
+
     private static func encodeAnimalIds(_ animalIds: [String]) -> String? {
         guard animalIds.isEmpty == false,
               let data = try? JSONEncoder().encode(animalIds) else {
@@ -369,7 +427,7 @@ final class PersistedCabinLodgingState {
 
 @Model
 final class PersistedConsumedPostcardText {
-    @Attribute(.unique) var id: String
+    var id: String = ""
 
     init(id: String) {
         self.id = id
@@ -378,6 +436,8 @@ final class PersistedConsumedPostcardText {
 
 @MainActor
 final class SwiftDataUserStateStore: AppUserStateStore {
+    static let cloudKitContainerIdentifier = "iCloud.com.qianyu.TripPet"
+
     private static let defaultInitialCabinAnimalId = "moji_cat"
 
     private let context: ModelContext
@@ -395,7 +455,7 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         let configuration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: inMemory,
-            cloudKitDatabase: .none
+            cloudKitDatabase: inMemory ? .none : .private(Self.cloudKitContainerIdentifier)
         )
         let container = try ModelContainer(for: schema, configurations: [configuration])
         context = ModelContext(container)
@@ -433,20 +493,13 @@ final class SwiftDataUserStateStore: AppUserStateStore {
     }
 
     func save(_ state: AppUserState) {
-        replace(PersistedTicket.self, with: state.tickets.map(PersistedTicket.init(ticket:)))
-        replace(PersistedTrip.self, with: state.trips.map(PersistedTrip.init(trip:)))
-        replace(PersistedPostcard.self, with: state.postcards.map(PersistedPostcard.init(postcard:)))
-        replace(PersistedTravelWishState.self, with: state.travelWishes.map(PersistedTravelWishState.init(wish:)))
-        replace(PersistedAppFlag.self, with: [
-            PersistedAppFlag(key: AppFlagKey.onboardingCompleted, boolValue: state.flags.onboardingCompleted),
-            PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed),
-            PersistedAppFlag(key: AppFlagKey.firstImmediateTicketGifted, boolValue: state.flags.firstImmediateTicketGifted),
-            PersistedAppFlag(key: AppFlagKey.firstAirportPostcardDelivered, boolValue: state.flags.firstAirportPostcardDelivered)
-        ])
-        replace(PersistedCabinLodgingState.self, with: [
-            PersistedCabinLodgingState(state: state.cabinLodging)
-        ])
-        replace(PersistedConsumedPostcardText.self, with: state.consumedPostcardTextIds.map(PersistedConsumedPostcardText.init(id:)))
+        saveTickets(state.tickets)
+        saveTrips(state.trips)
+        savePostcards(state.postcards)
+        saveTravelWishes(state.travelWishes)
+        saveFlags(state.flags)
+        saveCabinLodging(state.cabinLodging)
+        saveConsumedPostcardTextIds(state.consumedPostcardTextIds)
         try? context.save()
     }
 
@@ -486,12 +539,129 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         return seed.animals.first(where: \.isResident)?.id ?? seed.animals.first?.id
     }
 
-    private func replace<T: PersistentModel>(_ type: T.Type, with models: [T]) {
-        let descriptor = FetchDescriptor<T>()
-        if let existing = try? context.fetch(descriptor) {
-            existing.forEach { context.delete($0) }
+    private func saveTickets(_ tickets: [Ticket]) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedTicket>())) ?? []
+        let byId = Dictionary(grouping: existing, by: \.id)
+        let desiredIds = Set(tickets.map(\.id))
+
+        for ticket in tickets {
+            if let model = byId[ticket.id]?.first {
+                model.update(from: ticket)
+            } else {
+                context.insert(PersistedTicket(ticket: ticket))
+            }
         }
-        models.forEach { context.insert($0) }
+        existing
+            .filter { desiredIds.contains($0.id) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byId)
+    }
+
+    private func saveTrips(_ trips: [Trip]) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedTrip>())) ?? []
+        let byId = Dictionary(grouping: existing, by: \.id)
+        let desiredIds = Set(trips.map(\.id))
+
+        for trip in trips {
+            if let model = byId[trip.id]?.first {
+                model.update(from: trip)
+            } else {
+                context.insert(PersistedTrip(trip: trip))
+            }
+        }
+        existing
+            .filter { desiredIds.contains($0.id) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byId)
+    }
+
+    private func savePostcards(_ postcards: [Postcard]) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedPostcard>())) ?? []
+        let byId = Dictionary(grouping: existing, by: \.id)
+        let desiredIds = Set(postcards.map(\.id))
+
+        for postcard in postcards {
+            if let model = byId[postcard.id]?.first {
+                model.update(from: postcard)
+            } else {
+                context.insert(PersistedPostcard(postcard: postcard))
+            }
+        }
+        existing
+            .filter { desiredIds.contains($0.id) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byId)
+    }
+
+    private func saveTravelWishes(_ wishes: [TravelWish]) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedTravelWishState>())) ?? []
+        let byId = Dictionary(grouping: existing, by: \.id)
+        let desiredIds = Set(wishes.map(\.id))
+
+        for wish in wishes {
+            if let model = byId[wish.id]?.first {
+                model.update(from: wish)
+            } else {
+                context.insert(PersistedTravelWishState(wish: wish))
+            }
+        }
+        existing
+            .filter { desiredIds.contains($0.id) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byId)
+    }
+
+    private func saveFlags(_ flags: AppUserFlags) {
+        let values = [
+            AppFlagKey.onboardingCompleted: flags.onboardingCompleted,
+            AppFlagKey.healthGuideDismissed: flags.healthGuideDismissed,
+            AppFlagKey.firstImmediateTicketGifted: flags.firstImmediateTicketGifted,
+            AppFlagKey.firstAirportPostcardDelivered: flags.firstAirportPostcardDelivered
+        ]
+        let existing = (try? context.fetch(FetchDescriptor<PersistedAppFlag>())) ?? []
+        let byKey = Dictionary(grouping: existing, by: \.key)
+
+        for (key, value) in values {
+            if let model = byKey[key]?.first {
+                model.update(boolValue: value)
+            } else {
+                context.insert(PersistedAppFlag(key: key, boolValue: value))
+            }
+        }
+        let desiredKeys = Set(values.keys)
+        existing
+            .filter { desiredKeys.contains($0.key) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byKey)
+    }
+
+    private func saveCabinLodging(_ state: CabinLodgingState) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedCabinLodgingState>())) ?? []
+        if let model = existing.first {
+            model.update(from: state)
+        } else {
+            context.insert(PersistedCabinLodgingState(state: state))
+        }
+        existing.dropFirst().forEach { context.delete($0) }
+    }
+
+    private func saveConsumedPostcardTextIds(_ ids: Set<String>) {
+        let existing = (try? context.fetch(FetchDescriptor<PersistedConsumedPostcardText>())) ?? []
+        let byId = Dictionary(grouping: existing, by: \.id)
+
+        for id in ids where byId[id]?.first == nil {
+            context.insert(PersistedConsumedPostcardText(id: id))
+        }
+        existing
+            .filter { ids.contains($0.id) == false }
+            .forEach { context.delete($0) }
+        deleteDuplicateModels(in: byId)
+    }
+
+    private func deleteDuplicateModels<Key: Hashable, Model: PersistentModel>(in groupedModels: [Key: [Model]]) {
+        for models in groupedModels.values where models.count > 1 {
+            models.dropFirst().forEach { context.delete($0) }
+        }
     }
 
     private func rehydrate(wishes: [TravelWish], seed: SeedData) -> [TravelWish] {

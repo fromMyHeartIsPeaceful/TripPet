@@ -17,6 +17,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     header
                     healthCard
+                    iCloudCard
 
                     VStack(spacing: 10) {
                         NavigationLink {
@@ -58,6 +59,7 @@ struct SettingsView: View {
             .navigationBarHidden(true)
             .task {
                 await environment.refreshStepsIfPossible()
+                await environment.refreshCloudSyncStatus()
                 updateHealthStatus()
             }
             .onChange(of: environment.stepSnapshot) { _, _ in
@@ -115,6 +117,36 @@ struct SettingsView: View {
         .paperCard(cornerRadius: 24)
     }
 
+    private var iCloudCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
+                ArtImage(name: "icon_settings", isDecorative: false)
+                    .frame(width: 26, height: 26)
+                    .foregroundStyle(AppTheme.deepSage)
+                    .frame(width: 42, height: 42)
+                    .background(AppTheme.paperWhite)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.paperGray, lineWidth: AppTheme.hairline))
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        Text(AppCopy.Settings.iCloudTitle)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(AppTheme.ink)
+                        cloudStatusTag
+                    }
+
+                    Text(cloudStatusText)
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineSpacing(3)
+                }
+            }
+        }
+        .padding(18)
+        .paperCard(cornerRadius: 24)
+    }
+
     private var statusTag: some View {
         Text(statusTagText)
             .font(.system(size: 12, weight: .semibold))
@@ -122,6 +154,16 @@ struct SettingsView: View {
             .padding(.horizontal, 9)
             .frame(height: 25)
             .background(statusTagColor.opacity(0.13))
+            .clipShape(Capsule())
+    }
+
+    private var cloudStatusTag: some View {
+        Text(cloudStatusTagText)
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(cloudStatusTagColor)
+            .padding(.horizontal, 9)
+            .frame(height: 25)
+            .background(cloudStatusTagColor.opacity(0.13))
             .clipShape(Capsule())
     }
 
@@ -150,6 +192,51 @@ struct SettingsView: View {
             return Color(red: 0.788, green: 0.537, blue: 0.463)
         case .notDetermined:
             return AppTheme.ochre
+        }
+    }
+
+    private var cloudStatusTagText: String {
+        switch environment.cloudSyncStatus {
+        case .checking:
+            return "检查中"
+        case .available:
+            return "可同步"
+        case .noAccount:
+            return "未登录"
+        case .restricted:
+            return "受限制"
+        case .unavailable:
+            return "暂不可用"
+        case .error:
+            return "需重试"
+        }
+    }
+
+    private var cloudStatusTagColor: Color {
+        switch environment.cloudSyncStatus {
+        case .available:
+            return AppTheme.deepSage
+        case .checking, .noAccount:
+            return AppTheme.ochre
+        case .restricted, .unavailable, .error:
+            return Color(red: 0.788, green: 0.537, blue: 0.463)
+        }
+    }
+
+    private var cloudStatusText: String {
+        switch environment.cloudSyncStatus {
+        case .checking:
+            return AppCopy.Settings.iCloudChecking
+        case .available:
+            return AppCopy.Settings.iCloudAvailable
+        case .noAccount:
+            return AppCopy.Settings.iCloudNoAccount
+        case .restricted:
+            return AppCopy.Settings.iCloudRestricted
+        case .unavailable:
+            return AppCopy.Settings.iCloudUnavailable
+        case .error(let message):
+            return "\(AppCopy.Settings.iCloudErrorPrefix)：\(message)"
         }
     }
 

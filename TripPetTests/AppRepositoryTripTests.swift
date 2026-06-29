@@ -469,9 +469,28 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertTrue(restoredRepository.userFlags.onboardingCompleted)
         XCTAssertTrue(restoredRepository.userFlags.healthGuideDismissed)
         XCTAssertEqual(restoredRepository.tickets.count, 1)
+        XCTAssertEqual(restoredRepository.tickets.first?.grantType, .stepFunded)
+        XCTAssertNotEqual(restoredRepository.tickets.first?.sourceSteps, 5_200)
+        XCTAssertEqual(restoredRepository.dailyLimitedTicketCountToday(on: Self.date(hour: 11)), 1)
         XCTAssertEqual(restoredRepository.trips.first?.status, .completed)
         XCTAssertEqual(restoredRepository.postcards.first?.tripId, trip.id)
         XCTAssertTrue(restoredRepository.postcards.first?.isRead ?? false)
+    }
+
+    func testSwiftDataStoreDoesNotPersistHealthKitStepCountInTickets() throws {
+        let store = try SwiftDataUserStateStore(inMemory: true)
+        let seed = Self.makeSeed()
+        let repository = AppRepository(seed: seed, store: store)
+        let giftedAt = Self.date(hour: 11)
+
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: giftedAt)
+
+        let restoredRepository = AppRepository(seed: seed, store: store)
+        let restoredTicket = try XCTUnwrap(restoredRepository.tickets.first)
+
+        XCTAssertEqual(restoredTicket.grantType, .stepFunded)
+        XCTAssertNotEqual(restoredTicket.sourceSteps, 5_200)
+        XCTAssertEqual(restoredRepository.stepFundedTicketCountToday(on: giftedAt), 1)
     }
 
     func testMarkPostcardReadIsIdempotentAndSkipsUnneededPersistence() throws {

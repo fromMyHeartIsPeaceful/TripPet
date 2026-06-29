@@ -23,9 +23,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.healthcare-fitness</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>用于读取当天步数，把脚步转化为送给小动物的旅行机票。</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>本应用不会写入健康数据，仅保留 HealthKit 能力用于后续扩展。</string>
+	<string>用于读取当天步数，在本机判断是否可把脚步转化为送给小动物的旅行机票。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

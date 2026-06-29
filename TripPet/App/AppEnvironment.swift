@@ -1,4 +1,5 @@
 import Combine
+import CloudKit
 import Foundation
 
 struct StepCountSnapshot: Equatable {
@@ -6,6 +7,15 @@ struct StepCountSnapshot: Equatable {
     var steps: Int?
     var readAt: Date?
     var errorMessage: String?
+}
+
+enum CloudSyncStatus: Equatable {
+    case checking
+    case available
+    case noAccount
+    case restricted
+    case unavailable
+    case error(String)
 }
 
 @MainActor
@@ -18,6 +28,7 @@ final class AppEnvironment: ObservableObject {
     let postcardNotificationService: PostcardNotificationServiceProtocol
     let destinations: [ManifestDestination]
     @Published private(set) var stepSnapshot: StepCountSnapshot
+    @Published private(set) var cloudSyncStatus: CloudSyncStatus
     @Published private(set) var notificationRequestedTab: AppTab?
     private var cancellables: Set<AnyCancellable> = []
     private var notifiedPostcardIds: Set<String> = []
@@ -47,6 +58,7 @@ final class AppEnvironment: ObservableObject {
             readAt: nil,
             errorMessage: nil
         )
+        self.cloudSyncStatus = .checking
 
         repository.objectWillChange
             .sink { [weak self] _ in
@@ -153,6 +165,28 @@ final class AppEnvironment: ObservableObject {
                 readAt: stepSnapshot.readAt,
                 errorMessage: error.localizedDescription
             )
+        }
+    }
+
+    func refreshCloudSyncStatus() async {
+        cloudSyncStatus = .checking
+        do {
+            let status = try await CKContainer(identifier: SwiftDataUserStateStore.cloudKitContainerIdentifier)
+                .accountStatus()
+            switch status {
+            case .available:
+                cloudSyncStatus = .available
+            case .noAccount:
+                cloudSyncStatus = .noAccount
+            case .restricted:
+                cloudSyncStatus = .restricted
+            case .couldNotDetermine, .temporarilyUnavailable:
+                cloudSyncStatus = .unavailable
+            @unknown default:
+                cloudSyncStatus = .unavailable
+            }
+        } catch {
+            cloudSyncStatus = .error(error.localizedDescription)
         }
     }
 

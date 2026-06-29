@@ -331,6 +331,9 @@
 							com.apple.HealthKit = {
 								enabled = 1;
 							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 						};
 					};
 					00000000000000000000002B = {
@@ -576,8 +579,7 @@
 				INFOPLIST_FILE = TripPet/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TripPet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，把脚步转化为送给小动物的旅行机票。";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "本应用不会写入健康数据，仅保留 HealthKit 能力用于后续扩展。";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，在本机判断是否可把脚步转化为送给小动物的旅行机票。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIAppFonts = (
@@ -614,8 +616,7 @@
 				INFOPLIST_FILE = TripPet/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TripPet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，把脚步转化为送给小动物的旅行机票。";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "本应用不会写入健康数据，仅保留 HealthKit 能力用于后续扩展。";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "用于读取当天步数，在本机判断是否可把脚步转化为送给小动物的旅行机票。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIAppFonts = (

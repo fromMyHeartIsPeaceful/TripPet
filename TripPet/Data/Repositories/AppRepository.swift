@@ -125,7 +125,7 @@ final class AppRepository: ObservableObject {
 
     func stepFundedTicketCountToday(on date: Date = Date(), calendar: Calendar = .current) -> Int {
         tickets
-            .filter { calendar.isDate($0.giftedAt, inSameDayAs: date) && $0.sourceSteps > 0 }
+            .filter { calendar.isDate($0.giftedAt, inSameDayAs: date) && $0.grantType == .stepFunded }
             .reduce(0) { total, ticket in
                 total + max(1, ticket.ticketCount)
             }
@@ -180,7 +180,8 @@ final class AppRepository: ObservableObject {
             date: date,
             sourceSteps: sourceSteps,
             ticketCount: ticketCount,
-            giftedAt: date
+            giftedAt: date,
+            grantType: isFirstImmediateTicket ? .firstImmediate : .stepFunded
         )
         tickets.append(ticket)
 
