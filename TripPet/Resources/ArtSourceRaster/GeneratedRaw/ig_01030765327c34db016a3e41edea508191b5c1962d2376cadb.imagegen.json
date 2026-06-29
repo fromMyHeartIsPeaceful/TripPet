@@ -1,0 +1,14 @@
+{
+  "asset_name": "ig_01030765327c34db016a3e41edea508191b5c1962d2376cadb",
+  "call_id": "ig_01030765327c34db016a3e41edea508191b5c1962d2376cadb",
+  "line_number": 43,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T17-08-42-019f0330-4185-7ee1-9c2c-69f770e325b5.jsonl",
+  "raw_png": "ig_01030765327c34db016a3e41edea508191b5c1962d2376cadb.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 1961523,
+  "sha256": "6ff664539600864f5936ff16f7f07e95bf4fda7ce213e1985a7ccf4360a6a23c",
+  "revised_prompt": "Create one standalone butterfly illustration as a game/app art asset matching a warm hand-painted travel-pet journal style. Subject: a single small friendly butterfly, wings open in a gentle three-quarter view, cute and delicate but not childish, suitable as a decorative companion asset in a cozy travel postcard app. Style: soft watercolor and colored-pencil texture, visible paper grain, hand-drawn organic edges, subtle warm sepia outline, low-saturation palette. Palette: muted sage green, dusty teal, warm cream, pale honey yellow, tiny coral accents, harmonious with cozy animal travel illustrations. Shape: rounded wing lobes, simple readable silhouette, tiny fuzzy body, fine antennae, charming but not anthropomorphic. Lighting: soft diffuse studio lighting, no hard cast shadow. Background: transparent if supported; otherwise perfectly plain off-white with no scene, no props, no text, no watermark. Composition: centered, full subject visible with generous padding, asset-ready cutout, high-resolution square image."
+}

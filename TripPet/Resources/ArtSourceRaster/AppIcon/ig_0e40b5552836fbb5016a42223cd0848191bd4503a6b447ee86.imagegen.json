@@ -1,0 +1,14 @@
+{
+  "asset_name": "ig_0e40b5552836fbb5016a42223cd0848191bd4503a6b447ee86",
+  "call_id": "ig_0e40b5552836fbb5016a42223cd0848191bd4503a6b447ee86",
+  "line_number": 91,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/29/rollout-2026-06-29T15-34-01-019f124c-a799-7c93-950c-074afbc379a2.jsonl",
+  "raw_png": "ig_0e40b5552836fbb5016a42223cd0848191bd4503a6b447ee86.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2481138,
+  "sha256": "e410f6c45f67bfe4215edb3a677452ccf1d92875396b14fee2abeb8f52ad4815",
+  "revised_prompt": "Use case: logo-brand\nAsset type: final pure raster PNG for iOS app icon and App Store icon, square 1024x1024\nPrimary request: Create a simpler enlarged app icon for the Chinese iOS app \"步履小屋\". The app turns daily walking steps into travel tickets for small animals.\nSubject: One large cozy tiny cabin filling most of the icon, larger than a normal app icon illustration, with a warm lit door and simple roof. Add exactly one pair of footprint marks in the lower foreground and one clean folded paper plane, also enlarged, near the upper-right roof area or doorway. No other objects.\nStyle/medium: premium simplified watercolor travel-journal icon, iconic and readable, soft pencil outline, warm paper texture, crisp silhouette.\nComposition/framing: all elements are noticeably larger and use the square icon space efficiently. Cabin should occupy about 75-85% of the image height/width while still safe for iOS rounded-corner crop. No tiny details. Strong readable silhouette at phone home-screen size.\nLighting/mood: warm, cozy, calm, inviting.\nColor palette: warm cream background, honey yellow cabin light, warm brown roof/walls, soft muted sage/olive accent only if needed. No blue at all, no purple, no dark navy.\nMaterials/textures: subtle watercolor and paper grain; clean crisp edges; not blurry.\nText: no text, no letters, no numbers.\nConstraints: pure image only; exactly one pair of footprints; keep one paper plane; no leaves, no flowers, no grass, no trees, no plants, no scenery, no clouds, no blue watercolor wash, no border, no exterior drop shadow, no Apple logo, no Health icon, no watermark. Must be suitable as a final phone icon and App Store icon."
+}

@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步履小屋成就系统静态线框 V2</title>
+  <style>
+    :root {
+      --ink: #20231f;
+      --muted: #67665f;
+      --line: #111;
+      --paper: #fff9ef;
+      --card: #fbf3e6;
+      --surface: #f3efe7;
+      --soft: #ded6c7;
+      --lavender: #e7dcfb;
+      --gold: #e4bf70;
+      --sage: #8faf95;
+      --blue: #a9c9d8;
+      --locked: #d9d6ce;
+      --shadow: rgba(32, 35, 31, 0.16);
+      --phone-w: 390px;
+      --phone-h: 844px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(var(--soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--soft) 1px, transparent 1px),
+        #f2f0ea;
+      background-size: 32px 32px;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(320px, var(--phone-w)));
+      gap: 28px;
+      align-items: start;
+      width: max-content;
+      min-width: 100%;
+      padding: 34px;
+    }
+
+    .phone-shell {
+      width: var(--phone-w);
+    }
+
+    .caption {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .phone {
+      height: var(--phone-h);
+      border: 3px solid var(--line);
+      border-radius: 38px;
+      background: var(--paper);
+      box-shadow: 8px 8px 0 var(--line);
+      overflow: hidden;
+    }
+
+    .screen {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(231, 220, 251, 0.52), transparent 22%),
+        radial-gradient(circle at 84% 8%, rgba(169, 201, 216, 0.34), transparent 20%),
+        var(--surface);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      padding: 16px 24px 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .page {
+      min-height: 0;
+      padding: 0 20px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .page::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page-content {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 8px 0 22px;
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 44px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    h2 {
+      font-size: 21px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 15px;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 27px;
+      padding: 0 10px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      font-weight: 900;
+    }
+
+    .back-button::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-left: 3px solid var(--line);
+      border-bottom: 3px solid var(--line);
+      transform: rotate(45deg);
+    }
+
+    .hero-card,
+    .category-card,
+    .target-card,
+    .medal-board {
+      border: 3px solid var(--line);
+      background: rgba(255, 249, 239, 0.94);
+      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    .hero-card {
+      display: grid;
+      gap: 12px;
+      min-height: 128px;
+      padding: 16px;
+      border-radius: 30px;
+    }
+
+    .hero-top {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 13px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 7px;
+    }
+
+    .big-number {
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .progress-bar {
+      height: 18px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      overflow: hidden;
+    }
+
+    .progress-bar > span {
+      display: block;
+      width: var(--value, 0%);
+      height: 100%;
+      background: var(--sage);
+    }
+
+    .category-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .category-card {
+      display: grid;
+      grid-template-columns: 66px 1fr;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      min-height: 116px;
+      padding: 12px;
+      border-radius: 24px;
+      text-align: left;
+    }
+
+    .category-copy {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .category-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .target-card {
+      display: grid;
+      gap: 12px;
+      padding: 15px;
+      border-radius: 26px;
+    }
+
+    .travel-fused-card {
+      position: relative;
+      display: grid;
+      gap: 18px;
+      padding: 24px 18px 26px;
+      border: 3px solid var(--line);
+      border-radius: 30px;
+      background:
+        linear-gradient(rgba(255, 249, 239, 0.92), rgba(255, 249, 239, 0.92)),
+        url("TripPet/Resources/Assets.xcassets/Postcards/postcard_base_16x9.imageset/postcard_base_16x9@3x.png") center / cover;
+      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    .travel-fused-card .target-head {
+      grid-template-columns: 1fr;
+    }
+
+    .target-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .target-text {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .target-value-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .target-value-row strong {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .animal-showcase {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      align-items: center;
+      padding: 0 44px;
+    }
+
+    .arrow-button {
+      position: absolute;
+      top: 50%;
+      display: grid;
+      width: 38px;
+      height: 46px;
+      place-items: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      transform: translateY(-50%);
+    }
+
+    .arrow-button.prev {
+      left: 0;
+    }
+
+    .arrow-button.next {
+      right: 0;
+    }
+
+    .arrow-button img {
+      width: 24px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .animal-panel {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 92px;
+      width: 100%;
+      max-width: 276px;
+      padding: 10px 12px;
+      border: 3px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+    }
+
+    .animal-portrait {
+      display: grid;
+      width: 72px;
+      height: 72px;
+      place-items: center;
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: var(--lavender);
+      overflow: hidden;
+      font-size: 27px;
+      font-weight: 950;
+    }
+
+    .animal-portrait img {
+      width: 88%;
+      height: 88%;
+      object-fit: contain;
+    }
+
+    .animal-panel-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .animal-panel-copy h2 {
+      white-space: nowrap;
+    }
+
+    .animal-panel-copy strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .section-title strong {
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 950;
+    }
+
+    .animal-switch {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .animal-tab {
+      min-height: 38px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .animal-tab.active {
+      background: var(--lavender);
+    }
+
+    .medal-board {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 28px;
+    }
+
+    .travel-fused-card .medal-board {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .medal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 10px;
+      align-items: start;
+    }
+
+    .step-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 8px;
+    }
+
+    .medal-item {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .medal {
+      position: relative;
+      display: inline-grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: var(--locked);
+      color: var(--line);
+      font-size: 20px;
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .medal.large {
+      width: 72px;
+      height: 72px;
+      font-size: 22px;
+    }
+
+    .medal.unlocked {
+      background: var(--gold);
+    }
+
+    .medal.progress {
+      background:
+        conic-gradient(var(--gold) 0 var(--arc, 70%), var(--paper) var(--arc, 70%) 100%);
+    }
+
+    .medal.locked {
+      border-style: dashed;
+      color: var(--muted);
+    }
+
+    .medal::before {
+      content: "★";
+      transform: translateY(-1px);
+    }
+
+    .medal.locked::after {
+      content: "锁";
+      position: absolute;
+      right: -7px;
+      bottom: -7px;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: var(--paper);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      min-height: 28px;
+      padding: 0 8px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+      transform: translateY(-13px);
+    }
+
+    .medal-name {
+      display: grid;
+      gap: 3px;
+      width: 100%;
+      min-height: 76px;
+      margin-top: -10px;
+      align-content: start;
+    }
+
+    .medal-name strong {
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.22;
+      font-weight: 950;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .medal-name span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .medal-name .subtitle {
+      white-space: normal;
+    }
+
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      width: 252px;
+      height: 60px;
+      margin: 0 auto 18px;
+      padding: 6px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      box-shadow: 0 8px 18px rgba(32, 35, 31, 0.12);
+    }
+
+    .nav-item {
+      display: grid;
+      gap: 2px;
+      place-items: center;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .nav-item.active {
+      background: rgba(143, 175, 149, 0.28);
+    }
+
+    .nav-icon {
+      position: relative;
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-icon.home {
+      border: 3px solid var(--line);
+      border-top: 0;
+      transform: translateY(4px);
+    }
+
+    .nav-icon.home::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: -9px;
+      width: 14px;
+      height: 14px;
+      border-left: 3px solid var(--line);
+      border-top: 3px solid var(--line);
+      transform: rotate(45deg);
+    }
+
+    .nav-icon.medal-mini {
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: var(--lavender);
+    }
+
+    .nav-icon.medal-mini::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      bottom: -6px;
+      width: 7px;
+      height: 9px;
+      border-left: 3px solid var(--line);
+      border-right: 3px solid var(--line);
+    }
+
+    .nav-icon.map {
+      border: 3px solid var(--line);
+      border-radius: 50%;
+    }
+
+    .nav-icon.map::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-top: 3px solid var(--line);
+      transform: rotate(-20deg);
+    }
+
+    @media (max-width: 1640px) {
+      .board {
+        grid-template-columns: repeat(2, minmax(320px, var(--phone-w)));
+        width: auto;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .board {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .phone-shell {
+        width: min(var(--phone-w), calc(100vw - 40px));
+      }
+
+      .phone {
+        height: min(var(--phone-h), 92vh);
+        min-height: 720px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="board" aria-label="成就系统四屏静态线框 V2">
+    <section class="phone-shell">
+      <p class="caption">1级页：只看下一个目标</p>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>09:41</span>
+          </div>
+
+          <section class="page" aria-label="成就首页">
+            <div class="page-content">
+              <div class="top-row">
+                <h1>成就</h1>
+              </div>
+
+              <article class="hero-card">
+                <div class="hero-top">
+                  <span class="medal large progress" style="--arc: 85%"></span>
+                  <div class="hero-copy">
+                    <span class="hint">最近的目标</span>
+                    <strong class="big-number">42,600 / 50,000</strong>
+                    <h2>脚步 50k 勋章快到了</h2>
+                  </div>
+                </div>
+                <div class="progress-bar" style="--value: 85%"><span></span></div>
+                <p class="hint">再赠送 7,400 步，就能点亮下一枚脚步勋章。</p>
+              </article>
+
+              <div class="category-list">
+                <button class="category-card" type="button">
+                  <span class="medal unlocked"></span>
+                  <span class="category-copy">
+                    <span class="category-title-row">
+                      <h2>旅行勋章墙</h2>
+                      <span class="pill">已收集 3 / 18</span>
+                    </span>
+                    <span class="progress-bar" style="--value: 60%"><span></span></span>
+                  </span>
+                </button>
+
+                <button class="category-card" type="button">
+                  <span class="medal progress" style="--arc: 85%"></span>
+                  <span class="category-copy">
+                    <span class="category-title-row">
+                      <h2>脚步勋章墙</h2>
+                      <span class="pill">42.6k / 50k</span>
+                    </span>
+                    <span class="progress-bar" style="--value: 85%"><span></span></span>
+                    <span class="hint">当前最接近完成，适合作为主刺激点。</span>
+                  </span>
+                </button>
+
+                <button class="category-card" type="button">
+                  <span class="medal progress" style="--arc: 28%"></span>
+                  <span class="category-copy">
+                    <span class="category-title-row">
+                      <h2>明信片勋章墙</h2>
+                      <span class="pill">14 / 50</span>
+                    </span>
+                    <span class="progress-bar" style="--value: 28%"><span></span></span>
+                    <span class="hint">小满距离 50 张明信片勋章还差 36 张。</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <nav class="bottom-nav" aria-label="底部导航">
+            <button class="nav-item" type="button"><span class="nav-icon home"></span><span>小屋</span></button>
+            <button class="nav-item active" type="button"><span class="nav-icon medal-mini"></span><span>成就</span></button>
+            <button class="nav-item" type="button"><span class="nav-icon map"></span><span>地图</span></button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone-shell">
+      <p class="caption">2级页：旅行次数</p>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>09:41</span>
+          </div>
+
+          <section class="page" aria-label="旅行次数成就详情">
+            <div class="page-content">
+              <div class="top-row">
+                <button class="back-button" type="button">返回</button>
+              </div>
+
+              <article class="travel-fused-card">
+                <div class="target-head">
+                  <span class="target-text">
+                    <h1>旅行勋章墙</h1>
+                  </span>
+                </div>
+                <div class="animal-showcase" aria-label="左右滑动查看不同小动物">
+                  <button class="arrow-button prev" type="button" aria-label="上一只小动物">
+                    <img src="TripPet/Resources/Assets.xcassets/UI/map_scroll_arrow_left.imageset/map_scroll_arrow_left@3x.png" alt="">
+                  </button>
+                  <div class="animal-panel">
+                    <span class="animal-portrait">
+                      <img src="TripPet/Resources/Assets.xcassets/Animals/animal_home_xiaoman_hamster.imageset/animal_home_xiaoman_hamster@3x.png" alt="小满头像">
+                    </span>
+                    <span class="animal-panel-copy">
+                      <h2>小满</h2>
+                      <span class="hint">已收集 2 / 6 枚旅行勋章</span>
+                      <span class="hint">下一个勋章点</span>
+                      <strong>12 / 20</strong>
+                    </span>
+                  </div>
+                  <button class="arrow-button next" type="button" aria-label="下一只小动物">
+                    <img src="TripPet/Resources/Assets.xcassets/UI/map_scroll_arrow_right.imageset/map_scroll_arrow_right@3x.png" alt="">
+                  </button>
+                </div>
+                <div class="progress-bar" style="--value: 60%"><span></span></div>
+
+                <section class="medal-board" aria-label="小满旅行勋章墙">
+                  <div class="medal-grid">
+                    <article class="medal-item">
+                      <span><span class="medal unlocked"></span><span class="badge">1次</span></span>
+                      <span class="medal-name">
+                        <strong>穷人乍富</strong>
+                        <span class="subtitle">初次体验旅游乐趣</span>
+                        <span>1 / 1</span>
+                      </span>
+                    </article>
+                    <article class="medal-item">
+                      <span><span class="medal unlocked"></span><span class="badge">10次</span></span>
+                      <span class="medal-name">
+                        <strong>小富即安</strong>
+                        <span class="subtitle">逐渐变为出行常客</span>
+                        <span>10 / 10</span>
+                      </span>
+                    </article>
+                    <article class="medal-item">
+                      <span><span class="medal progress" style="--arc: 60%"></span><span class="badge">20次</span></span>
+                      <span class="medal-name">
+                        <strong>观光达人</strong>
+                        <span class="subtitle">认识个有钱朋友可真好</span>
+                        <span>12 / 20</span>
+                      </span>
+                    </article>
+                    <article class="medal-item">
+                      <span><span class="medal locked"></span><span class="badge">30次</span></span>
+                      <span class="medal-name">
+                        <strong>游玩专家</strong>
+                        <span class="subtitle">永远享受别人买单的旅行</span>
+                        <span>0 / 30</span>
+                      </span>
+                    </article>
+                    <article class="medal-item">
+                      <span><span class="medal locked"></span><span class="badge">50次</span></span>
+                      <span class="medal-name">
+                        <strong>探险大师</strong>
+                        <span class="subtitle">旅行生涯中一分钱没出</span>
+                        <span>0 / 50</span>
+                      </span>
+                    </article>
+                    <article class="medal-item">
+                      <span><span class="medal locked"></span><span class="badge">100次</span></span>
+                      <span class="medal-name">
+                        <strong>环球旅人</strong>
+                        <span class="subtitle">背后有个贼有实力的大佬</span>
+                        <span>0 / 100</span>
+                      </span>
+                    </article>
+                  </div>
+                </section>
+              </article>
+            </div>
+          </section>
+
+          <nav class="bottom-nav" aria-label="底部导航">
+            <button class="nav-item" type="button"><span class="nav-icon home"></span><span>小屋</span></button>
+            <button class="nav-item active" type="button"><span class="nav-icon medal-mini"></span><span>成就</span></button>
+            <button class="nav-item" type="button"><span class="nav-icon map"></span><span>地图</span></button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone-shell">
+      <p class="caption">2级页：赠送脚步</p>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>09:41</span>
+            <span>成就详情</span>
+          </div>
+
+          <section class="page" aria-label="赠送脚步成就详情">
+            <div class="page-content">
+              <div class="top-row">
+                <button class="back-button" type="button">返回</button>
+                <span class="pill">全局累计</span>
+              </div>
+
+              <article class="target-card">
+                <div class="target-head">
+                  <span class="medal progress" style="--arc: 85%"></span>
+                  <span class="target-text">
+                    <h1>脚步勋章墙</h1>
+                    <span class="hint">当前最接近完成的成就分类</span>
+                  </span>
+                </div>
+                <div class="target-value-row">
+                  <span class="hint">下一个勋章点</span>
+                  <strong>42,600 / 50,000</strong>
+                </div>
+                <div class="progress-bar" style="--value: 85%"><span></span></div>
+                <p class="hint">完成后进度切换到 50,000 / 100,000。</p>
+              </article>
+
+              <section class="medal-board" aria-label="脚步勋章墙">
+                <div class="section-title">
+                  <span>一个勋章 = 一个成就</span>
+                  <span>14档</span>
+                </div>
+                <div class="medal-grid step-grid">
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">3k</span></span>
+                    <span class="medal-name"><strong>您也是辛苦了</strong><span>3000 / 3000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">9k</span></span>
+                    <span class="medal-name"><strong>没病走两步</strong><span>9000 / 9000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">20k</span></span>
+                    <span class="medal-name"><strong>佛山无影脚</strong><span>20000 / 20000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">30k</span></span>
+                    <span class="medal-name"><strong>要啥自行车</strong><span>30000 / 30000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal progress" style="--arc: 85%"></span><span class="badge">50k</span></span>
+                    <span class="medal-name"><strong>热爱走路人士</strong><span>42600 / 50000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">100k</span></span>
+                    <span class="medal-name"><strong>白脚起家</strong><span>0 / 100000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">200k</span></span>
+                    <span class="medal-name"><strong>奉献之神</strong><span>0 / 200000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">300k</span></span>
+                    <span class="medal-name"><strong>世界走出来</strong><span>0 / 300000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">400k</span></span>
+                    <span class="medal-name"><strong>骆驼祥子</strong><span>0 / 400000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">500k</span></span>
+                    <span class="medal-name"><strong>11路司机</strong><span>0 / 500000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">600k</span></span>
+                    <span class="medal-name"><strong>塞纳春水</strong><span>0 / 600000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">700k</span></span>
+                    <span class="medal-name"><strong>踏破铁鞋</strong><span>0 / 700000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">800k</span></span>
+                    <span class="medal-name"><strong>铁脚板</strong><span>0 / 800000</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">1m</span></span>
+                    <span class="medal-name"><strong>宇宙脚底</strong><span>0 / 1000000</span></span>
+                  </article>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <nav class="bottom-nav" aria-label="底部导航">
+            <button class="nav-item" type="button"><span class="nav-icon home"></span><span>小屋</span></button>
+            <button class="nav-item active" type="button"><span class="nav-icon medal-mini"></span><span>成就</span></button>
+            <button class="nav-item" type="button"><span class="nav-icon map"></span><span>地图</span></button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone-shell">
+      <p class="caption">2级页：明信片收集</p>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>09:41</span>
+            <span>成就详情</span>
+          </div>
+
+          <section class="page" aria-label="明信片收集成就详情">
+            <div class="page-content">
+              <div class="top-row">
+                <button class="back-button" type="button">返回</button>
+                <span class="pill">小动物独立</span>
+              </div>
+
+              <article class="target-card">
+                <div class="target-head">
+                  <span class="medal progress" style="--arc: 28%"></span>
+                  <span class="target-text">
+                    <h1>明信片勋章墙</h1>
+                    <span class="hint">当前查看：小满</span>
+                  </span>
+                </div>
+                <div class="target-value-row">
+                  <span class="hint">下一个勋章点</span>
+                  <strong>14 / 50</strong>
+                </div>
+                <div class="progress-bar" style="--value: 28%"><span></span></div>
+                <p class="hint">完成后进入 50 / 100 的下一段进度。</p>
+              </article>
+
+              <div class="animal-switch" aria-label="切换小动物">
+                <button class="animal-tab active" type="button">小满 14张</button>
+                <button class="animal-tab" type="button">糖圆 1张</button>
+                <button class="animal-tab" type="button">墨迹 0张</button>
+              </div>
+
+              <section class="medal-board" aria-label="小满明信片勋章墙">
+                <div class="section-title">
+                  <span>收到越多，勋章越亮</span>
+                  <span>9档</span>
+                </div>
+                <div class="medal-grid">
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">1张</span></span>
+                    <span class="medal-name"><strong>初次相识</strong><span>1 / 1</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal unlocked"></span><span class="badge">10张</span></span>
+                    <span class="medal-name"><strong>些许相知</strong><span>10 / 10</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal progress" style="--arc: 28%"></span><span class="badge">50张</span></span>
+                    <span class="medal-name"><strong>你也有点可爱</strong><span>14 / 50</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">100张</span></span>
+                    <span class="medal-name"><strong>非无情无义</strong><span>0 / 100</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">200张</span></span>
+                    <span class="medal-name"><strong>有情有义</strong><span>0 / 200</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">300张</span></span>
+                    <span class="medal-name"><strong>My Lord</strong><span>0 / 300</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">500张</span></span>
+                    <span class="medal-name"><strong>完美的人</strong><span>0 / 500</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">800张</span></span>
+                    <span class="medal-name"><strong>银河系的爱</strong><span>0 / 800</span></span>
+                  </article>
+                  <article class="medal-item">
+                    <span><span class="medal locked"></span><span class="badge">1000张</span></span>
+                    <span class="medal-name"><strong>整个宇宙</strong><span>0 / 1000</span></span>
+                  </article>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <nav class="bottom-nav" aria-label="底部导航">
+            <button class="nav-item" type="button"><span class="nav-icon home"></span><span>小屋</span></button>
+            <button class="nav-item active" type="button"><span class="nav-icon medal-mini"></span><span>成就</span></button>
+            <button class="nav-item" type="button"><span class="nav-icon map"></span><span>地图</span></button>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

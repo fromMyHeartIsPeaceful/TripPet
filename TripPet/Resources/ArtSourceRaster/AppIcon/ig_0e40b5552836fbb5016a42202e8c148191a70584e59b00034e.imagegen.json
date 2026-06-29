@@ -1,0 +1,14 @@
+{
+  "asset_name": "ig_0e40b5552836fbb5016a42202e8c148191a70584e59b00034e",
+  "call_id": "ig_0e40b5552836fbb5016a42202e8c148191a70584e59b00034e",
+  "line_number": 41,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/29/rollout-2026-06-29T15-34-01-019f124c-a799-7c93-950c-074afbc379a2.jsonl",
+  "raw_png": "ig_0e40b5552836fbb5016a42202e8c148191a70584e59b00034e.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2506468,
+  "sha256": "fd5cd92f14392f0616283829849699085c40e4f99d442fac9d4744d478bd96dc",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon and App Store icon, square 1024x1024\nPrimary request: Create a polished app icon for a Chinese iOS app named \"步履小屋\". The app turns daily walking steps from Apple Health into travel tickets that send small animals around the world, then they return with postcards.\nSubject: A cozy tiny cabin as the main silhouette, with a warm lit doorway, a curved dotted walking path made of small footprints leading into a folded paper ticket / paper plane shape, and one subtle small cat travel companion with a tiny suitcase near the doorway.\nStyle/medium: premium watercolor travel-journal illustration, soft pencil outlines, tactile paper texture, gentle handcrafted feel, app-icon-ready rather than detailed scene art.\nComposition/framing: centered iconic composition, simple readable shapes, strong silhouette, enough padding for iOS rounded-corner crop, no border, no drop shadow outside the icon.\nLighting/mood: warm, calm, encouraging, cozy evening cabin glow; not gamified or fitness-aggressive.\nColor palette: warm cream paper, soft sage green, muted sky blue, honey yellow cabin light, small coral accents; avoid dark blue/purple-dominant palette.\nMaterials/textures: watercolor wash, subtle paper grain, hand-drawn linework, crisp enough at small sizes.\nText: no text, no letters, no numbers.\nConstraints: must read clearly at phone home-screen size; suitable for App Store; no Apple logo, no Health app icon, no brand marks, no realistic humans, no busy background, no photorealism, no watermark."
+}

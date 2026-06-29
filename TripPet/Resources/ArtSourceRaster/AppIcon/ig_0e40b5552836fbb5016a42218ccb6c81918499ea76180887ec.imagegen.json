@@ -1,0 +1,14 @@
+{
+  "asset_name": "ig_0e40b5552836fbb5016a42218ccb6c81918499ea76180887ec",
+  "call_id": "ig_0e40b5552836fbb5016a42218ccb6c81918499ea76180887ec",
+  "line_number": 69,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/29/rollout-2026-06-29T15-34-01-019f124c-a799-7c93-950c-074afbc379a2.jsonl",
+  "raw_png": "ig_0e40b5552836fbb5016a42218ccb6c81918499ea76180887ec.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2466951,
+  "sha256": "017267e7238ee943f7b1f47e1a773b6e105009472e3d0712a96e953865bcb76e",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon and App Store icon, square 1024x1024\nPrimary request: Redesign a simpler, clearer app icon for the Chinese iOS app \"步履小屋\". The app turns daily walking steps into travel tickets for small animals.\nSubject: A large cozy tiny cabin filling most of the square icon area, with a warm lit door/window. Include exactly one pair of simple footprint marks near the lower foreground and one clean folded paper plane near the cabin roof or doorway, suggesting travel. No other decorative objects.\nStyle/medium: premium watercolor travel-journal app icon, but simplified and iconic; soft pencil outline, warm paper texture, crisp readable silhouette.\nComposition/framing: cabin is the dominant shape, large and centered, using the icon space efficiently with generous but not excessive padding for iOS rounded-corner crop. Strong simple silhouette readable at 60px. Avoid scene-like complexity.\nLighting/mood: warm, calm, cozy, gentle invitation.\nColor palette: warm cream background, honey yellow cabin light, soft sage/olive and warm brown cabin tones, tiny coral accent allowed. Absolutely no blue watercolor wash, no blue background, no purple, no dark navy.\nMaterials/textures: subtle watercolor paper grain only; clean edges; not blurry.\nText: no text, no letters, no numbers.\nConstraints: exactly one pair of footprints; keep paper plane; no leaves, no flowers, no grass clumps, no trees, no plants, no busy background, no landscape scenery, no Apple logo, no Health icon, no watermark, no border, no exterior drop shadow. Must be suitable for phone home screen and App Store."
+}
