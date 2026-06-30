@@ -548,16 +548,12 @@ private struct AchievementMedalArtwork: View {
     let tierOrdinal: Int
     let size: CGFloat
 
-    private var medalOpacity: Double {
-        medal.isUnlocked ? 1 : 0.68
-    }
-
-    private var medalSaturation: Double {
-        medal.isUnlocked ? 1 : 0.28
-    }
-
     private var scale: CGFloat {
         size / 106
+    }
+
+    private var visualState: AchievementMedalArtworkVisualState {
+        AchievementMedalArtworkVisualState.forMedalState(medal.state)
     }
 
     var body: some View {
@@ -589,24 +585,19 @@ private struct AchievementMedalArtwork: View {
     }
 
     private func formalMedalArtwork(assetName: String) -> some View {
-        let ring = MedalRingStyle.forTierOrdinal(tierOrdinal)
-        let isUnlocked = medal.isUnlocked
-        let ringColor = isUnlocked ? ring.color : AppTheme.paperGray.opacity(0.62)
-        let ringUnderlayColor = isUnlocked ? ring.underlayColor : AppTheme.paperWhite.opacity(0.48)
-        let ringLineWidth = ring.lineWidth * scale
-        let underlayLineWidth = (ring.lineWidth + 1.5) * scale
+        let state = visualState
 
         return ZStack {
             Circle()
-                .fill(AppTheme.paperWhite.opacity(isUnlocked ? 0.58 : 0.26))
+                .fill(AppTheme.paperWhite.opacity(state.baseFillOpacity))
                 .frame(width: 100 * scale, height: 100 * scale)
                 .overlay(
                     Circle()
                         .stroke(
                             LinearGradient(
                                 colors: [
-                                    Color.white.opacity(isUnlocked ? 0.82 : 0.54),
-                                    AppTheme.oliveInk.opacity(isUnlocked ? 0.13 : 0.08)
+                                    Color.white.opacity(state.baseHighlightOpacity),
+                                    AppTheme.oliveInk.opacity(state.baseStrokeOpacity)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -614,69 +605,91 @@ private struct AchievementMedalArtwork: View {
                             lineWidth: 1.2 * scale
                         )
                 )
-                .shadow(color: Color.white.opacity(isUnlocked ? 0.58 : 0.32), radius: 2 * scale, x: -1.5 * scale, y: -1.5 * scale)
-                .shadow(color: AppTheme.oliveInk.opacity(isUnlocked ? 0.16 : 0.05), radius: 7 * scale, x: 3.5 * scale, y: 5 * scale)
+                .shadow(color: Color.white.opacity(state.baseLightShadowOpacity), radius: 2 * scale, x: -1.5 * scale, y: -1.5 * scale)
+                .shadow(color: AppTheme.oliveInk.opacity(state.baseDropShadowOpacity), radius: 7 * scale, x: 3.5 * scale, y: 5 * scale)
 
             ArtImage(name: assetName)
-                .frame(width: 98 * scale, height: 98 * scale)
-                .saturation(medalSaturation)
-                .opacity(medalOpacity)
-                .shadow(color: Color.white.opacity(isUnlocked ? 0.42 : 0.18), radius: 1.5 * scale, x: -1 * scale, y: -1 * scale)
-                .shadow(color: AppTheme.oliveInk.opacity(isUnlocked ? 0.12 : 0.03), radius: 4 * scale, x: 1.5 * scale, y: 2.5 * scale)
+                .frame(width: 104 * scale, height: 104 * scale)
+                .saturation(state.saturation)
+                .contrast(state.contrast)
+                .brightness(state.brightness)
+                .opacity(state.assetOpacity)
+                .shadow(color: Color.white.opacity(state.assetLightShadowOpacity), radius: 1.5 * scale, x: -1 * scale, y: -1 * scale)
+                .shadow(color: AppTheme.oliveInk.opacity(state.assetDropShadowOpacity), radius: 4 * scale, x: 1.5 * scale, y: 2.5 * scale)
 
-            Circle()
-                .stroke(AppTheme.oliveInk.opacity(isUnlocked ? 0.12 : 0.08), lineWidth: 0.8 * scale)
-                .frame(width: 86 * scale, height: 86 * scale)
-
-            Circle()
-                .stroke(ringUnderlayColor, lineWidth: underlayLineWidth)
-                .frame(width: 92 * scale, height: 92 * scale)
-                .opacity(isUnlocked ? ring.underlayOpacity : 0.42)
-
-            Circle()
-                .stroke(ringColor, lineWidth: ringLineWidth)
-                .frame(width: 92 * scale, height: 92 * scale)
-                .opacity(isUnlocked ? 1 : 0.58)
-                .shadow(color: ringColor.opacity(isUnlocked ? ring.glowOpacity : 0), radius: ring.glowRadius * scale, x: 0, y: 0)
+            if state.veilOpacity > 0 {
+                Circle()
+                    .fill(AppTheme.oliveInk.opacity(state.veilOpacity))
+                    .frame(width: 99 * scale, height: 99 * scale)
+                    .blendMode(.multiply)
+                    .allowsHitTesting(false)
+            }
         }
     }
 }
 
-private struct MedalRingStyle {
-    let color: Color
-    let lineWidth: CGFloat
-    let glowRadius: CGFloat
-    let glowOpacity: Double
-    let underlayColor: Color
-    let underlayOpacity: Double
+private struct AchievementMedalArtworkVisualState {
+    let assetOpacity: Double
+    let saturation: Double
+    let contrast: Double
+    let brightness: Double
+    let veilOpacity: Double
+    let baseFillOpacity: Double
+    let baseHighlightOpacity: Double
+    let baseStrokeOpacity: Double
+    let baseLightShadowOpacity: Double
+    let baseDropShadowOpacity: Double
+    let assetLightShadowOpacity: Double
+    let assetDropShadowOpacity: Double
 
-    static func forTierOrdinal(_ tierOrdinal: Int) -> MedalRingStyle {
-        let clampedOrdinal = max(1, min(tierOrdinal, 18))
-        let colorIndex = (clampedOrdinal - 1) / 2
-        let palette = [
-            Color(red: 0.549, green: 0.569, blue: 0.537),
-            Color(red: 1.0, green: 0.973, blue: 0.929),
-            Color(red: 0.749, green: 0.863, blue: 0.753),
-            Color(red: 0.62, green: 0.784, blue: 0.863),
-            Color(red: 0.969, green: 0.91, blue: 0.651),
-            Color(red: 0.741, green: 0.655, blue: 0.847),
-            Color(red: 0.878, green: 0.702, blue: 0.306),
-            Color(red: 0.91, green: 0.592, blue: 0.271),
-            Color(red: 0.91, green: 0.475, blue: 0.2)
-        ]
-        let baseLineWidth = 1.25 + CGFloat(colorIndex) * 0.22
-        let lineWidth = colorIndex == 8 ? baseLineWidth + 0.65 : baseLineWidth
-        let isWhiteRing = colorIndex == 1
-        let isGlowRing = colorIndex == 8
-
-        return MedalRingStyle(
-            color: palette[colorIndex],
-            lineWidth: lineWidth,
-            glowRadius: isGlowRing ? 5 : (isWhiteRing ? 3 : 1.5),
-            glowOpacity: isGlowRing ? 0.42 : (isWhiteRing ? 0.2 : 0.1),
-            underlayColor: isWhiteRing ? AppTheme.pencilGray.opacity(0.5) : AppTheme.paperWhite.opacity(0.68),
-            underlayOpacity: isWhiteRing ? 0.72 : 0.38
-        )
+    static func forMedalState(_ state: AchievementMedalState) -> AchievementMedalArtworkVisualState {
+        switch state {
+        case .collected:
+            return AchievementMedalArtworkVisualState(
+                assetOpacity: 1,
+                saturation: 1,
+                contrast: 1,
+                brightness: 0,
+                veilOpacity: 0,
+                baseFillOpacity: 0.58,
+                baseHighlightOpacity: 0.82,
+                baseStrokeOpacity: 0.13,
+                baseLightShadowOpacity: 0.58,
+                baseDropShadowOpacity: 0.16,
+                assetLightShadowOpacity: 0.42,
+                assetDropShadowOpacity: 0.12
+            )
+        case .inProgress:
+            return AchievementMedalArtworkVisualState(
+                assetOpacity: 0.74,
+                saturation: 0,
+                contrast: 0.68,
+                brightness: -0.08,
+                veilOpacity: 0.06,
+                baseFillOpacity: 0.32,
+                baseHighlightOpacity: 0.48,
+                baseStrokeOpacity: 0.08,
+                baseLightShadowOpacity: 0.28,
+                baseDropShadowOpacity: 0.05,
+                assetLightShadowOpacity: 0.14,
+                assetDropShadowOpacity: 0.03
+            )
+        case .locked:
+            return AchievementMedalArtworkVisualState(
+                assetOpacity: 0.56,
+                saturation: 0,
+                contrast: 0.52,
+                brightness: -0.2,
+                veilOpacity: 0.12,
+                baseFillOpacity: 0.22,
+                baseHighlightOpacity: 0.34,
+                baseStrokeOpacity: 0.07,
+                baseLightShadowOpacity: 0.2,
+                baseDropShadowOpacity: 0.04,
+                assetLightShadowOpacity: 0.09,
+                assetDropShadowOpacity: 0.02
+            )
+        }
     }
 }
 
