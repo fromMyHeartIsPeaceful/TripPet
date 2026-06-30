@@ -1,6 +1,7 @@
 import XCTest
 @testable import TripPet
 import simd
+import UserNotifications
 
 @MainActor
 final class RootTabViewTests: XCTestCase {
@@ -43,6 +44,49 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(RootTabView.deferredPrewarmTabs, [.map])
         XCTAssertFalse(RootTabView.deferredPrewarmTabs.contains(.achievements))
         XCTAssertFalse(RootTabView.deferredPrewarmTabs.contains(.mailbox))
+    }
+
+    func testEmptyMailboxPromptUsesDefaultBeforeTap() {
+        let viewModel = MailboxViewModel()
+
+        XCTAssertEqual(viewModel.emptyMailboxTapCount, 0)
+        XCTAssertNil(viewModel.emptyMailboxPromptIndex)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyPrompt)
+    }
+
+    func testEmptyMailboxPromptCyclesFromFirstTap() {
+        let viewModel = MailboxViewModel()
+
+        viewModel.registerEmptyMailboxTap()
+        XCTAssertEqual(viewModel.emptyMailboxTapCount, 1)
+        XCTAssertEqual(viewModel.emptyMailboxPromptIndex, 0)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyTapPrompts[0])
+
+        viewModel.registerEmptyMailboxTap()
+        XCTAssertEqual(viewModel.emptyMailboxPromptIndex, 1)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyTapPrompts[1])
+
+        viewModel.registerEmptyMailboxTap()
+        XCTAssertEqual(viewModel.emptyMailboxPromptIndex, 2)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyTapPrompts[2])
+
+        viewModel.registerEmptyMailboxTap()
+        XCTAssertEqual(viewModel.emptyMailboxPromptIndex, 0)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyTapPrompts[0])
+    }
+
+    func testEmptyMailboxPromptResetClearsTapState() {
+        let viewModel = MailboxViewModel()
+
+        for _ in 0..<5 {
+            viewModel.registerEmptyMailboxTap()
+        }
+
+        viewModel.resetEmptyMailboxPrompt()
+
+        XCTAssertEqual(viewModel.emptyMailboxTapCount, 0)
+        XCTAssertNil(viewModel.emptyMailboxPromptIndex)
+        XCTAssertEqual(viewModel.emptyMailboxPromptText, AppCopy.Mailbox.emptyPrompt)
     }
 
     func testMailboxViewModelOpeningStackDoesNotMarkPostcardRead() {
@@ -183,20 +227,53 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
     }
 
-    func testNotificationResponseQueuesMailboxRouteBeforeReturning() async {
-        let notificationService = PostcardNotificationService()
-        var handledTabs: [AppTab] = []
-        notificationService.tabRequestHandler = { tab in
-            handledTabs.append(tab)
-        }
+    func testNotificationDefaultActionQueuesMailboxRouteBeforeEnvironmentExists() {
+        let routeStore = NotificationRouteStore()
+        let receivedAt = Date(timeIntervalSince1970: 1_000)
 
-        await notificationService.routeNotificationResponse(
+        XCTAssertTrue(routeStore.enqueueNotificationResponse(
             userInfo: ["target": "mailbox", "postcardId": "postcard-1"],
-            actionIdentifier: "default"
+            actionIdentifier: UNNotificationDefaultActionIdentifier,
+            receivedAt: receivedAt
+        ))
+
+        XCTAssertEqual(
+            routeStore.pendingRoute,
+            NotificationRoute(
+                tab: .mailbox,
+                postcardId: "postcard-1",
+                actionIdentifier: UNNotificationDefaultActionIdentifier,
+                receivedAt: receivedAt
+            )
         )
 
-        XCTAssertEqual(notificationService.requestedTab, .mailbox)
-        XCTAssertEqual(handledTabs, [.mailbox])
+        let environment = AppEnvironment.preview(notificationRouteStore: routeStore)
+
+        XCTAssertEqual(environment.notificationRequestedTab, .mailbox)
+        XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
+        XCTAssertNil(routeStore.pendingRoute)
+    }
+
+    func testNotificationDismissActionDoesNotQueueMailboxRoute() {
+        let routeStore = NotificationRouteStore()
+
+        XCTAssertFalse(routeStore.enqueueNotificationResponse(
+            userInfo: ["target": "mailbox", "postcardId": "postcard-1"],
+            actionIdentifier: UNNotificationDismissActionIdentifier
+        ))
+
+        XCTAssertNil(routeStore.pendingRoute)
+    }
+
+    func testNotificationUnknownTargetDoesNotQueueRoute() {
+        let routeStore = NotificationRouteStore()
+
+        XCTAssertFalse(routeStore.enqueueNotificationResponse(
+            userInfo: ["target": "cabin", "postcardId": "postcard-1"],
+            actionIdentifier: UNNotificationDefaultActionIdentifier
+        ))
+
+        XCTAssertNil(routeStore.pendingRoute)
     }
 
     func testLaunchPolicySkipsLaunchStoryWithoutBackgroundTimestamp() {
@@ -259,16 +336,21 @@ final class RootTabViewTests: XCTestCase {
     }
 
     func testNotificationTabRequestSurvivesLaunchStoryBeforeRootConsumesIt() {
-        let notificationService = RootTabNotificationService()
-        let environment = AppEnvironment.preview(postcardNotificationService: notificationService)
+        let routeStore = NotificationRouteStore()
 
-        environment.queueNotificationTabRequest(.mailbox)
+        XCTAssertTrue(routeStore.enqueueNotificationResponse(
+            userInfo: ["target": "mailbox", "postcardId": "postcard-1"],
+            actionIdentifier: UNNotificationDefaultActionIdentifier,
+            receivedAt: Date(timeIntervalSince1970: 1_000)
+        ))
         XCTAssertTrue(
             AppLaunchPresentationPolicy.shouldPresentLaunchStoryOnActivation(
                 previousBackgroundedAt: Date(timeIntervalSince1970: 960),
                 now: Date(timeIntervalSince1970: 1_000)
             )
         )
+
+        let environment = AppEnvironment.preview(notificationRouteStore: routeStore)
 
         XCTAssertEqual(environment.notificationRequestedTab, .mailbox)
         XCTAssertEqual(environment.consumeNotificationTabRequest(), .mailbox)
@@ -450,6 +532,24 @@ final class RootTabViewTests: XCTestCase {
     func testTravelCountdownShowsArrivingSoonWhenDue() {
         XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 0), "即将到达")
         XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: -12), "即将到达")
+    }
+
+    func testTravelCountdownClockStringStopsAtZero() {
+        XCTAssertEqual(TravelCountdownFormatter.clockString(remaining: 0), "00:00:00")
+        XCTAssertEqual(TravelCountdownFormatter.clockString(remaining: -12), "00:00:00")
+    }
+
+    func testTravelCountdownClockStringFormatsSeconds() {
+        XCTAssertEqual(TravelCountdownFormatter.clockString(remaining: 1), "00:00:01")
+        XCTAssertEqual(TravelCountdownFormatter.clockString(remaining: 65), "00:01:05")
+        XCTAssertEqual(
+            TravelCountdownFormatter.clockString(remaining: (17 * 60 * 60) + (59 * 60) + 1),
+            "17:59:01"
+        )
+        XCTAssertEqual(
+            TravelCountdownFormatter.clockString(remaining: (25 * 60 * 60) + (3 * 60) + 9),
+            "25:03:09"
+        )
     }
 
     func testTravelCountdownFormatsMinutes() {

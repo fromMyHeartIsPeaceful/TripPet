@@ -58,8 +58,7 @@ struct AchievementWallView: View {
             AchievementMedalDetailView(selection: selection) {
                 selectedMedalDetail = nil
             }
-            .presentationDetents([.height(500)])
-            .presentationDragIndicator(.visible)
+            .appActionSheetPresentation()
         }
     }
 
@@ -312,6 +311,44 @@ private struct AchievementMedalSelection: Identifiable {
     }
 }
 
+struct AchievementMedalSharePayload: Equatable {
+    let title: String
+    let categoryTitle: String
+    let completionDescription: String
+    let note: String?
+}
+
+enum AchievementMedalSharePolicy {
+    static func payload(for medal: AchievementMedalProgress) -> AchievementMedalSharePayload? {
+        guard medal.isUnlocked else { return nil }
+        return AchievementMedalSharePayload(
+            title: medal.tier.title,
+            categoryTitle: "\(medal.tier.category.medalLabel)勋章",
+            completionDescription: completionDescription(for: medal),
+            note: medal.tier.subtitle
+        )
+    }
+
+    static func filename(for medal: AchievementMedalProgress) -> String {
+        "bulu-medal-\(medal.tier.category.rawValue)-\(medal.tier.threshold).png"
+    }
+
+    static func completionDescription(for medal: AchievementMedalProgress) -> String {
+        switch medal.tier.category {
+        case .travel:
+            return "完成 \(formattedThreshold(for: medal)) 次旅行即可获得。当前进度：\(medal.valueText)。"
+        case .steps:
+            return "累计行走 \(formattedThreshold(for: medal)) 步即可获得。当前进度：\(medal.valueText)。"
+        case .postcards:
+            return "收到 \(formattedThreshold(for: medal)) 张明信片即可获得。当前进度：\(medal.valueText)。"
+        }
+    }
+
+    private static func formattedThreshold(for medal: AchievementMedalProgress) -> String {
+        medal.tier.threshold.formatted(.number.grouping(.automatic))
+    }
+}
+
 private struct AchievementMedalView: View {
     let medal: AchievementMedalProgress
     let tierOrdinal: Int
@@ -352,11 +389,34 @@ private struct AchievementMedalDetailView: View {
         selection.medal
     }
 
-    var body: some View {
-        ZStack {
-            PaperBackground()
+    private var sharePayload: AchievementMedalSharePayload? {
+        AchievementMedalSharePolicy.payload(for: medal)
+    }
 
+    var body: some View {
+        AppActionBottomSheet(
+            buttonAccessibilityIdentifier: "achievement-medal-detail-done",
+            onButton: onDone
+        ) {
             VStack(spacing: 14) {
+                if let sharePayload {
+                    HStack {
+                        Spacer()
+
+                        RenderedShareLink(
+                            title: sharePayload.title,
+                            filename: AchievementMedalSharePolicy.filename(for: medal),
+                            accessibilityLabel: AppCopy.Share.medalAccessibilityLabel
+                        ) {
+                            AchievementMedalShareImage(
+                                medal: medal,
+                                tierOrdinal: selection.tierOrdinal,
+                                payload: sharePayload
+                            )
+                        }
+                    }
+                }
+
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 16) {
                         AchievementMedalArtwork(
@@ -370,16 +430,9 @@ private struct AchievementMedalDetailView: View {
                         detailCard
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
+                        .padding(.top, 4)
                 }
-
-                Button("知道了") {
-                    onDone()
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .accessibilityIdentifier("achievement-medal-detail-done")
             }
-            .padding(20)
         }
         .accessibilityIdentifier("achievement-medal-detail")
     }
@@ -417,18 +470,76 @@ private struct AchievementMedalDetailView: View {
     }
 
     private var completionDescription: String {
-        switch medal.tier.category {
-        case .travel:
-            return "完成 \(formattedThreshold) 次旅行即可获得。当前进度：\(medal.valueText)。"
-        case .steps:
-            return "累计行走 \(formattedThreshold) 步即可获得。当前进度：\(medal.valueText)。"
-        case .postcards:
-            return "收到 \(formattedThreshold) 张明信片即可获得。当前进度：\(medal.valueText)。"
-        }
+        AchievementMedalSharePolicy.completionDescription(for: medal)
     }
+}
 
-    private var formattedThreshold: String {
-        medal.tier.threshold.formatted(.number.grouping(.automatic))
+private struct AchievementMedalShareImage: View {
+    let medal: AchievementMedalProgress
+    let tierOrdinal: Int
+    let payload: AchievementMedalSharePayload
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 5) {
+                Text("我获得了\(payload.categoryTitle)")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(AppTheme.deepSage)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+
+                Text("小动物旅行手帐的新收藏")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+            }
+            .padding(.top, 8)
+
+            AchievementMedalArtwork(
+                medal: medal,
+                tierOrdinal: tierOrdinal,
+                size: 206
+            )
+            .frame(width: 206, height: 206)
+            .padding(.top, 4)
+
+            VStack(spacing: 12) {
+                Text(payload.title)
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(AppTheme.ink)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.68)
+
+                Text(payload.completionDescription)
+                    .font(.system(size: 15))
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let note = payload.note, note.isEmpty == false {
+                    Text(note)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(AppTheme.deepSage)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity)
+            .paperCard(cornerRadius: 20, stroke: AppTheme.sage.opacity(0.34))
+
+            Spacer(minLength: 0)
+
+            ShareBrandFooter()
+        }
+        .padding(.horizontal, 28)
+        .padding(.vertical, 26)
+        .frame(width: ShareImageRenderer.pointSize.width, height: ShareImageRenderer.pointSize.height)
+        .background(ShareCanvasBackground())
     }
 }
 

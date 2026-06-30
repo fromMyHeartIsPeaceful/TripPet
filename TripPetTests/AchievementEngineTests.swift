@@ -1,6 +1,7 @@
 import UIKit
 import XCTest
 @testable import TripPet
+import SwiftUI
 
 final class AchievementEngineTests: XCTestCase {
     private let engine = AchievementEngine()
@@ -301,6 +302,61 @@ final class AchievementEngineTests: XCTestCase {
         for assetName in assetNames {
             XCTAssertNotNil(UIImage(named: assetName), "Missing achievement medal asset: \(assetName)")
         }
+    }
+
+    func testShareCopyUsesExpectedPromotionText() {
+        XCTAssertEqual(AppCopy.Share.appName, "步履小屋")
+        XCTAssertEqual(AppCopy.Share.promo, "App Store搜索“步履小屋”")
+    }
+
+    func testShareablePNGStoresNonEmptyPNGData() throws {
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+        let data = try XCTUnwrap(image.pngData())
+        let item = ShareablePNG(data: data, filename: "share-test.png")
+
+        XCTAssertFalse(item.data.isEmpty)
+        XCTAssertEqual(item.filename, "share-test.png")
+    }
+
+    @MainActor
+    func testShareImageRendererExportsExpectedPixelSize() throws {
+        let item = try XCTUnwrap(ShareImageRenderer.makePNG(filename: "share-render-test.png") {
+            Color.red
+        })
+        let image = try XCTUnwrap(UIImage(data: item.data))
+        let cgImage = try XCTUnwrap(image.cgImage)
+
+        XCTAssertEqual(cgImage.width, 1080)
+        XCTAssertEqual(cgImage.height, 1920)
+    }
+
+    func testAchievementMedalSharePayloadOnlyExistsForCollectedMedals() throws {
+        let tier = try XCTUnwrap(AchievementEngine.travelTiers.first)
+        let collected = AchievementMedalProgress(
+            tier: tier,
+            currentValue: tier.threshold,
+            state: .collected
+        )
+        let inProgress = AchievementMedalProgress(
+            tier: tier,
+            currentValue: 0,
+            state: .inProgress
+        )
+        let locked = AchievementMedalProgress(
+            tier: tier,
+            currentValue: 0,
+            state: .locked
+        )
+
+        let payload = try XCTUnwrap(AchievementMedalSharePolicy.payload(for: collected))
+        XCTAssertEqual(payload.title, tier.title)
+        XCTAssertEqual(payload.categoryTitle, "旅行勋章")
+        XCTAssertEqual(payload.completionDescription, "完成 1 次旅行即可获得。当前进度：1 / 1。")
+        XCTAssertNil(AchievementMedalSharePolicy.payload(for: inProgress))
+        XCTAssertNil(AchievementMedalSharePolicy.payload(for: locked))
     }
 
     private static let animals = [

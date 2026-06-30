@@ -40,7 +40,21 @@ struct PostcardDetailView: View {
             }
             .buttonStyle(OutlineButtonStyle())
             .accessibilityLabel("返回邮箱")
+
             Spacer()
+
+            RenderedShareLink(
+                title: "\(postcard.destination)明信片",
+                filename: "bulu-postcard-\(postcard.id).png",
+                accessibilityLabel: AppCopy.Share.postcardAccessibilityLabel
+            ) {
+                PostcardShareImage(
+                    postcard: postcard,
+                    senderName: senderName,
+                    animalId: tripForPostcard?.animalId,
+                    destination: destinationForPostcard
+                )
+            }
         }
     }
 
@@ -64,6 +78,48 @@ struct PostcardDetailView: View {
             $0.displayName == postcard.destination ||
                 $0.landmarkAssetName == postcard.destinationAssetName
         }
+    }
+}
+
+struct PostcardShareImage: View {
+    let postcard: Postcard
+    let senderName: String
+    let animalId: String?
+    let destination: ManifestDestination?
+
+    var body: some View {
+        VStack(spacing: 14) {
+            VStack(spacing: 5) {
+                Text("来自\(postcard.destination)的明信片")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(AppTheme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+
+                Text("\(senderName)寄来的远方来信")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+            }
+            .padding(.top, 2)
+
+            PostcardArtwork(
+                postcard: postcard,
+                senderName: senderName,
+                animalId: animalId,
+                destination: destination,
+                showsShadow: false
+            )
+            .frame(width: 252)
+            .shadow(color: AppTheme.oliveInk.opacity(0.08), radius: 10, x: 0, y: 5)
+
+            ShareBrandFooter()
+        }
+        .padding(.horizontal, 28)
+        .padding(.vertical, 26)
+        .frame(width: ShareImageRenderer.pointSize.width, height: ShareImageRenderer.pointSize.height)
+        .background(ShareCanvasBackground())
     }
 }
 

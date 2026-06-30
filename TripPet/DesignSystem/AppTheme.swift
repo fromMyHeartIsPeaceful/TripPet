@@ -21,6 +21,7 @@ enum AppTheme {
 
     static let hairline: CGFloat = 1
     static let cornerRadius: CGFloat = 16
+    static let actionBottomSheetHeight: CGFloat = 500
 
     static let pageTitle = Font.system(size: 32, weight: .semibold)
     static let cardTitle = Font.system(size: 22, weight: .semibold)
@@ -70,6 +71,46 @@ struct PaperCardModifier: ViewModifier {
 extension View {
     func paperCard(cornerRadius: CGFloat = AppTheme.cornerRadius, stroke: Color = AppTheme.paperGray) -> some View {
         modifier(PaperCardModifier(cornerRadius: cornerRadius, stroke: stroke))
+    }
+
+    func appActionSheetPresentation() -> some View {
+        presentationDetents([.height(AppTheme.actionBottomSheetHeight)])
+            .presentationDragIndicator(.visible)
+    }
+}
+
+struct AppActionBottomSheet<Content: View>: View {
+    var buttonTitle = "知道了"
+    var buttonAccessibilityIdentifier: String? = nil
+    let onButton: () -> Void
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        ZStack {
+            PaperBackground()
+
+            VStack(spacing: 14) {
+                content()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                actionButton
+            }
+            .padding(20)
+        }
+    }
+
+    @ViewBuilder
+    private var actionButton: some View {
+        let button = Button(buttonTitle) {
+            onButton()
+        }
+        .buttonStyle(PrimaryButtonStyle())
+
+        if let buttonAccessibilityIdentifier {
+            button.accessibilityIdentifier(buttonAccessibilityIdentifier)
+        } else {
+            button
+        }
     }
 }
 

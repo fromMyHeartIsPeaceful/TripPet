@@ -46,14 +46,27 @@ struct WorldMapView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationBarHidden(true)
         .sheet(item: $selectedTravelRoute) { route in
-            TravelCountdownSheet(route: route)
-                .presentationDetents([.height(300)])
-                .presentationDragIndicator(.visible)
+            TravelCountdownSheet(route: route) {
+                _ = environment.revealEligiblePostcards()
+                selectedTravelRoute = nil
+            }
+            .appActionSheetPresentation()
+        }
+        .onChange(of: activeTravelRouteIds) { _, activeRouteIds in
+            guard let selectedTravelRoute,
+                  activeRouteIds.contains(selectedTravelRoute.id) == false else {
+                return
+            }
+            self.selectedTravelRoute = nil
         }
     }
 
     private var activeTravelAnimalCount: Int {
         environment.repository.activeTravelTrips.prefix(9).count
+    }
+
+    private var activeTravelRouteIds: Set<String> {
+        Set(globeRoutes.map(\.id))
     }
 
     private var accessibilitySummary: String {
@@ -521,65 +534,138 @@ private struct AnimalDestinationMarker: View {
 
 private struct TravelCountdownSheet: View {
     let route: TravelGlobeRoute
+    let onDone: () -> Void
 
     var body: some View {
-        TimelineView(.periodic(from: Date(), by: 60)) { timeline in
-            let remainingText = TravelCountdownFormatter.timeString(
+        TimelineView(.periodic(from: Date(), by: 1)) { timeline in
+            let clockText = TravelCountdownFormatter.clockString(
                 until: route.expectedReturnAt,
                 now: timeline.date
             )
 
-            VStack(spacing: 18) {
-                ZStack {
-                    Circle()
-                        .fill(AppTheme.paperWhite)
-                        .frame(width: 78, height: 78)
-                        .overlay(Circle().stroke(route.tint.opacity(0.85), lineWidth: 2))
-                        .shadow(color: AppTheme.oliveInk.opacity(0.12), radius: 10, x: 0, y: 5)
+            AppActionBottomSheet(onButton: onDone) {
+                VStack(spacing: 16) {
+                    TravelCountdownAnimalHeader(
+                        animalName: route.animalName,
+                        animalAssetName: route.animalAssetName
+                    )
 
-                    ArtImage(name: route.animalAssetName)
-                        .frame(width: 58, height: 58)
-                        .clipShape(Circle())
-                }
+                    TravelCountdownClockBadge(
+                        text: countdownText(clockText: clockText),
+                        tint: route.tint
+                    )
 
-                VStack(spacing: 8) {
-                    Text(returnHomeText(remainingText: remainingText))
-                        .font(.system(size: 24, weight: .heavy, design: .rounded))
+                    Text("正在【\(route.destination)】旅行")
+                        .font(.system(size: 23, weight: .heavy, design: .rounded))
                         .foregroundStyle(AppTheme.ink)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.66)
-
-                    Text("目的地：\(route.destination)")
-                        .font(AppTheme.body)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.82)
-
-                    Text("预计到达：\(TravelCountdownFormatter.arrivalTimeString(for: route.expectedReturnAt))")
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk.opacity(0.86))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.82)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.72)
+                        .frame(maxWidth: .infinity)
                 }
+                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding(.horizontal, 28)
-            .padding(.vertical, 26)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(PaperBackground())
         }
     }
 
-    private func returnHomeText(remainingText: String) -> String {
-        if remainingText == TravelCountdownFormatter.arrivingSoonText {
-            return "\(route.animalName)即将回家"
-        }
+    private func countdownText(clockText: String) -> String {
+        "还有\(clockText)回家"
+    }
+}
 
-        return "\(route.animalName)还有\(remainingText)回家"
+private struct TravelCountdownAnimalHeader: View {
+    let animalName: String
+    let animalAssetName: String
+
+    var body: some View {
+        VStack(spacing: 7) {
+            ArtImage(name: animalAssetName)
+                .frame(width: 104, height: 104)
+                .background(
+                    Circle()
+                        .fill(AppTheme.paperWhite.opacity(0.72))
+                        .shadow(color: AppTheme.oliveInk.opacity(0.1), radius: 10, x: 0, y: 5)
+                )
+
+            Text(animalName)
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(AppTheme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(animalName)
+    }
+}
+
+private struct TravelCountdownClockBadge: View {
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 9) {
+            ClockGlyph()
+                .frame(width: 23, height: 23)
+
+            Text(text)
+                .font(.system(size: 20, weight: .heavy, design: .rounded))
+                .foregroundStyle(AppTheme.paperWhite)
+                .lineLimit(1)
+                .minimumScaleFactor(0.70)
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 18)
+        .frame(maxWidth: 304)
+        .frame(height: 54)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(AppTheme.sage.opacity(0.88))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppTheme.paperWhite.opacity(0.92), lineWidth: 1.2)
+        )
+        .shadow(color: AppTheme.oliveInk.opacity(0.08), radius: 6, x: 0, y: 3)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("回家倒计时，\(text)")
+    }
+}
+
+private struct ClockGlyph: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(AppTheme.paperWhite.opacity(0.92), lineWidth: 2)
+
+            Rectangle()
+                .fill(AppTheme.paperWhite.opacity(0.92))
+                .frame(width: 2, height: 7)
+                .offset(y: -3)
+
+            Rectangle()
+                .fill(AppTheme.paperWhite.opacity(0.92))
+                .frame(width: 7, height: 2)
+                .offset(x: 3)
+        }
     }
 }
 
 enum TravelCountdownFormatter {
     static let arrivingSoonText = "即将到达"
+
+    static func clockString(until expectedReturnAt: Date, now: Date) -> String {
+        clockString(remaining: expectedReturnAt.timeIntervalSince(now))
+    }
+
+    static func clockString(remaining: TimeInterval) -> String {
+        let totalSeconds = max(0, Int(ceil(remaining)))
+        let hours = totalSeconds / 3_600
+        let minutes = (totalSeconds % 3_600) / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
 
     static func timeString(until expectedReturnAt: Date, now: Date) -> String {
         timeString(remaining: expectedReturnAt.timeIntervalSince(now))

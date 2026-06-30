@@ -1,9 +1,12 @@
 import CoreText
 import SwiftUI
+import UIKit
+import UserNotifications
 
 @main
 @MainActor
 struct TripPetApp: App {
+    @UIApplicationDelegateAdaptor(TripPetAppDelegate.self) private var appDelegate
     @StateObject private var environment = AppEnvironment.live()
     @Environment(\.scenePhase) private var scenePhase
     @State private var didEnterBackground = false
@@ -41,6 +44,37 @@ struct TripPetApp: App {
                         break
                     }
                 }
+        }
+    }
+}
+
+final class TripPetAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(
+        _ application: UIApplication,
+        willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        PostcardNotificationDiagnostics.record("delegate registered willFinishLaunching")
+        return true
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        []
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        PostcardNotificationDiagnostics.record("didReceive response action=\(response.actionIdentifier)")
+        await MainActor.run {
+            _ = NotificationRouteStore.shared.enqueueNotificationResponse(
+                userInfo: response.notification.request.content.userInfo,
+                actionIdentifier: response.actionIdentifier
+            )
         }
     }
 }

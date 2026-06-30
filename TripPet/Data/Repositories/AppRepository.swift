@@ -45,6 +45,7 @@ final class AppRepository: ObservableObject {
         userFlags = userState.flags
         cabinLodging = Self.migratedCabinLodging(userState.cabinLodging, availableAnimalIds: availableAnimalIds)
         consumedPostcardTextIds = userState.consumedPostcardTextIds
+        normalizePendingPostcardPlans()
         if travelWishes != userState.travelWishes ||
             trips != userState.trips ||
             cabinLodging != userState.cabinLodging {
@@ -379,6 +380,13 @@ final class AppRepository: ObservableObject {
         )
     }
 
+    private func normalizePendingPostcardPlans() {
+        for index in trips.indices where trips[index].status == .traveling || trips[index].status == .preparing {
+            guard trips[index].postcardPlan.isEmpty == false else { continue }
+            trips[index].postcardPlan = postcardScheduler.normalizedPostcardPlan(trips[index].postcardPlan)
+        }
+    }
+
     private func makePostcard(
         scheduler: PostcardScheduler,
         for trip: Trip,
@@ -389,6 +397,8 @@ final class AppRepository: ObservableObject {
     ) -> Postcard {
         let narrative = PostcardTextLibrary.randomEntry(
             for: animal,
+            on: date,
+            calendar: calendar,
             excluding: consumedPostcardTextIds
         )
         if let narrative {

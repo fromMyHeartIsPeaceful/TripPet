@@ -4,13 +4,18 @@ struct PostcardScheduler {
     static let tripDuration: TimeInterval = 60 * 60 * 18
 
     var randomOffset: (ClosedRange<TimeInterval>) -> TimeInterval
+    var calendar: Calendar
 
-    init(randomOffset: @escaping (ClosedRange<TimeInterval>) -> TimeInterval = { Double.random(in: $0) }) {
+    init(
+        calendar: Calendar = .current,
+        randomOffset: @escaping (ClosedRange<TimeInterval>) -> TimeInterval = { Double.random(in: $0) }
+    ) {
+        self.calendar = calendar
         self.randomOffset = randomOffset
     }
 
     func makePostcardPlan(departedAt: Date) -> [TripPostcardPlanItem] {
-        [
+        normalizedPostcardPlan([
             TripPostcardPlanItem(
                 sequence: 1,
                 dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 2...60 * 60 * 3)),
@@ -21,7 +26,30 @@ struct PostcardScheduler {
                 dueAt: departedAt.addingTimeInterval(randomOffset(60 * 60 * 6...60 * 60 * 8)),
                 revealedAt: nil
             )
-        ]
+        ])
+    }
+
+    func normalizedPostcardPlan(_ plan: [TripPostcardPlanItem]) -> [TripPostcardPlanItem] {
+        var lastPendingDueAt: Date?
+        return plan.map { item in
+            guard item.revealedAt == nil else {
+                return item
+            }
+
+            var normalized = item
+            normalized.dueAt = PostcardCareTimeRules.normalizedDeliveryDate(
+                for: normalized.dueAt,
+                calendar: calendar
+            )
+            if let lastPendingDueAt {
+                let minimumDueAt = lastPendingDueAt.addingTimeInterval(PostcardCareTimeRules.minimumSpacing)
+                if normalized.dueAt < minimumDueAt {
+                    normalized.dueAt = minimumDueAt
+                }
+            }
+            lastPendingDueAt = normalized.dueAt
+            return normalized
+        }
     }
 
     func shouldRevealPostcard(for planItem: TripPostcardPlanItem, on date: Date = Date()) -> Bool {

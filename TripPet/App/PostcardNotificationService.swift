@@ -8,6 +8,102 @@ enum AppTab: Hashable {
     case map
 }
 
+struct NotificationRoute: Equatable {
+    var tab: AppTab
+    var postcardId: String?
+    var actionIdentifier: String
+    var receivedAt: Date
+}
+
+enum PostcardNotificationPayload {
+    static let targetKey = "target"
+    static let mailboxTarget = "mailbox"
+    static let postcardIdKey = "postcardId"
+
+    static func mailboxUserInfo(postcardId: String) -> [String: String] {
+        [
+            targetKey: mailboxTarget,
+            postcardIdKey: postcardId
+        ]
+    }
+
+    static func targetTab(from userInfo: [AnyHashable: Any]) -> AppTab? {
+        guard userInfo[targetKey] as? String == mailboxTarget else {
+            return nil
+        }
+        return .mailbox
+    }
+
+    static func route(
+        from userInfo: [AnyHashable: Any],
+        actionIdentifier: String,
+        receivedAt: Date = Date()
+    ) -> NotificationRoute? {
+        guard actionIdentifier == UNNotificationDefaultActionIdentifier else {
+            PostcardNotificationDiagnostics.record("route skipped action=\(actionIdentifier)")
+            return nil
+        }
+        guard let tab = targetTab(from: userInfo) else {
+            PostcardNotificationDiagnostics.record("route skipped unknown target")
+            return nil
+        }
+        return NotificationRoute(
+            tab: tab,
+            postcardId: userInfo[postcardIdKey] as? String,
+            actionIdentifier: actionIdentifier,
+            receivedAt: receivedAt
+        )
+    }
+}
+
+@MainActor
+final class NotificationRouteStore: ObservableObject {
+    static let shared = NotificationRouteStore()
+
+    @Published private(set) var pendingRoute: NotificationRoute?
+
+    init() {}
+
+    @discardableResult
+    func enqueueNotificationResponse(
+        userInfo: [AnyHashable: Any],
+        actionIdentifier: String,
+        receivedAt: Date = Date()
+    ) -> Bool {
+        guard let route = PostcardNotificationPayload.route(
+            from: userInfo,
+            actionIdentifier: actionIdentifier,
+            receivedAt: receivedAt
+        ) else {
+            return false
+        }
+        enqueue(route)
+        return true
+    }
+
+    func enqueue(_ route: NotificationRoute) {
+        pendingRoute = route
+        PostcardNotificationDiagnostics.record(
+            "route queued tab=\(route.tab) postcardId=\(route.postcardId ?? "nil") action=\(route.actionIdentifier)"
+        )
+    }
+
+    func consumeRoute() -> NotificationRoute? {
+        let route = pendingRoute
+        pendingRoute = nil
+        if let route {
+            PostcardNotificationDiagnostics.record(
+                "route consumed tab=\(route.tab) postcardId=\(route.postcardId ?? "nil")"
+            )
+        }
+        return route
+    }
+
+    func clear() {
+        pendingRoute = nil
+    }
+}
+
 @MainActor
 protocol PostcardNotificationServiceProtocol: AnyObject {
     var requestedTab: AppTab? { get set }
@@ -44,9 +140,6 @@ final class DisabledPostcardNotificationService: PostcardNotificationServiceProt
 @MainActor
 final class PostcardNotificationService: NSObject, ObservableObject, PostcardNotificationServiceProtocol {
     nonisolated static let newPostcardTitle = "邮箱收到1条新的明信片"
-    private nonisolated static let targetKey = "target"
-    private nonisolated static let mailboxTarget = "mailbox"
-    private nonisolated static let postcardIdKey = "postcardId"
 
     var requestedTab: AppTab?
     var tabRequestHandler: ((AppTab) -> Void)?
@@ -56,7 +149,6 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
     init(center: UNUserNotificationCenter = .current()) {
         self.center = center
         super.init()
-        center.delegate = self
     }
 
     func requestAuthorization() async -> Bool {
@@ -114,10 +206,7 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
         let content = UNMutableNotificationContent()
         content.title = Self.newPostcardTitle
         content.sound = .default
-        content.userInfo = [
-            Self.targetKey: Self.mailboxTarget,
-            Self.postcardIdKey: postcardId
-        ]
+        content.userInfo = PostcardNotificationPayload.mailboxUserInfo(postcardId: postcardId)
 
         let timeInterval = max(1, deliveryDate?.timeIntervalSinceNow ?? 1)
         let request = UNNotificationRequest(
@@ -142,10 +231,7 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
     }
 
     nonisolated static func targetTab(from userInfo: [AnyHashable: Any]) -> AppTab? {
-        guard userInfo[targetKey] as? String == mailboxTarget else {
-            return nil
-        }
-        return .mailbox
+        PostcardNotificationPayload.targetTab(from: userInfo)
     }
 
     private nonisolated static func canScheduleNotification(for status: UNAuthorizationStatus) -> Bool {
@@ -173,46 +259,6 @@ final class PostcardNotificationService: NSObject, ObservableObject, PostcardNot
             return "ephemeral"
         @unknown default:
             return "unknown"
-        }
-    }
-}
-
-extension PostcardNotificationService: UNUserNotificationCenterDelegate {
-    nonisolated func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification
-    ) async -> UNNotificationPresentationOptions {
-        []
-    }
-
-    nonisolated func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse
-    ) async {
-        await routeNotificationResponse(
-            userInfo: response.notification.request.content.userInfo,
-            actionIdentifier: response.actionIdentifier
-        )
-    }
-
-    nonisolated func routeNotificationResponse(
-        userInfo: [AnyHashable: Any],
-        actionIdentifier: String
-    ) async {
-        PostcardNotificationDiagnostics.record("didReceive response action=\(actionIdentifier)")
-        guard let tab = Self.targetTab(from: userInfo) else {
-            PostcardNotificationDiagnostics.record("didReceive skipped unknown target")
-            return
-        }
-
-        await MainActor.run { [weak self] in
-            guard let self else {
-                PostcardNotificationDiagnostics.record("didReceive skipped released service")
-                return
-            }
-            PostcardNotificationDiagnostics.record("didReceive route tab=\(tab)")
-            requestedTab = tab
-            tabRequestHandler?(tab)
         }
     }
 }

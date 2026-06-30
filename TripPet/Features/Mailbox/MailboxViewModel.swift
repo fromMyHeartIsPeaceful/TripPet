@@ -15,6 +15,22 @@ final class MailboxViewModel: ObservableObject {
     @Published private(set) var selectedPostcardSource: PostcardDetailSource?
     @Published private(set) var pendingReadPostcardId: String?
     @Published var isHistoryPresented = false
+    @Published private(set) var emptyMailboxTapCount = 0
+
+    var emptyMailboxPromptIndex: Int? {
+        guard emptyMailboxTapCount > 0,
+              AppCopy.Mailbox.emptyTapPrompts.isEmpty == false else {
+            return nil
+        }
+        return (emptyMailboxTapCount - 1) % AppCopy.Mailbox.emptyTapPrompts.count
+    }
+
+    var emptyMailboxPromptText: String {
+        if let emptyMailboxPromptIndex {
+            return AppCopy.Mailbox.emptyTapPrompts[emptyMailboxPromptIndex]
+        }
+        return AppCopy.Mailbox.emptyPrompt
+    }
 
     func openStack(with postcards: [Postcard]) {
         guard postcards.isEmpty == false else { return }
@@ -40,6 +56,14 @@ final class MailboxViewModel: ObservableObject {
     func showNextPostcard(count: Int) {
         guard count > 1 else { return }
         stackIndex = min(stackIndex + 1, count - 1)
+    }
+
+    func registerEmptyMailboxTap() {
+        emptyMailboxTapCount += 1
+    }
+
+    func resetEmptyMailboxPrompt() {
+        emptyMailboxTapCount = 0
     }
 
     func showUnreadStackDetail(_ postcard: Postcard) {

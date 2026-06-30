@@ -2,6 +2,8 @@ import SwiftUI
 import UIKit
 
 struct MailboxView: View {
+    var isActive = true
+
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var viewModel = MailboxViewModel()
@@ -20,6 +22,7 @@ struct MailboxView: View {
                         unreadCount: unreadPostcards.count,
                         readCount: readPostcards.count,
                         reduceMotion: reduceMotion,
+                        speechText: mailboxSpeechText,
                         onOpenMailbox: {
                             viewModel.openStack(with: unreadPostcards)
                             if let firstPostcard = unreadPostcards.first {
@@ -30,6 +33,9 @@ struct MailboxView: View {
                         },
                         onOpenHistory: {
                             viewModel.isHistoryPresented = true
+                        },
+                        onEmptyMailboxTap: {
+                            viewModel.registerEmptyMailboxTap()
                         }
                     )
 
@@ -57,6 +63,17 @@ struct MailboxView: View {
                 }
             }
             .navigationBarHidden(true)
+            .onAppear {
+                viewModel.resetEmptyMailboxPrompt()
+            }
+            .onChange(of: unreadPostcards.count) {
+                viewModel.resetEmptyMailboxPrompt()
+            }
+            .onChange(of: isActive) { _, newValue in
+                if newValue {
+                    viewModel.resetEmptyMailboxPrompt()
+                }
+            }
             .task {
                 environment.revealEligiblePostcards()
             }
@@ -99,6 +116,10 @@ struct MailboxView: View {
         environment.repository.postcards.filter(\.isRead)
     }
 
+    private var mailboxSpeechText: String {
+        unreadPostcards.isEmpty ? viewModel.emptyMailboxPromptText : AppCopy.Mailbox.hasPostcardsPrompt
+    }
+
     private var stackPostcards: [Postcard] {
         viewModel.openedStackPostcardIds.compactMap { postcardId in
             environment.repository.postcards.first { $0.id == postcardId }
@@ -138,8 +159,10 @@ private struct MailboxSceneContent: View {
     let unreadCount: Int
     let readCount: Int
     let reduceMotion: Bool
+    let speechText: String
     let onOpenMailbox: () -> Void
     let onOpenHistory: () -> Void
+    let onEmptyMailboxTap: () -> Void
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -147,24 +170,50 @@ private struct MailboxSceneContent: View {
                 .padding(.horizontal, 20)
                 .padding(.top, headerTopPadding)
 
-            Button(action: onOpenMailbox) {
+            Button(action: onMailboxTap) {
                 MailboxHotspotButton(hasUnread: hasUnread, reduceMotion: reduceMotion)
                     .frame(width: mailboxHitboxWidth, height: mailboxHitboxHeight)
             }
             .buttonStyle(.plain)
-            .disabled(hasUnread == false)
             .position(x: mailboxCenterX, y: mailboxCenterY)
             .accessibilityLabel(hasUnread ? "打开邮箱，查看新明信片" : "邮箱还没有新明信片")
 
-            mailboxStatusPrompt
-                .position(mailboxStatusPromptCenter)
-                .allowsHitTesting(false)
+            Button(action: onMailboxTap) {
+                MailboxButterflySpeechBubble(
+                    text: speechText,
+                    width: speechBubbleWidth,
+                    height: speechBubbleHeight
+                )
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            .position(speechBubbleCenter)
+            .accessibilityLabel(hasUnread ? "打开邮箱，查看新明信片" : "蝴蝶说：\(speechText)")
 
-            MailboxPerchedButterfly(height: butterflyHeight, reduceMotion: reduceMotion)
+            if hasUnread {
+                MailboxPerchedButterfly(height: butterflyHeight, reduceMotion: reduceMotion)
+                    .position(x: butterflyCenter.x, y: butterflyCenter.y)
+                    .allowsHitTesting(false)
+            } else {
+                Button(action: onEmptyMailboxTap) {
+                    MailboxPerchedButterfly(height: butterflyHeight, reduceMotion: reduceMotion)
+                }
+                .buttonStyle(.plain)
+                .frame(width: butterflyTapWidth, height: butterflyTapHeight)
+                .contentShape(Rectangle())
                 .position(x: butterflyCenter.x, y: butterflyCenter.y)
-                .allowsHitTesting(false)
+                .accessibilityLabel("蝴蝶说：\(speechText)")
+            }
         }
         .frame(width: size.width, height: size.height)
+    }
+
+    private func onMailboxTap() {
+        if hasUnread {
+            onOpenMailbox()
+        } else {
+            onEmptyMailboxTap()
+        }
     }
 
     private var header: some View {
@@ -187,49 +236,6 @@ private struct MailboxSceneContent: View {
 
     private var hasUnread: Bool {
         unreadCount > 0
-    }
-
-    private var mailboxStatusText: String {
-        hasUnread ? "点击邮箱收取明信片" : "邮箱空空"
-    }
-
-    private var mailboxStatusPrompt: some View {
-        Text(mailboxStatusText)
-            .font(AppTheme.postcardTitle(size: mailboxStatusFontSize))
-            .foregroundStyle(AppTheme.deepSage.opacity(0.98))
-            .lineLimit(1)
-            .minimumScaleFactor(0.78)
-            .padding(.horizontal, hasUnread ? 16 : 18)
-            .padding(.vertical, 8)
-            .frame(minWidth: mailboxStatusPromptMinWidth)
-            .background(mailboxStatusPromptBackground)
-            .shadow(color: AppTheme.paperWhite.opacity(0.86), radius: 3, x: 0, y: 1)
-            .shadow(color: AppTheme.oliveInk.opacity(0.18), radius: 7, x: 0, y: 3)
-            .rotationEffect(.degrees(-1.0))
-            .accessibilityLabel(mailboxStatusText)
-    }
-
-    private var mailboxStatusPromptBackground: some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        AppTheme.paperWhite.opacity(0.86),
-                        AppTheme.ivory.opacity(0.78)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(AppTheme.ochre.opacity(0.26), lineWidth: 0.9)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
-                    .stroke(AppTheme.paperWhite.opacity(0.62), lineWidth: 1)
-                    .padding(2)
-            )
     }
 
     private var headerTopPadding: CGFloat {
@@ -260,6 +266,29 @@ private struct MailboxSceneContent: View {
         butterflyHeight * MailboxButterflyAnimationCatalog.aspectRatio
     }
 
+    private var butterflyTapWidth: CGFloat {
+        max(butterflyWidth + 30, 84)
+    }
+
+    private var butterflyTapHeight: CGFloat {
+        max(butterflyHeight + 28, 92)
+    }
+
+    private var speechBubbleWidth: CGFloat {
+        min(max(size.width * 0.72, 260), 300)
+    }
+
+    private var speechBubbleHeight: CGFloat {
+        128
+    }
+
+    private var speechBubbleCenter: CGPoint {
+        CGPoint(
+            x: min(max(butterflyCenter.x - speechBubbleWidth * 0.34, speechBubbleWidth * 0.5 + 14), size.width - speechBubbleWidth * 0.5 - 14),
+            y: max(butterflyCenter.y - speechBubbleHeight * 0.82, safeAreaInsets.top + speechBubbleHeight * 0.5 + 44)
+        )
+    }
+
     private var butterflyCenter: CGPoint {
         let perchPoint = mailboxPerchPoint
         return CGPoint(
@@ -270,10 +299,6 @@ private struct MailboxSceneContent: View {
 
     private var mailboxPerchPoint: CGPoint {
         scenePoint(forBackgroundNormalizedPoint: mailboxTopPerchPoint)
-    }
-
-    private var mailboxStatusPromptCenter: CGPoint {
-        scenePoint(forBackgroundNormalizedPoint: Self.mailboxStatusPromptPoint)
     }
 
     private var mailboxTopPerchPoint: CGPoint {
@@ -311,20 +336,40 @@ private struct MailboxSceneContent: View {
         )
     }
 
-    private var mailboxStatusFontSize: CGFloat {
-        min(max(size.width * 0.047, 17), 21)
-    }
-
-    private var mailboxStatusPromptMinWidth: CGFloat {
-        hasUnread ? min(max(size.width * 0.47, 176), 232) : min(max(size.width * 0.30, 116), 150)
-    }
-
     private static let unreadMailboxBackgroundDesignSize = CGSize(width: 884, height: 1780)
     private static let emptyMailboxBackgroundDesignSize = CGSize(width: 887, height: 1774)
     private static let unreadMailboxTopPerchPoint = CGPoint(x: 0.704, y: 0.426)
     private static let emptyMailboxTopPerchPoint = CGPoint(x: 0.674, y: 0.445)
-    private static let mailboxStatusPromptPoint = CGPoint(x: 0.492, y: 0.812)
     private static let butterflyContactAnchor = CGPoint(x: 0.50, y: 0.83)
+}
+
+private struct MailboxButterflySpeechBubble: View {
+    let text: String
+    let width: CGFloat
+    let height: CGFloat
+
+    var body: some View {
+        ZStack {
+            ArtImage(name: "mailbox_butterfly_speech_bubble", contentMode: .fit)
+                .frame(width: width, height: height)
+                .allowsHitTesting(false)
+
+            Text(text)
+                .font(AppTheme.postcardTitle(size: 16))
+                .foregroundStyle(AppTheme.deepSage.opacity(0.98))
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+                .lineLimit(3)
+                .minimumScaleFactor(0.76)
+                .padding(.horizontal, 30)
+                .padding(.top, 24)
+                .padding(.bottom, 34)
+                .frame(width: width, height: height)
+        }
+        .frame(width: width, height: height)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(text)
+    }
 }
 
 private struct MailboxSceneBackground: View {

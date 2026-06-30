@@ -1,0 +1,14 @@
+{
+  "asset_name": "mailbox_butterfly_speech_bubble",
+  "call_id": "ig_08d5ac0057c785a0016a4363122c9881919f1dab084b09fb68",
+  "line_number": 720,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/30/rollout-2026-06-30T11-02-09-019f167a-1d73-74c1-bab9-7f66ff6d0c79.jsonl",
+  "raw_png": "mailbox_butterfly_speech_bubble.raw.png",
+  "width": 1859,
+  "height": 846,
+  "has_alpha": false,
+  "byte_count": 1575712,
+  "sha256": "318bbb956b33586c5d1222ec92ffe09e5cd0c28e3f8e1acbb999205f635846be",
+  "revised_prompt": "Use case: illustration-story\nAsset type: transparent UI speech bubble asset for an iOS watercolor storybook app\nPrimary request: Create a simple blank speech bubble with a mostly regular rounded-rectangle body and a short tail on the lower-right/right-lower side, pointing down-right toward a butterfly. No text.\nStyle/medium: warm watercolor picture-book UI asset, subtle paper grain, soft ivory fill, clean gentle ochre/sepia outline.\nComposition/framing: wide horizontal rounded rectangle, centered, full shape visible, generous padding, approximate 2.2:1 aspect ratio. The body should be simple and clean, like a rounded rectangle, not an irregular blob. The tail is short, simple, attached near the lower-right edge, angled down-right.\nColor palette: warm ivory paper, pale cream, soft ochre outline, low saturation.\nText: none.\nTransparency workflow: Put the asset on a perfectly flat solid #00ff00 chroma-key background for background removal.\nConstraints: background must be one uniform #00ff00 color with no shadows, no gradients, no texture, no reflections, no floor plane, and no lighting variation. Keep the bubble fully separated from the background with crisp antialiased edges and generous padding. Do not use #00ff00 anywhere in the bubble.\nAvoid: no letters, no symbols, no icons, no butterfly, no mailbox, no props, no watermark, no cast shadow outside the bubble, no heavily wavy or irregular hand-drawn outline."
+}

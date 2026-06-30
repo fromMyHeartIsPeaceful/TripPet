@@ -33,6 +33,14 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(highPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 8))
     }
 
+    func testPostcardPlanDefersQuietHoursAndKeepsSpacing() throws {
+        let departedAt = Self.date(hour: 23, minute: 30)
+        let plan = PostcardScheduler(randomOffset: { $0.lowerBound }).makePostcardPlan(departedAt: departedAt)
+
+        XCTAssertEqual(plan[0].dueAt, Self.date(day: 2, hour: 6, minute: 30))
+        XCTAssertEqual(plan[1].dueAt, Self.date(day: 2, hour: 8))
+    }
+
     func testActiveTripCanBeReadAfterGift() {
         let repository = AppRepository(seed: Self.makeSeed())
 
@@ -652,10 +660,14 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.consumedPostcardTextIds.count, 2)
     }
 
-    func testPostcardTextLibraryImportsVersionOnePointZeroSixMarkdownCorpus() {
+    func testPostcardTextLibraryImportsCareMarkdownCorpus() {
         let counts = Dictionary(
             grouping: PostcardTextLibrary.narratives,
             by: \.animalKey
+        ).mapValues(\.count)
+        let categoryCounts = Dictionary(
+            grouping: PostcardTextLibrary.narratives,
+            by: { "\($0.animalKey)-\($0.careCategory.rawValue)" }
         ).mapValues(\.count)
 
         XCTAssertEqual(PostcardTextLibrary.narratives.count, 1_260)
@@ -668,6 +680,53 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(counts["deer_visitor"], 140)
         XCTAssertEqual(counts["fox_visitor"], 140)
         XCTAssertEqual(counts["bear_visitor"], 140)
+
+        for animalKey in counts.keys {
+            for category in PostcardCareCategory.allCases {
+                XCTAssertEqual(categoryCounts["\(animalKey)-\(category.rawValue)"], 10)
+            }
+        }
+    }
+
+    func testCareTextLibrarySelectsCategoriesByLocalReadTime() throws {
+        let animal = Self.makeNarrativeSeed().animals[0]
+
+        let morning = try XCTUnwrap(
+            PostcardTextLibrary.randomEntry(
+                for: animal,
+                on: Self.date(hour: 7),
+                excluding: []
+            )
+        )
+        XCTAssertTrue([.morningRestart, .gentleEncouragement, .weatherSeason].contains(morning.careCategory))
+
+        let afternoon = try XCTUnwrap(
+            PostcardTextLibrary.randomEntry(
+                for: animal,
+                on: Self.date(hour: 15),
+                excluding: []
+            )
+        )
+        XCTAssertTrue([.movementBreak, .workRhythm, .informationOverload, .lowBattery].contains(afternoon.careCategory))
+
+        let evening = try XCTUnwrap(
+            PostcardTextLibrary.randomEntry(
+                for: animal,
+                on: Self.date(hour: 22),
+                excluding: []
+            )
+        )
+        XCTAssertFalse(evening.careCategory == .gentleEncouragement)
+        XCTAssertTrue([.nightCare, .sleepShutdown, .lowBattery, .selfBlameFailure].contains(evening.careCategory))
+
+        let deepNight = try XCTUnwrap(
+            PostcardTextLibrary.randomEntry(
+                for: animal,
+                on: Self.date(hour: 3),
+                excluding: []
+            )
+        )
+        XCTAssertTrue([.nightCare, .sleepShutdown].contains(deepNight.careCategory))
     }
 
     func testNarrativeLibraryFallsBackToDestinationTemplateWhenAnimalTextsAreExhausted() throws {
@@ -711,6 +770,37 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertNil(repository.activeTrip)
         XCTAssertEqual(repository.postcards.count, 2)
         XCTAssertEqual(repository.trips.first?.status, .completed)
+    }
+
+    func testPendingPostcardPlansNormalizeOnRepositoryInit() throws {
+        let seed = Self.makeSeed()
+        let trip = Trip(
+            id: "legacy-night-trip",
+            animalId: "cat",
+            destinationId: "paris",
+            destination: "巴黎",
+            departedAt: Self.date(hour: 23, minute: 30),
+            expectedReturnAt: Self.date(day: 2, hour: 17, minute: 30),
+            status: .traveling,
+            postcardPlan: [
+                TripPostcardPlanItem(sequence: 1, dueAt: Self.date(day: 2, hour: 1, minute: 30), revealedAt: nil),
+                TripPostcardPlanItem(sequence: 2, dueAt: Self.date(day: 2, hour: 5, minute: 30), revealedAt: nil)
+            ],
+            completedAt: nil
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: ["cat"])
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+
+        XCTAssertEqual(repository.trips.first?.postcardPlan[0].dueAt, Self.date(day: 2, hour: 6, minute: 30))
+        XCTAssertEqual(repository.trips.first?.postcardPlan[1].dueAt, Self.date(day: 2, hour: 8))
     }
 
     func testPersistedDestinationIdRehydratesLatestManifestCatalog() throws {
@@ -1107,13 +1197,14 @@ final class AppRepositoryTripTests: XCTestCase {
         PostcardScheduler(randomOffset: { $0.lowerBound })
     }
 
-    private static func date(day: Int = 1, hour: Int = 0) -> Date {
+    private static func date(day: Int = 1, hour: Int = 0, minute: Int = 0) -> Date {
         DateComponents(
             calendar: Calendar(identifier: .gregorian),
             year: 2026,
             month: 6,
             day: day,
-            hour: hour
+            hour: hour,
+            minute: minute
         ).date!
     }
 }

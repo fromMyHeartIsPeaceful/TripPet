@@ -119,6 +119,20 @@ enum AppCopy {
         static let title = "邮箱"
         static let emptyTitle = "邮箱还很安静"
         static let emptyBody = "等待小动物从路上寄来明信片..."
+        static let hasPostcardsPrompt = "点击邮箱收取明信片"
+        static let emptyPrompt = "邮箱空空"
+        static let emptyTapPrompts = [
+            "小动物们会寄明信片来的，稍安勿躁",
+            "世界上大约有2万种蝴蝶，不影响我依然是独特的那一只",
+            "祝福你每天都有个好心情！"
+        ]
+    }
+
+    enum Share {
+        static let appName = "步履小屋"
+        static let promo = "App Store搜索“步履小屋”"
+        static let postcardAccessibilityLabel = "分享明信片"
+        static let medalAccessibilityLabel = "分享勋章"
     }
 
     enum Settings {

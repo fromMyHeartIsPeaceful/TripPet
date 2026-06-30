@@ -1,5 +1,7 @@
 import SwiftUI
 import UIKit
+import CoreTransferable
+import UniformTypeIdentifiers
 
 struct ArtImage: View {
     enum ContentMode {
@@ -139,5 +141,149 @@ struct RollingDigitView: View {
         }
         .frame(width: 28, height: 40)
         .clipped()
+    }
+}
+
+struct ShareablePNG: Transferable, Equatable {
+    let data: Data
+    let filename: String
+
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(exportedContentType: .png) { item in
+            item.data
+        }
+        .suggestedFileName { item in
+            item.filename
+        }
+    }
+
+    var previewImage: Image {
+        if let image = UIImage(data: data) {
+            return Image(uiImage: image)
+        }
+        return Image(systemName: "photo")
+    }
+}
+
+enum ShareImageRenderer {
+    static let pointSize = CGSize(width: 360, height: 640)
+    static let scale: CGFloat = 3
+
+    @MainActor
+    static func makePNG<Content: View>(
+        filename: String,
+        @ViewBuilder content: () -> Content
+    ) -> ShareablePNG? {
+        guard let data = pngData(content: content) else {
+            return nil
+        }
+        return ShareablePNG(data: data, filename: filename)
+    }
+
+    @MainActor
+    static func pngData<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> Data? {
+        let renderedContent = content()
+            .frame(width: pointSize.width, height: pointSize.height)
+            .environment(\.colorScheme, .light)
+        let renderer = ImageRenderer(content: renderedContent)
+        renderer.scale = scale
+        renderer.proposedSize = ProposedViewSize(pointSize)
+        return renderer.uiImage?.pngData()
+    }
+}
+
+struct RenderedShareLink<Content: View>: View {
+    let title: String
+    let filename: String
+    let accessibilityLabel: String
+    @ViewBuilder var content: () -> Content
+
+    @State private var item: ShareablePNG?
+
+    var body: some View {
+        Group {
+            if let item {
+                ShareLink(
+                    item: item,
+                    preview: SharePreview(title, image: item.previewImage)
+                ) {
+                    shareLabel
+                }
+            } else {
+                Button {} label: {
+                    shareLabel
+                }
+                .disabled(true)
+            }
+        }
+        .accessibilityLabel(accessibilityLabel)
+        .task(id: filename) {
+            item = ShareImageRenderer.makePNG(filename: filename) {
+                content()
+            }
+        }
+    }
+
+    private var shareLabel: some View {
+        Image(systemName: "square.and.arrow.up")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(AppTheme.ink)
+            .frame(width: 36, height: 36)
+            .background(AppTheme.ivory)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(AppTheme.paperGray, lineWidth: AppTheme.hairline)
+            )
+    }
+}
+
+struct ShareCanvasBackground: View {
+    var body: some View {
+        AppTheme.paperWhite
+            .overlay {
+                ArtImage(name: "texture_paper_grain", contentMode: .fill)
+                    .opacity(0.08)
+            }
+    }
+}
+
+struct ShareBrandFooter: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            Image("share_app_icon")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 46, height: 46)
+                .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                        .stroke(Color.white.opacity(0.72), lineWidth: 1)
+                )
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(AppCopy.Share.appName)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(AppTheme.ink)
+
+                Text(AppCopy.Share.promo)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(AppTheme.secondaryInk)
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(AppTheme.ivory.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppTheme.paperGray.opacity(0.72), lineWidth: AppTheme.hairline)
+        )
     }
 }

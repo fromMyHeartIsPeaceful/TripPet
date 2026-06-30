@@ -78,7 +78,7 @@ struct RootTabView: View {
 
             if shouldBuildTab(.mailbox) {
                 retainedContent(.mailbox) {
-                    MailboxView()
+                    MailboxView(isActive: selectedTab == .mailbox)
                 }
             }
 

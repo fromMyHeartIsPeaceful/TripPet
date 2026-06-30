@@ -16,6 +16,7 @@ final class AppEnvironment: ObservableObject {
     let animalVisitService: AnimalVisitService
     let postcardScheduler: PostcardScheduler
     let postcardNotificationService: PostcardNotificationServiceProtocol
+    let notificationRouteStore: NotificationRouteStore
     let destinations: [ManifestDestination]
     @Published private(set) var stepSnapshot: StepCountSnapshot
     @Published private(set) var notificationRequestedTab: AppTab?
@@ -32,6 +33,7 @@ final class AppEnvironment: ObservableObject {
         animalVisitService: AnimalVisitService,
         postcardScheduler: PostcardScheduler,
         postcardNotificationService: PostcardNotificationServiceProtocol? = nil,
+        notificationRouteStore: NotificationRouteStore? = nil,
         destinations: [ManifestDestination]
     ) {
         self.repository = repository
@@ -40,6 +42,7 @@ final class AppEnvironment: ObservableObject {
         self.animalVisitService = animalVisitService
         self.postcardScheduler = postcardScheduler
         self.postcardNotificationService = postcardNotificationService ?? DisabledPostcardNotificationService()
+        self.notificationRouteStore = notificationRouteStore ?? .shared
         self.destinations = destinations
         self.stepSnapshot = StepCountSnapshot(
             status: stepCountProvider.authorizationStatus(),
@@ -57,6 +60,15 @@ final class AppEnvironment: ObservableObject {
         self.postcardNotificationService.tabRequestHandler = { [weak self] tab in
             self?.queueNotificationTabRequest(tab)
         }
+
+        self.notificationRouteStore.$pendingRoute
+            .sink { [weak self] route in
+                guard let route else { return }
+                self?.queueNotificationRoute(route)
+            }
+            .store(in: &cancellables)
+
+        queuePendingNotificationRouteIfNeeded()
     }
 
     static func live() -> AppEnvironment {
@@ -75,6 +87,7 @@ final class AppEnvironment: ObservableObject {
             animalVisitService: AnimalVisitService(),
             postcardScheduler: PostcardScheduler(),
             postcardNotificationService: PostcardNotificationService(),
+            notificationRouteStore: .shared,
             destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations
         )
     }
@@ -84,7 +97,8 @@ final class AppEnvironment: ObservableObject {
         flags: AppUserFlags = AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true),
         stepStatus: StepCountAuthorizationStatus = .sharingAuthorized,
         steps: Int = 4_200,
-        postcardNotificationService: PostcardNotificationServiceProtocol? = nil
+        postcardNotificationService: PostcardNotificationServiceProtocol? = nil,
+        notificationRouteStore: NotificationRouteStore? = nil
     ) -> AppEnvironment {
         let state = AppUserState(seed: seed, flags: flags)
         let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: state))
@@ -95,6 +109,7 @@ final class AppEnvironment: ObservableObject {
             animalVisitService: AnimalVisitService(),
             postcardScheduler: PostcardScheduler(),
             postcardNotificationService: postcardNotificationService,
+            notificationRouteStore: notificationRouteStore ?? NotificationRouteStore(),
             destinations: seed.destinations.isEmpty ? ContentManifestLoader.loadDestinations() : seed.destinations
         )
     }
@@ -273,6 +288,7 @@ final class AppEnvironment: ObservableObject {
     func clearNotificationTabRequest() {
         notificationRequestedTab = nil
         postcardNotificationService.requestedTab = nil
+        notificationRouteStore.clear()
     }
 
     func queueNotificationTabRequest(_ tab: AppTab) {
@@ -280,11 +296,23 @@ final class AppEnvironment: ObservableObject {
         postcardNotificationService.requestedTab = tab
     }
 
+    func queueNotificationRoute(_ route: NotificationRoute) {
+        queueNotificationTabRequest(route.tab)
+    }
+
+    func queuePendingNotificationRouteIfNeeded() {
+        guard let route = notificationRouteStore.pendingRoute else { return }
+        queueNotificationRoute(route)
+    }
+
     func consumeNotificationTabRequest() -> AppTab? {
-        let requestedTab = notificationRequestedTab ?? postcardNotificationService.requestedTab
+        let requestedTab = notificationRequestedTab ??
+            postcardNotificationService.requestedTab ??
+            notificationRouteStore.pendingRoute?.tab
         guard requestedTab != nil else { return nil }
         notificationRequestedTab = nil
         postcardNotificationService.requestedTab = nil
+        notificationRouteStore.clear()
         return requestedTab
     }
 

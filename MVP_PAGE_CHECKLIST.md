@@ -1,6 +1,6 @@
 # 步旅小屋 MVP 页面与验收清单
 
-更新时间：2026-06-07
+更新时间：2026-06-30
 
 ## 任务29：真机 HealthKit 验证矩阵
 
@@ -39,6 +39,12 @@
 - App 读取步数：
 - 授权弹窗是否出现：
 - 是否有 Xcode `notification_proxy` 外部设备噪声：
+
+2026-06-30 模拟器测试备注：
+- 验证 Apple 健康授权弹窗时，必须使用正常模拟器签名构建安装包；不要用 `CODE_SIGNING_ALLOWED=NO` 的测试包判断 HealthKit 授权能力。
+- HealthKit 读权限不能可靠反查。App 在 `HealthKitStepCountProvider.requestAuthorization()` 成功后会写入 `TripPet.healthKitStepReadPermissionRequested = true`，后续状态会进入 `readPermissionRequested`，再点击 Apple 健康按钮会优先尝试读取步数，不一定再次出现系统授权弹窗。
+- 因此，“未出现系统授权弹窗”不能直接判定为 BUG。先确认当前是否全新安装、是否已出现过系统弹窗、`Library/Preferences/com.qianyu.TripPet.plist` 中是否已有 `TripPet.healthKitStepReadPermissionRequested`，以及当前包是否带有模拟器 HealthKit entitlement。
+- 本次复测结论：清理旧包并安装正常签名的 1.0.8 长测构建后，点击 Apple 健康可以出现系统授权弹窗；该现象属于测试环境/授权状态判断注意事项，不归类为业务 BUG。
 
 ## 任务32/34：页面对照清单
 
