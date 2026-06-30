@@ -3,6 +3,7 @@ import UserNotifications
 
 enum AppTab: Hashable {
     case cabin
+    case achievements
     case mailbox
     case map
 }
@@ -188,13 +189,23 @@ extension PostcardNotificationService: UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
-        PostcardNotificationDiagnostics.record("didReceive response action=\(response.actionIdentifier)")
-        guard let tab = Self.targetTab(from: response.notification.request.content.userInfo) else {
+        await routeNotificationResponse(
+            userInfo: response.notification.request.content.userInfo,
+            actionIdentifier: response.actionIdentifier
+        )
+    }
+
+    nonisolated func routeNotificationResponse(
+        userInfo: [AnyHashable: Any],
+        actionIdentifier: String
+    ) async {
+        PostcardNotificationDiagnostics.record("didReceive response action=\(actionIdentifier)")
+        guard let tab = Self.targetTab(from: userInfo) else {
             PostcardNotificationDiagnostics.record("didReceive skipped unknown target")
             return
         }
 
-        Task { @MainActor [weak self] in
+        await MainActor.run { [weak self] in
             guard let self else {
                 PostcardNotificationDiagnostics.record("didReceive skipped released service")
                 return

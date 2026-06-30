@@ -3,8 +3,9 @@ import Foundation
 enum AppCopy {
     enum Tabs {
         static let cabin = "小屋"
+        static let achievements = "成就"
         static let mailbox = "邮箱"
-        static let map = "地图"
+        static let map = "地球"
     }
 
     enum Onboarding {
@@ -34,6 +35,7 @@ enum AppCopy {
         static let settingsAuthorized = "Health 已连接，可以读取今日步数"
         static let settingsReadPermissionRequested = "已请求 Health 步数读取权限，会在赠送时尝试读取今日步数"
         static let settingsRequestFailed = "暂时没有连上 Health。可以稍后再试，或在系统设置里检查权限。"
+        static let stepSyncPending = "等待Apple健康同步数据"
 
         static func todayStepsRead(_ steps: Int) -> String {
             "Apple 健康今天读取到 \(steps) 步。"
@@ -50,13 +52,15 @@ enum AppCopy {
         static let healthReadPermissionRequested = "已请求 Health 步数读取权限。小屋会在赠送时读取今日步数，把脚步折成机票。"
         static let healthReconnectPrompt = "连接 Apple 健康后，才能读取今日步数，把脚步折成小动物的机票。"
         static let healthRequestFailed = "暂时没有连上 Health。可以稍后再试，或在设置里检查权限。"
-        static let stepReadFailed = "暂时没有读到今天的脚步。可以稍后再试，或在设置里检查 Health 权限。"
+        static let stepReadFailed = "Apple 健康已连接，但暂时没有读到今天的脚步。可以稍后重试读取。"
+        static let healthSyncPending = "等待Apple健康同步数据"
         static let gifted = "机票已经送出。小动物收好地图，准备出发了。"
         static let ruleHint = "达到3000步可赠送1张机票"
         static let firstTicketRuleHint = "首张机票已准备好"
         static let firstTicketGiftedSummary = "已使用首张机票"
         static let connectButton = "连接 Apple 健康"
         static let reconnectButton = "重新连接 Apple 健康"
+        static let retryStepReadButton = "重试读取今日步数"
         static let giftButton = "赠送今日脚步，让它出发"
         static let firstTicketGiftButton = "赠送第一张机票，让它出发"
         static let readingStepsButton = "正在读取今日脚步"
@@ -109,10 +113,6 @@ enum AppCopy {
         static func stepsLine(steps: Int) -> String {
             "\(steps) 步来自 Apple 健康"
         }
-
-        static func wishLine(animalName: String, destination: String) -> String {
-            "\(animalName)想去\(destination)"
-        }
     }
 
     enum Mailbox {
@@ -136,7 +136,7 @@ enum AppCopy {
         static let aboutTitle = "关于步履小屋"
         static let aboutDetail = "版本与说明"
         static let aboutBody = "步履小屋把每日脚步变成小动物的旅行机票。它更像一本会慢慢长出来的手帐，而不是一个催促你完成目标的工具。"
-        static let versionTitle = "1.0.7 版本"
+        static let versionTitle = "1.0.8 版本"
         static let versionBody = "当前包含小屋、邮箱、可消耗明信片文本库、300 城市旅行地点库、世界地图旅行标记、Health 步数读取和基础旅行规则。"
 
         static func collectionCount(_ count: Int) -> String {

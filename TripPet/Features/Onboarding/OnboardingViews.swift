@@ -222,10 +222,18 @@ struct HealthConnectView: View {
         if isWorking {
             return AppCopy.Health.connectingButton
         }
-        if environment.stepSnapshot.steps != nil {
+        if displayableStepCount != nil {
             return AppCopy.Health.enterCabinButton
         }
         return status.canAttemptStepRead ? AppCopy.Health.retryReadButton : AppCopy.Health.connectTitle
+    }
+
+    private var displayableStepCount: Int? {
+        guard let steps = environment.stepSnapshot.steps,
+              steps > 0 else {
+            return nil
+        }
+        return steps
     }
 
     private func refreshStatus() {
@@ -238,23 +246,27 @@ struct HealthConnectView: View {
         case .sharingDenied:
             message = AppCopy.Health.denied
         case .sharingAuthorized:
-            if let steps = environment.stepSnapshot.steps {
+            if let steps = displayableStepCount {
                 message = AppCopy.Health.todayStepsRead(steps)
             } else {
-                message = AppCopy.Health.authorized
+                message = environment.stepSnapshot.errorMessage == nil
+                    ? AppCopy.Health.stepSyncPending
+                    : AppCopy.Health.stepReadWillContinue
             }
         case .readPermissionRequested:
-            if let steps = environment.stepSnapshot.steps {
+            if let steps = displayableStepCount {
                 message = AppCopy.Health.todayStepsRead(steps)
             } else {
-                message = AppCopy.Health.readPermissionRequested
+                message = environment.stepSnapshot.errorMessage == nil
+                    ? AppCopy.Health.stepSyncPending
+                    : AppCopy.Health.stepReadWillContinue
             }
         }
     }
 
     private func connectHealth() async {
         healthDebugLog("HealthConnectView tap status=\(status) snapshotStatus=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps))")
-        if environment.stepSnapshot.steps != nil {
+        if displayableStepCount != nil {
             healthDebugLog("HealthConnectView finish existing steps")
             onFinished()
             return
@@ -267,11 +279,11 @@ struct HealthConnectView: View {
             if environment.stepSnapshot.status.canAttemptStepRead {
                 _ = try await environment.readTodaySteps()
                 refreshStatus()
-                if environment.stepSnapshot.steps != nil {
+                if displayableStepCount != nil {
                     healthDebugLog("HealthConnectView finish after read steps=\(String(describing: environment.stepSnapshot.steps))")
                     onFinished()
                 } else {
-                    message = AppCopy.Health.stepReadWillContinue
+                    message = AppCopy.Health.stepSyncPending
                     onFinished()
                 }
                 return

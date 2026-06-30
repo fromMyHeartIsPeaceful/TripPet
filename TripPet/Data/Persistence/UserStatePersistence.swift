@@ -144,6 +144,7 @@ final class PersistedTicket {
     var date: Date
     var sourceSteps: Int
     var ticketCount: Int
+    var animalId: String?
     var giftedAt: Date
 
     init(ticket: Ticket) {
@@ -151,6 +152,7 @@ final class PersistedTicket {
         date = ticket.date
         sourceSteps = ticket.sourceSteps
         ticketCount = ticket.ticketCount
+        animalId = ticket.animalId
         giftedAt = ticket.giftedAt
     }
 
@@ -160,6 +162,7 @@ final class PersistedTicket {
             date: date,
             sourceSteps: sourceSteps,
             ticketCount: ticketCount,
+            animalId: animalId,
             giftedAt: giftedAt
         )
     }

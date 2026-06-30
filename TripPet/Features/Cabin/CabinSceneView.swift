@@ -155,14 +155,14 @@ struct CabinAnimalLayout {
                 animalId: "xiaolu_guinea_pig",
                 floor: .middle,
                 side: .leftLarge,
-                footPointRatio: CGPoint(x: 0.365, y: 0.635),
+                footPointRatio: CGPoint(x: 0.365, y: 0.620),
                 heightRatio: 0.114
             ),
             Slot(
                 animalId: "bear_visitor",
                 floor: .middle,
                 side: .rightSmall,
-                footPointRatio: CGPoint(x: 0.635, y: 0.635),
+                footPointRatio: CGPoint(x: 0.635, y: 0.627),
                 heightRatio: 0.120,
                 isMirrored: true
             ),

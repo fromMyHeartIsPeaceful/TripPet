@@ -153,6 +153,14 @@ struct SettingsView: View {
         }
     }
 
+    private var displayableStepCount: Int? {
+        guard let steps = environment.stepSnapshot.steps,
+              steps > 0 else {
+            return nil
+        }
+        return steps
+    }
+
     private func updateHealthStatus() {
         switch environment.stepSnapshot.status {
         case .unavailable:
@@ -162,20 +170,20 @@ struct SettingsView: View {
         case .sharingDenied:
             healthStatus = AppCopy.Health.settingsDenied
         case .sharingAuthorized:
-            if let steps = environment.stepSnapshot.steps {
+            if let steps = displayableStepCount {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
                 healthStatus = environment.stepSnapshot.errorMessage == nil
-                    ? AppCopy.Health.settingsAuthorized
-                    : AppCopy.Health.stepReadWillContinue
+                    ? AppCopy.Health.stepSyncPending
+                    : AppCopy.Health.settingsRequestFailed
             }
         case .readPermissionRequested:
-            if let steps = environment.stepSnapshot.steps {
+            if let steps = displayableStepCount {
                 healthStatus = AppCopy.Health.todayStepsRead(steps)
             } else {
                 healthStatus = environment.stepSnapshot.errorMessage == nil
-                    ? AppCopy.Health.settingsReadPermissionRequested
-                    : AppCopy.Health.stepReadWillContinue
+                    ? AppCopy.Health.stepSyncPending
+                    : AppCopy.Health.settingsRequestFailed
             }
         }
     }

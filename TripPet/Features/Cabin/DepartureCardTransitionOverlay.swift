@@ -31,33 +31,39 @@ struct DepartureCardTransitionLayout: Equatable {
 }
 
 struct DepartureCardTransitionVisuals: Equatable {
-    static let maskOpacity: Double = 0.52
+    static let maskOpacity: Double = 0.42
     static let cornerRadius: CGFloat = 24
     static let strokeOpacity: Double = 0.56
     static let strokeWidth: CGFloat = 1
     static let settledShadowOpacity: Double = 0.16
 }
 
+struct DepartureCardTransitionTiming: Equatable {
+    static let maskEntranceDelay: UInt64 = 210_000_000
+    static let playbackStartDelay: UInt64 = 120_000_000
+    static let minimumPlaybackTimeBeforeReveal: Double = 0.12
+    static let videoReadyTimeout: UInt64 = 420_000_000
+    static let exitDuration: Double = 0.42
+}
+
 struct DepartureCardTransitionOverlay: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let context: DepartureTransitionContext
+    var onCoverReady: () -> Void = {}
     var onComplete: () -> Void
 
     @State private var phase: DepartureCardTransitionPhase = .idle
     @State private var shouldPlayVideo = false
     @State private var isVideoReadyForDisplay = false
-    @State private var videoPreviewImage: UIImage?
+    @State private var preparedVideo: DepartureTransitionPreparedVideo?
+    @State private var shouldUseStaticFallback = false
     @State private var isExiting = false
     @State private var didCompletePlayback = false
-
-    private let maskEntranceDelay: UInt64 = 210_000_000
-    private let playDelay: UInt64 = 650_000_000
-    private let videoReadyTimeout: UInt64 = 420_000_000
-    private let exitDuration: Double = 0.42
+    @State private var didReportCoverReady = false
 
     var body: some View {
-        let video = reduceMotion ? nil : DepartureTransitionCatalog.video(for: context.animalId)
+        let video = (reduceMotion || shouldUseStaticFallback) ? nil : DepartureTransitionCatalog.video(for: context.animalId)
 
         GeometryReader { proxy in
             let cardSize = DepartureCardTransitionLayout.cardSize(in: proxy.size)
@@ -69,7 +75,7 @@ struct DepartureCardTransitionOverlay: View {
 
                 transitionCard(video: video)
                     .frame(width: cardSize.width, height: cardSize.height)
-                    .background(cardPlaceholder)
+                    .background(staticDepartureCard)
                     .clipShape(RoundedRectangle(cornerRadius: DepartureCardTransitionVisuals.cornerRadius, style: .continuous))
                     .overlay {
                         RoundedRectangle(cornerRadius: DepartureCardTransitionVisuals.cornerRadius, style: .continuous)
@@ -93,12 +99,15 @@ struct DepartureCardTransitionOverlay: View {
             if let video,
                let url = DepartureTransitionCatalog.videoURL(for: video) {
                 Task {
-                    await prepareVideoPreview(url: url)
+                    await prepareVideo(url: url)
                 }
+                shouldPlayVideo = true
             }
 
             await startSequence(shouldWaitForVideo: video != nil)
-            shouldPlayVideo = true
+            if video == nil {
+                shouldPlayVideo = true
+            }
 
             if video == nil {
                 try? await Task.sleep(nanoseconds: reduceMotion ? 800_000_000 : 1_200_000_000)
@@ -116,19 +125,18 @@ struct DepartureCardTransitionOverlay: View {
         if let video,
            let url = DepartureTransitionCatalog.videoURL(for: video) {
             ZStack {
-                if let videoPreviewImage {
-                    Image(uiImage: videoPreviewImage)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    cardPlaceholder
-                }
+                staticDepartureCard
 
                 DepartureTransitionVideoView(
                     url: url,
+                    preparedVideo: preparedVideo,
                     shouldPlay: shouldPlayVideo,
                     onReadyForDisplay: {
                         isVideoReadyForDisplay = true
+                    },
+                    onPlaybackUnavailable: {
+                        shouldUseStaticFallback = true
+                        isVideoReadyForDisplay = false
                     },
                     onPlaybackComplete: completePlaybackIfNeeded
                 )
@@ -138,18 +146,6 @@ struct DepartureCardTransitionOverlay: View {
         } else {
             staticDepartureCard
         }
-    }
-
-    private var cardPlaceholder: some View {
-        LinearGradient(
-            colors: [
-                AppTheme.paperWhite,
-                AppTheme.ivory,
-                AppTheme.mistBlue.opacity(0.50)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
     }
 
     private var staticDepartureCard: some View {
@@ -177,7 +173,7 @@ struct DepartureCardTransitionOverlay: View {
             .offset(y: -10)
 
             DepartureTransitionMistOverlay(
-                isRevealed: shouldPlayVideo,
+                isRevealed: isVideoReadyForDisplay || shouldUseStaticFallback,
                 isClosing: isExiting
             )
             .opacity(reduceMotion ? 0 : 0.8)
@@ -236,13 +232,14 @@ struct DepartureCardTransitionOverlay: View {
             }
             try? await Task.sleep(nanoseconds: 120_000_000)
             phase = .settled
+            reportCoverReadyIfNeeded()
             try? await Task.sleep(nanoseconds: 120_000_000)
         } else {
             withAnimation(.easeOut(duration: 0.20)) {
                 phase = .appearingMask
             }
 
-            try? await Task.sleep(nanoseconds: maskEntranceDelay)
+            try? await Task.sleep(nanoseconds: DepartureCardTransitionTiming.maskEntranceDelay)
             await waitForVideoReadinessIfNeeded(shouldWaitForVideo: shouldWaitForVideo)
 
             withAnimation(.snappy(duration: 0.52, extraBounce: 0.01)) {
@@ -253,7 +250,8 @@ struct DepartureCardTransitionOverlay: View {
             withAnimation(.easeOut(duration: 0.18)) {
                 phase = .settled
             }
-            try? await Task.sleep(nanoseconds: playDelay)
+            reportCoverReadyIfNeeded()
+            try? await Task.sleep(nanoseconds: DepartureCardTransitionTiming.playbackStartDelay)
         }
 
         phase = .playing
@@ -265,42 +263,33 @@ struct DepartureCardTransitionOverlay: View {
         let pollInterval: UInt64 = 20_000_000
         var waited: UInt64 = 0
 
-        while isVideoVisualReady == false, waited < videoReadyTimeout {
+        while isVideoVisualReady == false, waited < DepartureCardTransitionTiming.videoReadyTimeout {
             try? await Task.sleep(nanoseconds: pollInterval)
             waited += pollInterval
         }
     }
 
     private var isVideoVisualReady: Bool {
-        isVideoReadyForDisplay || videoPreviewImage != nil
+        isVideoReadyForDisplay
     }
 
-    private func prepareVideoPreview(url: URL) async {
-        let image = await Task.detached(priority: .userInitiated) {
-            let asset = AVURLAsset(url: url)
-            let generator = AVAssetImageGenerator(asset: asset)
-            generator.appliesPreferredTrackTransform = true
-            generator.requestedTimeToleranceBefore = .zero
-            generator.requestedTimeToleranceAfter = CMTime(value: 1, timescale: 30)
+    private func prepareVideo(url: URL) async {
+        guard let preparedVideo = await DepartureTransitionPlaybackPreloader.shared.preparedVideo(for: url),
+              preparedVideo.url == url else {
+            return
+        }
 
-            guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
-                return nil as UIImage?
-            }
-
-            return UIImage(cgImage: cgImage)
-        }.value
-
-        guard let image else { return }
-        videoPreviewImage = image
+        self.preparedVideo = preparedVideo
     }
 
     private func completePlaybackIfNeeded() {
         guard didCompletePlayback == false else { return }
         didCompletePlayback = true
+        reportCoverReadyIfNeeded()
 
         let animation: Animation = reduceMotion
             ? .easeOut(duration: 0.16)
-            : .smooth(duration: exitDuration)
+            : .smooth(duration: DepartureCardTransitionTiming.exitDuration)
 
         withAnimation(animation) {
             isExiting = true
@@ -308,10 +297,16 @@ struct DepartureCardTransitionOverlay: View {
         }
 
         Task {
-            let delay = UInt64((reduceMotion ? 0.16 : exitDuration) * 1_000_000_000)
+            let delay = UInt64((reduceMotion ? 0.16 : DepartureCardTransitionTiming.exitDuration) * 1_000_000_000)
             try? await Task.sleep(nanoseconds: delay)
             onComplete()
         }
+    }
+
+    private func reportCoverReadyIfNeeded() {
+        guard didReportCoverReady == false else { return }
+        didReportCoverReady = true
+        onCoverReady()
     }
 }
 
@@ -342,7 +337,7 @@ private enum DepartureCardTransitionPhase: Equatable {
     }
 }
 
-private enum DepartureTransitionCatalog {
+enum DepartureTransitionCatalog {
     private static let resourceSubdirectory = "DepartureTransitions"
 
     private static let genericVideo = DepartureTransitionVideo(
@@ -357,7 +352,7 @@ private enum DepartureTransitionCatalog {
         ),
         "tangyuan_puppy": DepartureTransitionVideo(
             filename: "animal_departure_tangyuan_puppy.mp4",
-            duration: 5.58
+            duration: 6.04
         ),
         "moji_cat": DepartureTransitionVideo(
             filename: "animal_departure_moji_cat.mp4",
@@ -411,11 +406,164 @@ private enum DepartureTransitionCatalog {
             subdirectory: resourceSubdirectory
         )
     }
+
+    static var expectedVideos: [DepartureTransitionVideo] {
+        [genericVideo] + animalVideos.values.sorted { $0.filename < $1.filename }
+    }
 }
 
-private struct DepartureTransitionVideo: Equatable {
+struct DepartureTransitionVideo: Equatable {
     var filename: String
     var duration: Double
+}
+
+struct DepartureTransitionPreparedVideo {
+    var url: URL
+    var asset: AVURLAsset
+    var previewImage: UIImage?
+    var player: AVPlayer?
+    var didPreroll: Bool
+}
+
+@MainActor
+final class DepartureTransitionPlaybackPreloader {
+    static let shared = DepartureTransitionPlaybackPreloader()
+
+    private var preloadTasks: [URL: Task<DepartureTransitionPreparedVideo?, Never>] = [:]
+
+    func preloadVideo(for animalId: String) {
+        guard let video = DepartureTransitionCatalog.video(for: animalId),
+              let url = DepartureTransitionCatalog.videoURL(for: video) else {
+            return
+        }
+
+        preload(url: url)
+    }
+
+    func preload(url: URL) {
+        guard preloadTasks[url] == nil else {
+            return
+        }
+
+        preloadTasks[url] = makePreloadTask(for: url)
+    }
+
+    func preparedVideo(for url: URL) async -> DepartureTransitionPreparedVideo? {
+        let task: Task<DepartureTransitionPreparedVideo?, Never>
+        if let existingTask = preloadTasks[url] {
+            task = existingTask
+        } else {
+            task = makePreloadTask(for: url)
+            preloadTasks[url] = task
+        }
+
+        let preparedVideo = await task.value
+        preloadTasks[url] = nil
+
+        return preparedVideo
+    }
+
+    private func makePreloadTask(for url: URL) -> Task<DepartureTransitionPreparedVideo?, Never> {
+        Task(priority: .userInitiated) { @MainActor in
+            guard let loadedResources = await Self.loadResources(for: url) else {
+                return nil
+            }
+
+            let item = AVPlayerItem(asset: loadedResources.asset)
+            let player = Self.makePreparedPlayer(for: item)
+            let didPreroll = await Self.preroll(player)
+
+            return DepartureTransitionPreparedVideo(
+                url: url,
+                asset: loadedResources.asset,
+                previewImage: nil,
+                player: player,
+                didPreroll: didPreroll
+            )
+        }
+    }
+
+    private struct LoadedVideoResources {
+        var asset: AVURLAsset
+    }
+
+    nonisolated private static func loadResources(for url: URL) async -> LoadedVideoResources? {
+        let asset = AVURLAsset(url: url)
+        await warmAsset(asset)
+
+        guard (try? await asset.load(.isPlayable)) == true else {
+            return nil
+        }
+
+        return LoadedVideoResources(asset: asset)
+    }
+
+    private static func makePreparedPlayer(for item: AVPlayerItem) -> AVPlayer {
+        item.preferredForwardBufferDuration = 0
+        let player = AVPlayer(playerItem: item)
+        player.isMuted = true
+        player.automaticallyWaitsToMinimizeStalling = false
+        return player
+    }
+
+    private static func preroll(_ player: AVPlayer) async -> Bool {
+        guard await waitUntilPlayerReadyForPreroll(player) else {
+            return false
+        }
+
+        return await withCheckedContinuation { continuation in
+            var didResume = false
+            let resumeOnce: (Bool) -> Void = { didFinish in
+                guard didResume == false else { return }
+                didResume = true
+                continuation.resume(returning: didFinish)
+            }
+
+            player.preroll(atRate: 1.0) { didFinish in
+                DispatchQueue.main.async {
+                    resumeOnce(didFinish)
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                player.cancelPendingPrerolls()
+                resumeOnce(false)
+            }
+        }
+    }
+
+    private static func waitUntilPlayerReadyForPreroll(
+        _ player: AVPlayer,
+        timeoutNanoseconds: UInt64 = 650_000_000
+    ) async -> Bool {
+        let pollInterval: UInt64 = 20_000_000
+        var waited: UInt64 = 0
+
+        while waited < timeoutNanoseconds {
+            switch player.status {
+            case .readyToPlay:
+                return true
+            case .failed:
+                return false
+            case .unknown:
+                if player.currentItem?.status == .failed {
+                    return false
+                }
+                try? await Task.sleep(nanoseconds: pollInterval)
+                waited += pollInterval
+            @unknown default:
+                return false
+            }
+        }
+
+        return player.status == .readyToPlay
+    }
+
+    nonisolated private static func warmAsset(_ asset: AVURLAsset) async {
+        _ = try? await asset.load(.isPlayable)
+        _ = try? await asset.load(.duration)
+    }
+
 }
 
 private struct DepartureTransitionMistOverlay: View {
@@ -481,8 +629,10 @@ private struct DepartureTransitionMistOverlay: View {
 
 private struct DepartureTransitionVideoView: UIViewRepresentable {
     let url: URL
+    var preparedVideo: DepartureTransitionPreparedVideo?
     var shouldPlay: Bool = true
     var onReadyForDisplay: () -> Void = {}
+    var onPlaybackUnavailable: () -> Void = {}
     var onPlaybackComplete: () -> Void = {}
 
     func makeCoordinator() -> Coordinator {
@@ -491,9 +641,10 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> PlayerContainerView {
         let view = PlayerContainerView()
-        let paperColor = UIColor(red: 1.0, green: 0.976, blue: 0.937, alpha: 1)
-        view.backgroundColor = paperColor
-        view.playerLayer.backgroundColor = paperColor.cgColor
+        view.backgroundColor = .clear
+        view.isOpaque = false
+        view.playerLayer.backgroundColor = UIColor.clear.cgColor
+        view.playerLayer.isOpaque = false
         view.playerLayer.videoGravity = .resizeAspectFill
         return view
     }
@@ -501,9 +652,11 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
     func updateUIView(_ view: PlayerContainerView, context: Context) {
         context.coordinator.configure(
             url: url,
+            preparedVideo: preparedVideo,
             shouldPlay: shouldPlay,
             in: view,
             onReadyForDisplay: onReadyForDisplay,
+            onPlaybackUnavailable: onPlaybackUnavailable,
             onPlaybackComplete: onPlaybackComplete
         )
     }
@@ -514,52 +667,139 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
 
     final class Coordinator {
         private var currentURL: URL?
+        private var currentAsset: AVURLAsset?
         private var player: AVPlayer?
         private var endObserver: NSObjectProtocol?
+        private var timeObserver: Any?
         private var readyObserver: NSKeyValueObservation?
+        private var statusObserver: NSKeyValueObservation?
         private var hasStartedPlayback = false
+        private var isLayerReadyForDisplay = false
         private var didReportReadyForDisplay = false
         private var didReportCompletion = false
+        private var didReportUnavailable = false
+        private var isPendingPlayback = false
         private var onReadyForDisplay: () -> Void = {}
+        private var onPlaybackUnavailable: () -> Void = {}
         private var onPlaybackComplete: () -> Void = {}
 
         func configure(
             url: URL,
+            preparedVideo: DepartureTransitionPreparedVideo?,
             shouldPlay: Bool,
             in view: PlayerContainerView,
             onReadyForDisplay: @escaping () -> Void,
+            onPlaybackUnavailable: @escaping () -> Void,
             onPlaybackComplete: @escaping () -> Void
         ) {
             self.onReadyForDisplay = onReadyForDisplay
+            self.onPlaybackUnavailable = onPlaybackUnavailable
             self.onPlaybackComplete = onPlaybackComplete
 
             guard currentURL != url else {
+                if let preparedAsset = preparedVideo?.asset,
+                   currentAsset !== preparedAsset,
+                   hasStartedPlayback == false,
+                   didReportReadyForDisplay == false {
+                    configureNewItem(
+                        url: url,
+                        preparedVideo: preparedVideo,
+                        fallbackAsset: preparedAsset,
+                        shouldPlay: shouldPlay,
+                        in: view
+                    )
+                    return
+                }
+
                 if view.playerLayer.isReadyForDisplay {
-                    reportReadyForDisplayIfNeeded()
+                    isLayerReadyForDisplay = true
+                    reportReadyForDisplayIfPlaybackHasAdvanced()
                 }
                 playIfNeeded(shouldPlay: shouldPlay)
                 return
             }
 
             removeEndObserver()
+            removeTimeObserver()
             removeReadyObserver()
+            removeStatusObserver()
             currentURL = url
             hasStartedPlayback = false
+            isLayerReadyForDisplay = false
             didReportReadyForDisplay = false
             didReportCompletion = false
+            didReportUnavailable = false
+            isPendingPlayback = false
+            configureNewItem(
+                url: url,
+                preparedVideo: preparedVideo,
+                fallbackAsset: preparedVideo?.asset ?? AVURLAsset(url: url),
+                shouldPlay: shouldPlay,
+                in: view
+            )
+        }
 
-            let item = AVPlayerItem(url: url)
-            let player = AVPlayer(playerItem: item)
+        private func configureNewItem(
+            url: URL,
+            preparedVideo: DepartureTransitionPreparedVideo?,
+            fallbackAsset: AVURLAsset,
+            shouldPlay: Bool,
+            in view: PlayerContainerView
+        ) {
+            removeEndObserver()
+            removeTimeObserver()
+            removeReadyObserver()
+            removeStatusObserver()
+            currentURL = url
+            currentAsset = fallbackAsset
+            hasStartedPlayback = false
+            isLayerReadyForDisplay = false
+            didReportReadyForDisplay = false
+            didReportCompletion = false
+            didReportUnavailable = false
+            isPendingPlayback = false
+
+            let item: AVPlayerItem
+            let player: AVPlayer
+            if let preparedPlayer = preparedVideo?.player,
+               let preparedItem = preparedPlayer.currentItem {
+                player = preparedPlayer
+                item = preparedItem
+            } else {
+                item = AVPlayerItem(asset: fallbackAsset)
+                item.preferredForwardBufferDuration = 0
+                player = AVPlayer(playerItem: item)
+            }
+
             player.isMuted = true
-            item.preferredForwardBufferDuration = 0
+            player.automaticallyWaitsToMinimizeStalling = false
             self.player = player
             view.playerLayer.player = player
+            currentAsset = preparedVideo?.asset ?? fallbackAsset
+
+            statusObserver = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
+                DispatchQueue.main.async {
+                    self?.handleItemStatus(item.status)
+                }
+            }
 
             readyObserver = view.playerLayer.observe(\.isReadyForDisplay, options: [.initial, .new]) { [weak self] layer, _ in
                 guard layer.isReadyForDisplay else { return }
                 DispatchQueue.main.async {
-                    self?.reportReadyForDisplayIfNeeded()
+                    self?.isLayerReadyForDisplay = true
+                    self?.reportReadyForDisplayIfPlaybackHasAdvanced()
                 }
+            }
+
+            timeObserver = player.addPeriodicTimeObserver(
+                forInterval: CMTime(value: 1, timescale: 30),
+                queue: .main
+            ) { [weak self, weak player] time in
+                guard let self,
+                      self.player === player else {
+                    return
+                }
+                self.reportReadyForDisplayIfPlaybackHasAdvanced(currentTime: time)
             }
 
             endObserver = NotificationCenter.default.addObserver(
@@ -576,26 +816,68 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
         func stop() {
             player?.pause()
             removeEndObserver()
+            removeTimeObserver()
             removeReadyObserver()
+            removeStatusObserver()
             player = nil
             currentURL = nil
+            currentAsset = nil
             hasStartedPlayback = false
+            isLayerReadyForDisplay = false
             didReportReadyForDisplay = false
             didReportCompletion = false
+            didReportUnavailable = false
+            isPendingPlayback = false
         }
 
         private func playIfNeeded(shouldPlay: Bool) {
             guard shouldPlay, hasStartedPlayback == false else { return }
+            guard player?.currentItem?.status == .readyToPlay else {
+                isPendingPlayback = true
+                return
+            }
+
             hasStartedPlayback = true
             didReportCompletion = false
-            player?.seek(to: .zero)
-            player?.play()
+            isPendingPlayback = false
+            player?.playImmediately(atRate: 1.0)
+        }
+
+        private func handleItemStatus(_ status: AVPlayerItem.Status) {
+            switch status {
+            case .readyToPlay:
+                if isPendingPlayback {
+                    playIfNeeded(shouldPlay: true)
+                }
+            case .failed:
+                reportPlaybackUnavailableIfNeeded()
+            case .unknown:
+                break
+            @unknown default:
+                reportPlaybackUnavailableIfNeeded()
+            }
+        }
+
+        private func reportReadyForDisplayIfPlaybackHasAdvanced(currentTime: CMTime? = nil) {
+            guard isLayerReadyForDisplay else { return }
+            let time = currentTime ?? player?.currentTime() ?? .zero
+            guard CMTimeGetSeconds(time) >= DepartureCardTransitionTiming.minimumPlaybackTimeBeforeReveal else {
+                return
+            }
+            reportReadyForDisplayIfNeeded()
         }
 
         private func reportReadyForDisplayIfNeeded() {
             guard didReportReadyForDisplay == false else { return }
             didReportReadyForDisplay = true
             onReadyForDisplay()
+        }
+
+        private func reportPlaybackUnavailableIfNeeded() {
+            guard didReportUnavailable == false else { return }
+            didReportUnavailable = true
+            player?.pause()
+            onPlaybackUnavailable()
         }
 
         private func reportCompletionIfNeeded() {
@@ -612,9 +894,24 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
             }
         }
 
+        private func removeTimeObserver() {
+            if let timeObserver,
+               let player {
+                player.removeTimeObserver(timeObserver)
+                self.timeObserver = nil
+            } else {
+                timeObserver = nil
+            }
+        }
+
         private func removeReadyObserver() {
             readyObserver?.invalidate()
             readyObserver = nil
+        }
+
+        private func removeStatusObserver() {
+            statusObserver?.invalidate()
+            statusObserver = nil
         }
 
         deinit {
@@ -633,16 +930,16 @@ private struct DepartureTransitionVideoView: UIViewRepresentable {
 
         override init(frame: CGRect) {
             super.init(frame: frame)
-            backgroundColor = UIColor(red: 1.0, green: 0.976, blue: 0.937, alpha: 1)
+            backgroundColor = .clear
             clipsToBounds = true
-            isOpaque = true
+            isOpaque = false
         }
 
         required init?(coder: NSCoder) {
             super.init(coder: coder)
-            backgroundColor = UIColor(red: 1.0, green: 0.976, blue: 0.937, alpha: 1)
+            backgroundColor = .clear
             clipsToBounds = true
-            isOpaque = true
+            isOpaque = false
         }
     }
 }

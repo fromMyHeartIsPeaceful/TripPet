@@ -83,31 +83,30 @@ final class HealthKitStepCountProvider: StepCountProvider {
         let endDate = Date()
         healthDebugLog("todayStepCount query startOfDay=\(startOfDay) end=\(endDate)")
 
-        do {
-            return try await statisticsStepCount(
-                stepType: stepType,
-                startOfDay: startOfDay,
-                endDate: endDate,
-                predicateOptions: .strictStartDate,
-                label: "strict"
-            )
-        } catch {
-            healthDebugLog("todayStepCount strict statistics failed=\(error.localizedDescription)")
+        let strictResult = try await statisticsStepCount(
+            stepType: stepType,
+            startOfDay: startOfDay,
+            endDate: endDate,
+            predicateOptions: .strictStartDate,
+            label: "strict"
+        )
+        if case .steps(let steps) = strictResult {
+            return steps
         }
 
-        do {
-            return try await statisticsStepCount(
-                stepType: stepType,
-                startOfDay: startOfDay,
-                endDate: endDate,
-                predicateOptions: [],
-                label: "overlap"
-            )
-        } catch {
-            healthDebugLog("todayStepCount overlap statistics failed=\(error.localizedDescription)")
+        let overlapResult = try await statisticsStepCount(
+            stepType: stepType,
+            startOfDay: startOfDay,
+            endDate: endDate,
+            predicateOptions: [],
+            label: "overlap"
+        )
+        if case .steps(let steps) = overlapResult {
+            return steps
         }
 
-        return try await sampleStepCount(stepType: stepType, startOfDay: startOfDay, endDate: endDate)
+        let sampleResult = try await sampleStepCount(stepType: stepType, startOfDay: startOfDay, endDate: endDate)
+        return Self.resolvedStepCount(from: [strictResult, overlapResult, sampleResult])
         #else
         throw StepCountProviderError.unavailable
         #endif
@@ -147,7 +146,7 @@ final class HealthKitStepCountProvider: StepCountProvider {
         endDate: Date,
         predicateOptions: HKQueryOptions,
         label: String
-    ) async throws -> Int {
+    ) async throws -> HealthKitStepQueryResult {
         let predicate = HKQuery.predicateForSamples(
             withStart: startOfDay,
             end: endDate,
@@ -161,20 +160,27 @@ final class HealthKitStepCountProvider: StepCountProvider {
                 options: .cumulativeSum
             ) { _, result, error in
                 if let error {
-                    healthDebugLog("todayStepCount \(label) statistics error=\(error.localizedDescription)")
+                    if let noDataResult = Self.noDataQueryResultIfApplicable(for: error) {
+                        healthDebugLog("todayStepCount \(label) statistics no data error=\(Self.errorSummary(error))")
+                        continuation.resume(returning: noDataResult)
+                        return
+                    }
+
+                    healthDebugLog("todayStepCount \(label) statistics error=\(Self.errorSummary(error))")
                     continuation.resume(throwing: StepCountProviderError.unableToReadSteps)
                     return
                 }
 
                 guard let quantity = result?.sumQuantity() else {
                     healthDebugLog("todayStepCount \(label) statistics nil sumQuantity")
-                    continuation.resume(throwing: StepCountProviderError.unableToReadSteps)
+                    continuation.resume(returning: .noData)
                     return
                 }
 
                 let steps = quantity.doubleValue(for: HKUnit.count())
-                healthDebugLog("todayStepCount \(label) statistics raw=\(steps) rounded=\(max(0, Int(steps.rounded(.down))))")
-                continuation.resume(returning: max(0, Int(steps.rounded(.down))))
+                let normalizedSteps = Self.normalizedStepCount(steps)
+                healthDebugLog("todayStepCount \(label) statistics raw=\(steps) rounded=\(normalizedSteps)")
+                continuation.resume(returning: .steps(normalizedSteps))
             }
 
             healthStore.execute(query)
@@ -185,7 +191,7 @@ final class HealthKitStepCountProvider: StepCountProvider {
         stepType: HKQuantityType,
         startOfDay: Date,
         endDate: Date
-    ) async throws -> Int {
+    ) async throws -> HealthKitStepQueryResult {
         let predicate = HKQuery.predicateForSamples(
             withStart: startOfDay,
             end: endDate,
@@ -200,7 +206,13 @@ final class HealthKitStepCountProvider: StepCountProvider {
                 sortDescriptors: nil
             ) { _, samples, error in
                 if let error {
-                    healthDebugLog("todayStepCount sample query error=\(error.localizedDescription)")
+                    if let noDataResult = Self.noDataQueryResultIfApplicable(for: error) {
+                        healthDebugLog("todayStepCount sample query no data error=\(Self.errorSummary(error))")
+                        continuation.resume(returning: noDataResult)
+                        return
+                    }
+
+                    healthDebugLog("todayStepCount sample query error=\(Self.errorSummary(error))")
                     continuation.resume(throwing: StepCountProviderError.unableToReadSteps)
                     return
                 }
@@ -208,19 +220,55 @@ final class HealthKitStepCountProvider: StepCountProvider {
                 let quantitySamples = samples as? [HKQuantitySample] ?? []
                 guard quantitySamples.isEmpty == false else {
                     healthDebugLog("todayStepCount sample query no samples")
-                    continuation.resume(throwing: StepCountProviderError.unableToReadSteps)
+                    continuation.resume(returning: .noData)
                     return
                 }
 
                 let steps = quantitySamples.reduce(0.0) { partialResult, sample in
                     partialResult + sample.quantity.doubleValue(for: HKUnit.count())
                 }
-                healthDebugLog("todayStepCount sample query count=\(quantitySamples.count) raw=\(steps) rounded=\(max(0, Int(steps.rounded(.down))))")
-                continuation.resume(returning: max(0, Int(steps.rounded(.down))))
+                let normalizedSteps = Self.normalizedStepCount(steps)
+                healthDebugLog("todayStepCount sample query count=\(quantitySamples.count) raw=\(steps) rounded=\(normalizedSteps)")
+                continuation.resume(returning: .steps(normalizedSteps))
             }
 
             healthStore.execute(query)
         }
     }
     #endif
+
+    static func normalizedStepCount(_ steps: Double) -> Int {
+        max(0, Int(steps.rounded(.down)))
+    }
+
+    static func resolvedStepCount(from results: [HealthKitStepQueryResult]) -> Int {
+        for result in results {
+            if case .steps(let steps) = result {
+                return steps
+            }
+        }
+        return 0
+    }
+
+    #if canImport(HealthKit)
+    static func noDataQueryResultIfApplicable(for error: Error) -> HealthKitStepQueryResult? {
+        let nsError = error as NSError
+        guard nsError.domain == HKErrorDomain,
+              nsError.code == HKError.Code.errorNoData.rawValue else {
+            return nil
+        }
+
+        return .noData
+    }
+
+    private static func errorSummary(_ error: Error) -> String {
+        let nsError = error as NSError
+        return "domain=\(nsError.domain) code=\(nsError.code) message=\(nsError.localizedDescription)"
+    }
+    #endif
+}
+
+enum HealthKitStepQueryResult: Equatable {
+    case steps(Int)
+    case noData
 }

@@ -14,7 +14,12 @@ struct TicketGiftAnimalOption: Identifiable, Equatable {
     var animalId: String
     var animalName: String
     var assetName: String
-    var destination: String
+}
+
+enum StepCounterPresentation: Equatable {
+    case counter(Int)
+    case message(String)
+    case hidden
 }
 
 @MainActor
@@ -24,6 +29,7 @@ final class CabinViewModel: ObservableObject {
     @Published var isWorking = false
     @Published var isAutoReadingSteps = false
     @Published var shouldShowHealthReconnectCard = false
+    @Published var shouldShowStepReadRetryCard = false
     @Published var healthAuthorizationStatus: StepCountAuthorizationStatus = .sharingAuthorized
     @Published var pendingGiftConfirmation: TicketGiftConfirmation?
     @Published var confirmedGiftTrip: Trip?
@@ -37,13 +43,17 @@ final class CabinViewModel: ObservableObject {
         if isFirstImmediateTicketAvailable {
             return false
         }
+        return healthAuthorizationStatus.canAttemptStepRead == false
+    }
+
+    var shouldShowHealthActionCard: Bool {
+        if isFirstImmediateTicketAvailable {
+            return false
+        }
         if isAutoReadingSteps, environment?.stepSnapshot.steps == nil {
             return true
         }
-        if shouldShowHealthReconnectCard {
-            return true
-        }
-        return healthAuthorizationStatus.canAttemptStepRead == false
+        return requiresHealthConnection || shouldShowHealthReconnectCard || shouldShowStepReadRetryCard
     }
 
     var availableStepsForDisplay: Int {
@@ -54,9 +64,31 @@ final class CabinViewModel: ObservableObject {
         return availableSteps(from: environment.effectiveTodaySteps)
     }
 
+    var stepCounterPresentation: StepCounterPresentation {
+        guard let environment else { return .hidden }
+        if isFirstImmediateTicketAvailable {
+            return .counter(environment.ticketRuleEngine.requiredStepsPerTicket)
+        }
+        guard healthAuthorizationStatus.canAttemptStepRead else {
+            return .hidden
+        }
+        guard shouldShowStepReadRetryCard == false,
+              environment.stepSnapshot.errorMessage == nil else {
+            return .hidden
+        }
+        guard let steps = environment.stepSnapshot.steps else {
+            return .message(AppCopy.Cabin.healthSyncPending)
+        }
+        guard steps > 0 else {
+            return .message(AppCopy.Cabin.healthSyncPending)
+        }
+        return .counter(availableSteps(from: steps))
+    }
+
     var giftedStepsSummaryText: String? {
         guard let environment,
-              environment.stepSnapshot.steps != nil else {
+              let steps = environment.stepSnapshot.steps,
+              steps > 0 else {
             return nil
         }
 
@@ -71,7 +103,7 @@ final class CabinViewModel: ObservableObject {
     }
 
     var canGiftAvailableSteps: Bool {
-        guard let environment, requiresHealthConnection == false else { return false }
+        guard let environment, shouldShowHealthActionCard == false else { return false }
         if isFirstImmediateTicketAvailable {
             return true
         }
@@ -103,24 +135,51 @@ final class CabinViewModel: ObservableObject {
         case .unavailable:
             stepStatusText = "Health 不可用"
             actionMessage = AppCopy.Cabin.healthReconnectPrompt
+            shouldShowStepReadRetryCard = false
         case .notDetermined:
             stepStatusText = "Health 未连接"
             actionMessage = AppCopy.Cabin.healthReconnectPrompt
+            shouldShowStepReadRetryCard = false
         case .sharingDenied:
             stepStatusText = "Health 未连接"
             actionMessage = AppCopy.Cabin.healthReconnectPrompt
+            shouldShowStepReadRetryCard = false
         case .sharingAuthorized:
             stepStatusText = "Health 已连接"
-        case .readPermissionRequested:
-            stepStatusText = "Health 已请求"
-            if shouldReplaceActionMessageWithHealthGuidance {
-                if let steps = environment.stepSnapshot.steps {
+            if let steps = environment.stepSnapshot.steps, steps > 0 {
+                shouldShowHealthReconnectCard = false
+                shouldShowStepReadRetryCard = false
+                if shouldReplaceActionMessageWithHealthGuidance {
                     actionMessage = AppCopy.Cabin.healthConnectedWithSteps(
                         steps,
                         requiredSteps: environment.ticketRuleEngine.requiredStepsPerTicket
                     )
+                }
+            } else if shouldShowStepReadRetryCard {
+                actionMessage = AppCopy.Cabin.stepReadFailed
+            } else if shouldReplaceActionMessageWithHealthGuidance {
+                actionMessage = environment.stepSnapshot.errorMessage == nil
+                    ? AppCopy.Cabin.healthSyncPending
+                    : AppCopy.Cabin.stepReadFailed
+            }
+        case .readPermissionRequested:
+            stepStatusText = "Health 已请求"
+            if shouldReplaceActionMessageWithHealthGuidance {
+                if let steps = environment.stepSnapshot.steps, steps > 0 {
+                    shouldShowHealthReconnectCard = false
+                    shouldShowStepReadRetryCard = false
+                    actionMessage = AppCopy.Cabin.healthConnectedWithSteps(
+                        steps,
+                        requiredSteps: environment.ticketRuleEngine.requiredStepsPerTicket
+                    )
+                } else if shouldShowStepReadRetryCard {
+                    actionMessage = AppCopy.Cabin.stepReadFailed
                 } else {
-                    actionMessage = isAutoReadingSteps ? AppCopy.Cabin.readingStepsButton : AppCopy.Cabin.healthReconnectPrompt
+                    actionMessage = isAutoReadingSteps ? AppCopy.Cabin.readingStepsButton : (
+                        environment.stepSnapshot.errorMessage == nil
+                        ? AppCopy.Cabin.healthSyncPending
+                        : AppCopy.Cabin.stepReadFailed
+                    )
                 }
             }
         }
@@ -157,8 +216,7 @@ final class CabinViewModel: ObservableObject {
 
             let didRequest = try await environment.requestStepAuthorizationAndRefresh()
             guard didRequest else {
-                shouldShowHealthReconnectCard = true
-                actionMessage = AppCopy.Cabin.healthReconnectPrompt
+                showHealthReconnectPrompt()
                 await refresh()
                 return
             }
@@ -166,11 +224,15 @@ final class CabinViewModel: ObservableObject {
                 await ensureTodayStepsLoaded()
             } else {
                 shouldShowHealthReconnectCard = false
+                shouldShowStepReadRetryCard = false
                 await refresh()
             }
         } catch {
-            shouldShowHealthReconnectCard = true
-            actionMessage = AppCopy.Cabin.healthReconnectPrompt
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                showStepReadRetryPrompt()
+            } else {
+                showHealthReconnectPrompt()
+            }
             await refresh()
         }
     }
@@ -186,24 +248,23 @@ final class CabinViewModel: ObservableObject {
 
         if environment.stepSnapshot.steps != nil {
             shouldShowHealthReconnectCard = false
+            shouldShowStepReadRetryCard = false
             await refresh()
             return
         }
 
         healthAuthorizationStatus = environment.stepSnapshot.status
         guard environment.stepSnapshot.status.canAttemptStepRead else {
-            shouldShowHealthReconnectCard = true
+            showHealthReconnectPrompt()
             await refresh()
             return
         }
 
         shouldShowHealthReconnectCard = false
+        shouldShowStepReadRetryCard = false
         isAutoReadingSteps = true
         actionMessage = AppCopy.Cabin.readingStepsButton
         await refresh()
-        defer {
-            isAutoReadingSteps = false
-        }
 
         let didReadOnFirstAttempt: Bool
         do {
@@ -220,14 +281,15 @@ final class CabinViewModel: ObservableObject {
                 _ = try await environment.readTodaySteps()
             } catch {
                 healthDebugLog("Cabin ensureTodayStepsLoaded second read failed=\(error.localizedDescription)")
-                shouldShowHealthReconnectCard = true
+                showStepReadRetryPrompt()
             }
         }
 
         if environment.stepSnapshot.steps == nil {
-            shouldShowHealthReconnectCard = true
+            showStepReadRetryPrompt()
         }
 
+        isAutoReadingSteps = false
         healthDebugLog("Cabin ensureTodayStepsLoaded end status=\(environment.stepSnapshot.status) steps=\(String(describing: environment.stepSnapshot.steps)) reconnect=\(shouldShowHealthReconnectCard)")
         await refresh()
     }
@@ -274,7 +336,7 @@ final class CabinViewModel: ObservableObject {
             )
 
             guard eligibility.isEligible else {
-                actionMessage = eligibility.message
+                actionMessage = steps > 0 ? eligibility.message : AppCopy.Cabin.healthSyncPending
                 await refresh()
                 return
             }
@@ -289,7 +351,11 @@ final class CabinViewModel: ObservableObject {
                 isFirstImmediateTicket: false
             )
         } catch {
-            actionMessage = AppCopy.Cabin.stepReadFailed
+            if environment.stepSnapshot.status.canAttemptStepRead {
+                showStepReadRetryPrompt()
+            } else {
+                showHealthReconnectPrompt()
+            }
             await refresh()
         }
     }
@@ -381,8 +447,7 @@ final class CabinViewModel: ObservableObject {
             TicketGiftAnimalOption(
                 animalId: animal.id,
                 animalName: animal.name,
-                assetName: animal.homeAssetName,
-                destination: environment.repository.activeWish(for: animal.id)?.destination ?? "远方"
+                assetName: animal.homeAssetName
             )
         }
     }
@@ -395,6 +460,20 @@ final class CabinViewModel: ObservableObject {
             actionMessage == AppCopy.Cabin.healthRequestFailed ||
             actionMessage == AppCopy.Cabin.healthReadPermissionRequested ||
             actionMessage == AppCopy.Cabin.healthReconnectPrompt ||
-            actionMessage == AppCopy.Cabin.readingStepsButton
+            actionMessage == AppCopy.Cabin.stepReadFailed ||
+            actionMessage == AppCopy.Cabin.readingStepsButton ||
+            actionMessage == AppCopy.Cabin.healthSyncPending
+    }
+
+    private func showHealthReconnectPrompt() {
+        shouldShowHealthReconnectCard = true
+        shouldShowStepReadRetryCard = false
+        actionMessage = AppCopy.Cabin.healthReconnectPrompt
+    }
+
+    private func showStepReadRetryPrompt() {
+        shouldShowHealthReconnectCard = false
+        shouldShowStepReadRetryCard = true
+        actionMessage = AppCopy.Cabin.stepReadFailed
     }
 }

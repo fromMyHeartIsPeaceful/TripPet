@@ -1,0 +1,26 @@
+{
+  "asset_name": "butterfly_mailbox_perched",
+  "call_id": "ig_0a76161a2952b6b9016a3f82a743f48191a25e5b56237e19c9",
+  "line_number": "built-in-generated-file",
+  "source_generated_png": "/Users/qianyu/.codex/generated_images/019f0804-2cf2-72d2-a59c-560d3cb04c64/ig_0a76161a2952b6b9016a3f82a743f48191a25e5b56237e19c9.png",
+  "raw_png": "butterfly_mailbox_perched.raw.png",
+  "source_png": "butterfly_mailbox_perched.png",
+  "xcasset_png": "../../Assets.xcassets/Decorations/butterfly_mailbox_perched.imageset/butterfly_mailbox_perched@3x.png",
+  "width": 1254,
+  "height": 1254,
+  "raw_byte_count": 2112775,
+  "source_byte_count": 1696083,
+  "xcasset_byte_count": 182456,
+  "raw_sha256": "84d172873d12e8ba83c2ec38d0194c2ffb69de21a0bd8163255897b0ca5ab687",
+  "sha256": "fad2200fbfa1e38a32e7e49ffbd301d4b80e257373e7e3066ac7278baffd0547",
+  "xcasset_sha256": "325ebe271b49f3c4499f203db119117dc0c999cd1fc64d70309049053687d934",
+  "background_removal": {
+    "method": "chroma_key",
+    "tool": "/Users/qianyu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+    "key_color": "#f902fa",
+    "transparent_pixels": 945972,
+    "partial_alpha_pixels": 7452,
+    "total_pixels": 1572516
+  },
+  "revised_prompt": "Use case: illustration-story\nAsset type: TripPet iOS mailbox page decorative cutout, perched butterfly that will sit on top of a cream rural mailbox and flap via SwiftUI transform animation\nPrimary request: Create one prominent, opaque butterfly illustration designed as a game/app art asset. The butterfly is perched/resting on a mailbox, wings open and slightly raised as if ready to flap. It must read clearly at small mobile size.\nSubject: a single friendly butterfly with a small fuzzy body, visible antennae, bold readable wing silhouette, wings angled in a gentle three-quarter view. Make the butterfly body and wings visually solid and opaque, not translucent, not see-through, no glassy or ghostly effect.\nStyle/medium: warm hand-painted watercolor plus colored-pencil texture matching a cozy travel-pet storybook app, with crisp inked edges and polished mobile game asset readability.\nComposition/framing: centered full subject, generous padding, square image. Pose suitable for sitting on the curved top of a mailbox; the lower body should feel like it can touch/rest on a surface. Wings should be open enough to animate by subtle rotation/scale.\nLighting/mood: warm late-afternoon sunlight, cheerful, lively, inviting.\nColor palette: more saturated and prominent than the mailbox background: teal blue wing fields, honey yellow and warm coral accents, dark sage/sepia outlines, cream highlights. Avoid pale washed-out low-opacity colors.\nMaterials/textures: hand-painted paper texture inside the butterfly only; crisp dark outline and solid paint coverage.\nBackground: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform #ff00ff color with no shadows, gradients, texture, reflections, floor plane, or lighting variation.\nConstraints: The butterfly itself must be fully opaque and non-transparent. Do not use #ff00ff anywhere in the butterfly. No cast shadow, no contact shadow, no reflection, no props, no text, no watermark. Crisp subject edges separated from the background.\nAvoid: translucent wings, faded watercolor wash, low contrast, tiny unreadable details, realistic photo style, extra flowers, mailbox, envelope, animals, people, text."
+}

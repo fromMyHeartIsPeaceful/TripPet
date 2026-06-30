@@ -1,0 +1,15 @@
+{
+  "asset_name": "map_travel_count_sign",
+  "call_id": "ig_09137a2c0f88775e016a40ba5b3e4c81918bde4911463b63dd",
+  "line_number": 74,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/qianyu/.codex/sessions/2026/06/28/rollout-2026-06-28T14-06-00-019f0cd5-b553-7e21-a359-9dd5440f4edc.jsonl",
+  "generated_path": "/Users/qianyu/.codex/generated_images/019f0cd5-b553-7e21-a359-9dd5440f4edc/ig_09137a2c0f88775e016a40ba5b3e4c81918bde4911463b63dd.png",
+  "raw_png": "map_travel_count_sign.raw.png",
+  "width": 2149,
+  "height": 732,
+  "has_alpha": false,
+  "byte_count": 2268002,
+  "sha256": "0ad86174d8a6e844bfb4f7cf31ecbc565ed77d9b46ce5ce8252af8e1f5a0bd60",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS Earth page travel count container image, replacement for a wooden sign, final asset will be resized to exactly 2149 x 732 px and keyed to transparent background.\nPrimary request: Create one wide rounded capsule-shaped placement container for text, suitable for floating in a watercolor outer-space scene. It should feel like a moonstone / frosted celestial placard, not a wooden sign.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal; uniform color only, no shadows, no gradients, no texture, no floor plane.\nSubject: a single horizontal rounded rectangle/capsule panel with handmade watercolor edges. Center area must be pale ivory, pearl, or faint moonlit blue so dark olive text will be readable. Border can use soft midnight blue, muted violet, silver, and tiny golden star speckles. Add subtle hand-painted craters, comet-dust strokes, and star-map line accents around the rim only.\nStyle/medium: cozy TripPet storybook watercolor plus colored-pencil linework, polished mobile game UI art, soft paper texture inside the object.\nComposition/framing: very wide banner aspect ratio matching 2149:732, full object visible with generous padding, centered, symmetric enough to work as a reusable UI container. Leave a clean blank text-safe zone across the central 60 percent.\nText: none.\nConstraints: no text, no labels, no Chinese, no letters, no numbers, no watermark, no wood grain, no tree leaves, no branches, no paper scroll, no UI mockup, no animals, no people, no red annotation marks. Do not use #00ff00 anywhere in the subject. Crisp edges separated from the chroma background."
+}

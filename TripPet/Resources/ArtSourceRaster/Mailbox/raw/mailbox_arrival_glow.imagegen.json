@@ -1,0 +1,24 @@
+{
+  "asset_name": "mailbox_arrival_glow",
+  "call_id": "019f07d5-b159-78b3-9371-570e2e7779aa",
+  "line_number": 1,
+  "created_at": "2026-06-27",
+  "generator": "built-in image_gen",
+  "generated_dir": "/Users/qianyu/.codex/generated_images/019f07d5-b159-78b3-9371-570e2e7779aa",
+  "generated_file": "/Users/qianyu/.codex/generated_images/019f07d5-b159-78b3-9371-570e2e7779aa/ig_0856ce988a5ce750016a3f94145ec481918e00c872ccd19f48.png",
+  "raw_png": "mailbox_arrival_glow.raw.png",
+  "source_png": "../mailbox_arrival_glow.png",
+  "xcasset_png": "../../../Assets.xcassets/Envelopes/mailbox_arrival_glow.imageset/mailbox_arrival_glow@3x.png",
+  "dimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "width": 1254,
+  "height": 1254,
+  "byte_count": 1799432,
+  "sha256": "e68a7c52c71c5c00f60bee04a0d4336b1af2543b00714071b1aff4a3a307ab5d",
+  "alpha_required": false,
+  "compositing": "Use with SwiftUI blendMode(.screen) so the pure black background disappears over the mailbox scene.",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: mobile game UI overlay asset for a watercolor forest mailbox scene\nPrimary request: Create a standalone golden radial glow overlay on a perfectly pure black background. The glow should feel like warm sunlight and magical mail arrival light radiating from a mailbox, with a bright warm-gold center, many soft irregular watercolor light rays spreading outward in all directions, subtle dust-like sparkles, and feathered edges. The visual should be painterly and organic, not geometric, not a hard ring, not neon, and not a UI icon.\nComposition: square image, centered glow, rays extending broadly but fading into black at the edges. Strongest light at center, medium rays around it, fine sparkles near center and lower area.\nBackground: absolute solid black (#000000) for screen blend compositing. No gradients or texture in the background except the glow itself.\nAvoid: no mailbox, no objects, no text, no labels, no border, no frame, no arrows, no UI button, no hard circles, no lens flare artifacts, no colored rainbow flare, no visible white rectangle.",
+  "prompt": "Use case: stylized-concept\nAsset type: mobile game UI overlay asset for a watercolor forest mailbox scene\nPrimary request: Create a standalone golden radial glow overlay on a perfectly pure black background. The glow should feel like warm sunlight and magical mail arrival light radiating from a mailbox, with a bright warm-gold center, many soft irregular watercolor light rays spreading outward in all directions, subtle dust-like sparkles, and feathered edges. The visual should be painterly and organic, not geometric, not a hard ring, not neon, and not a UI icon.\nComposition: square image, centered glow, rays extending broadly but fading into black at the edges. Strongest light at center, medium rays around it, fine sparkles near center and lower area.\nBackground: absolute solid black (#000000) for screen blend compositing. No gradients or texture in the background except the glow itself.\nAvoid: no mailbox, no objects, no text, no labels, no border, no frame, no arrows, no UI button, no hard circles, no lens flare artifacts, no colored rainbow flare, no visible white rectangle."
+}

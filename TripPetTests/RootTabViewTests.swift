@@ -19,12 +19,184 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(RootTabView.unreadMailboxBadgeCount(in: [postcard]), 0)
     }
 
+    func testRootBottomTabOrderIncludesAchievementsBetweenCabinAndMailbox() {
+        XCTAssertEqual(RootTabView.bottomTabOrder, [.cabin, .achievements, .mailbox, .map])
+        XCTAssertEqual(
+            RootTabView.bottomTabOrder.map { tab in
+                switch tab {
+                case .cabin:
+                    AppCopy.Tabs.cabin
+                case .achievements:
+                    AppCopy.Tabs.achievements
+                case .mailbox:
+                    AppCopy.Tabs.mailbox
+                case .map:
+                    AppCopy.Tabs.map
+                }
+            },
+            ["小屋", "成就", "邮箱", "地球"]
+        )
+    }
+
+    func testRootTabPrewarmsOnlyMapAfterInitialCabinLoad() {
+        XCTAssertEqual(RootTabView.initialRetainedTabs, [.cabin])
+        XCTAssertEqual(RootTabView.deferredPrewarmTabs, [.map])
+        XCTAssertFalse(RootTabView.deferredPrewarmTabs.contains(.achievements))
+        XCTAssertFalse(RootTabView.deferredPrewarmTabs.contains(.mailbox))
+    }
+
+    func testMailboxViewModelOpeningStackDoesNotMarkPostcardRead() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: [postcard])
+
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+        XCTAssertNil(viewModel.selectedPostcard)
+        XCTAssertFalse(postcard.isRead)
+    }
+
+    func testMailboxViewModelMarksOpenedStackReadWhenClosingOverlay() {
+        let first = makePostcard(id: "first", isRead: false)
+        let second = makePostcard(id: "second", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [first, second]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        viewModel.closeStack(repository: repository)
+
+        XCTAssertTrue(repository.postcards.allSatisfy { $0.isRead })
+        XCTAssertFalse(viewModel.isStackPresented)
+        XCTAssertTrue(viewModel.openedStackPostcardIds.isEmpty)
+        XCTAssertEqual(viewModel.stackIndex, 0)
+    }
+
+    func testMailboxViewModelDoesNotMarkPostcardReadWhenShowingUnreadStackDetail() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [postcard]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        XCTAssertFalse(repository.postcards[0].isRead)
+
+        viewModel.showUnreadStackDetail(repository.postcards[0])
+
+        XCTAssertEqual(viewModel.selectedPostcard?.id, "unread")
+        XCTAssertEqual(viewModel.selectedPostcardSource, .unreadStack)
+        XCTAssertEqual(viewModel.pendingReadPostcardId, "unread")
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+    }
+
+    func testMailboxViewModelMarksPostcardReadWhenUnreadDetailDismisses() {
+        let postcard = makePostcard(id: "unread", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [postcard]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        viewModel.showUnreadStackDetail(repository.postcards[0])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertTrue(repository.postcards[0].isRead)
+        XCTAssertFalse(viewModel.isStackPresented)
+        XCTAssertTrue(viewModel.openedStackPostcardIds.isEmpty)
+        XCTAssertNil(viewModel.selectedPostcard)
+        XCTAssertNil(viewModel.selectedPostcardSource)
+        XCTAssertNil(viewModel.pendingReadPostcardId)
+    }
+
+    func testMailboxViewModelKeepsUnreadStackAfterReadingOneOfManyPostcards() {
+        let first = makePostcard(id: "first", isRead: false)
+        let second = makePostcard(id: "second", isRead: false)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [first, second]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: repository.postcards)
+        viewModel.showNextPostcard(count: repository.postcards.count)
+        viewModel.showUnreadStackDetail(repository.postcards[1])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertTrue(repository.postcards[1].isRead)
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["first"])
+        XCTAssertEqual(viewModel.stackIndex, 0)
+    }
+
+    func testMailboxViewModelHistoryDetailDismissDoesNotMarkUnreadPostcardRead() {
+        let unread = makePostcard(id: "unread", isRead: false)
+        let read = makePostcard(id: "read", isRead: true)
+        let repository = AppRepository(
+            seed: SeedData(
+                animals: [],
+                travelWishes: [],
+                trips: [],
+                postcards: [unread, read]
+            )
+        )
+        let viewModel = MailboxViewModel()
+
+        viewModel.openStack(with: [repository.postcards[0]])
+        viewModel.showHistoryDetail(repository.postcards[1])
+        viewModel.settleSelectedPostcardDismissal(repository: repository)
+
+        XCTAssertFalse(repository.postcards[0].isRead)
+        XCTAssertTrue(repository.postcards[1].isRead)
+        XCTAssertTrue(viewModel.isStackPresented)
+        XCTAssertEqual(viewModel.openedStackPostcardIds, ["unread"])
+    }
+
     func testPostcardNotificationPayloadRoutesToMailboxTab() {
         XCTAssertEqual(
             PostcardNotificationService.targetTab(from: ["target": "mailbox", "postcardId": "postcard-1"]),
             .mailbox
         )
         XCTAssertNil(PostcardNotificationService.targetTab(from: ["target": "cabin"]))
+    }
+
+    func testNotificationResponseQueuesMailboxRouteBeforeReturning() async {
+        let notificationService = PostcardNotificationService()
+        var handledTabs: [AppTab] = []
+        notificationService.tabRequestHandler = { tab in
+            handledTabs.append(tab)
+        }
+
+        await notificationService.routeNotificationResponse(
+            userInfo: ["target": "mailbox", "postcardId": "postcard-1"],
+            actionIdentifier: "default"
+        )
+
+        XCTAssertEqual(notificationService.requestedTab, .mailbox)
+        XCTAssertEqual(handledTabs, [.mailbox])
     }
 
     func testLaunchPolicySkipsLaunchStoryWithoutBackgroundTimestamp() {
@@ -125,12 +297,27 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(postcard.titleSenderNameFallback, "小动物")
     }
 
+    func testDefaultGlobeOrientationCentersCottage() {
+        XCTAssertEqual(GlobeCoordinate.cottage.latitude, -20, accuracy: 0.001)
+        XCTAssertEqual(GlobeCoordinate.cottage.longitude, -150, accuracy: 0.001)
+        XCTAssertEqual(
+            GlobeOrientation.defaultReadable.centerLatitude,
+            GlobeCoordinate.cottage.latitude,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            GlobeOrientation.defaultReadable.centerLongitude,
+            GlobeCoordinate.cottage.longitude,
+            accuracy: 0.001
+        )
+    }
+
     func testGlobeProjectionPlacesCenteredCoordinateAtCircleCenter() {
         let center = CGPoint(x: 120, y: 90)
         let projection = GlobeProjection(
             center: center,
             radius: 60,
-            orientation: GlobeOrientation(centerLatitude: 30, centerLongitude: 112)
+            orientation: .cottageCentered
         )
 
         let projected = projection.project(.cottage)
@@ -224,7 +411,7 @@ final class RootTabViewTests: XCTestCase {
     }
 
     func testGlobeOrientationSceneKitTransformFacesCenteredCoordinateForward() {
-        let orientation = GlobeOrientation(centerLatitude: 30, centerLongitude: 112)
+        let orientation = GlobeOrientation.cottageCentered
         let vector = GlobeVector(coordinate: .cottage)
         let transformed = orientation.sceneKitTransform * SIMD4(Float(vector.x), Float(vector.y), Float(vector.z), 1)
 
@@ -258,6 +445,36 @@ final class RootTabViewTests: XCTestCase {
         XCTAssertEqual(route.travelProgress(at: Date(timeIntervalSince1970: 500)), 0)
         XCTAssertEqual(route.travelProgress(at: Date(timeIntervalSince1970: 1_500)), 0.5, accuracy: 0.001)
         XCTAssertEqual(route.travelProgress(at: Date(timeIntervalSince1970: 2_500)), 1)
+    }
+
+    func testTravelCountdownShowsArrivingSoonWhenDue() {
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 0), "即将到达")
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: -12), "即将到达")
+    }
+
+    func testTravelCountdownFormatsMinutes() {
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 1), "1分钟")
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 59 * 60), "59分钟")
+    }
+
+    func testTravelCountdownFormatsHoursAndMinutes() {
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 60 * 60), "1小时0分钟")
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: (2 * 60 * 60) + (14 * 60)), "2小时14分钟")
+    }
+
+    func testTravelCountdownFormatsDaysAndHours() {
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: 24 * 60 * 60), "1天0小时")
+        XCTAssertEqual(TravelCountdownFormatter.timeString(remaining: (2 * 24 * 60 * 60) + (5 * 60 * 60)), "2天5小时")
+    }
+
+    func testTravelCountdownUsesExpectedReturnDate() {
+        let now = Date(timeIntervalSince1970: 1_000)
+        let expectedReturnAt = now.addingTimeInterval((3 * 60 * 60) + (21 * 60))
+
+        XCTAssertEqual(
+            TravelCountdownFormatter.timeString(until: expectedReturnAt, now: now),
+            "3小时21分钟"
+        )
     }
 
     func testDestinationCoordinateUsesLegacyFallback() {

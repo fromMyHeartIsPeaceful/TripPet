@@ -4,6 +4,7 @@ import simd
 
 struct WorldMapView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @State private var selectedTravelRoute: TravelGlobeRoute?
     var isActive: Bool = true
 
     var body: some View {
@@ -23,7 +24,13 @@ struct WorldMapView: View {
                     Spacer()
                         .frame(height: topReserve)
 
-                    TravelGlobeView(routes: globeRoutes, isActive: isActive)
+                    TravelGlobeView(
+                        routes: globeRoutes,
+                        isActive: isActive,
+                        onSelectRoute: { route in
+                            selectedTravelRoute = route
+                        }
+                    )
                         .frame(width: globeDiameter, height: globeDiameter)
                         .accessibilityLabel(accessibilitySummary)
 
@@ -38,6 +45,11 @@ struct WorldMapView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationBarHidden(true)
+        .sheet(item: $selectedTravelRoute) { route in
+            TravelCountdownSheet(route: route)
+                .presentationDetents([.height(300)])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     private var activeTravelAnimalCount: Int {
@@ -121,6 +133,7 @@ private struct MapCosmicBackground: View {
 struct TravelGlobeView: View {
     let routes: [TravelGlobeRoute]
     var isActive: Bool = true
+    var onSelectRoute: (TravelGlobeRoute) -> Void = { _ in }
 
     @State private var orientation = GlobeOrientation.defaultReadable
     fileprivate static let visibleGlobeRadiusRatio: CGFloat = 0.475
@@ -138,13 +151,25 @@ struct TravelGlobeView: View {
                     routeLayer(projection: projection, date: timeline.date)
                         .allowsHitTesting(false)
                     markerLayer(projection: projection, date: timeline.date)
-                        .allowsHitTesting(false)
+                        .allowsHitTesting(isActive)
                 }
                 .frame(width: diameter, height: diameter)
                 .contentShape(Circle())
                 .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
             }
         }
+        .onAppear {
+            resetToCottageCenterIfNeeded()
+        }
+        .onChange(of: isActive) { _, newValue in
+            guard newValue else { return }
+            resetToCottageCenterIfNeeded()
+        }
+    }
+
+    private func resetToCottageCenterIfNeeded() {
+        guard orientation != .cottageCentered else { return }
+        orientation = .cottageCentered
     }
 
     private func globeSurface(diameter: CGFloat) -> some View {
@@ -169,10 +194,10 @@ struct TravelGlobeView: View {
                         segments[index].dropFirst().forEach { path.addLine(to: $0) }
                     }
                     .stroke(
-                        route.tint.opacity(0.92),
+                        route.tint.opacity(0.60),
                         style: StrokeStyle(lineWidth: 2.7, lineCap: .round, lineJoin: .round, dash: [7, 6])
                     )
-                    .shadow(color: route.tint.opacity(0.30), radius: 5, x: 0, y: 2)
+                    .shadow(color: route.tint.opacity(0.16), radius: 5, x: 0, y: 2)
                 }
             }
         }
@@ -184,23 +209,22 @@ struct TravelGlobeView: View {
         ZStack {
             if let cottagePoint = projection.project(.cottage), cottagePoint.isVisible {
                 CottageMarker()
+                    .allowsHitTesting(false)
                     .position(cottagePoint.point)
             }
 
             ForEach(routes) { route in
-                if let planeCoordinate = route.coordinate(at: date),
-                   let projectedPlane = projection.project(planeCoordinate),
-                   projectedPlane.isVisible {
-                    PaperPlaneMarker(tint: route.tint)
-                        .rotationEffect(.degrees(route.planeAngle(at: date, projection: projection)))
-                        .position(projectedPlane.point)
-                        .opacity(0.92)
-                }
-
                 if let destinationPoint = projection.project(route.destinationCoordinate),
                    destinationPoint.isVisible {
-                    AnimalDestinationMarker(route: route)
-                        .position(destinationPoint.point)
+                    Button {
+                        onSelectRoute(route)
+                    } label: {
+                        AnimalDestinationMarker(route: route)
+                    }
+                    .buttonStyle(.plain)
+                    .contentShape(Circle())
+                    .accessibilityLabel("查看\(route.animalName)回家倒计时")
+                    .position(destinationPoint.point)
                 }
             }
         }
@@ -482,16 +506,110 @@ private struct AnimalDestinationMarker: View {
         ZStack {
             Circle()
                 .fill(AppTheme.paperWhite.opacity(0.96))
-                .frame(width: 54, height: 54)
-                .overlay(Circle().stroke(route.tint.opacity(0.9), lineWidth: 2))
-                .shadow(color: AppTheme.oliveInk.opacity(0.22), radius: 10, x: 0, y: 5)
+                .frame(width: 46, height: 46)
+                .overlay(Circle().stroke(AppTheme.ochre.opacity(0.55), lineWidth: 1.5))
+                .shadow(color: AppTheme.oliveInk.opacity(0.14), radius: 7, x: 0, y: 4)
 
             ArtImage(name: route.animalAssetName)
-                .frame(width: 38, height: 38)
+                .frame(width: 42, height: 42)
                 .clipShape(Circle())
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(route.animalName)正在前往\(route.destination)")
+    }
+}
+
+private struct TravelCountdownSheet: View {
+    let route: TravelGlobeRoute
+
+    var body: some View {
+        TimelineView(.periodic(from: Date(), by: 60)) { timeline in
+            let remainingText = TravelCountdownFormatter.timeString(
+                until: route.expectedReturnAt,
+                now: timeline.date
+            )
+
+            VStack(spacing: 18) {
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.paperWhite)
+                        .frame(width: 78, height: 78)
+                        .overlay(Circle().stroke(route.tint.opacity(0.85), lineWidth: 2))
+                        .shadow(color: AppTheme.oliveInk.opacity(0.12), radius: 10, x: 0, y: 5)
+
+                    ArtImage(name: route.animalAssetName)
+                        .frame(width: 58, height: 58)
+                        .clipShape(Circle())
+                }
+
+                VStack(spacing: 8) {
+                    Text(returnHomeText(remainingText: remainingText))
+                        .font(.system(size: 24, weight: .heavy, design: .rounded))
+                        .foregroundStyle(AppTheme.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.66)
+
+                    Text("目的地：\(route.destination)")
+                        .font(AppTheme.body)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+
+                    Text("预计到达：\(TravelCountdownFormatter.arrivalTimeString(for: route.expectedReturnAt))")
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk.opacity(0.86))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                }
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 26)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(PaperBackground())
+        }
+    }
+
+    private func returnHomeText(remainingText: String) -> String {
+        if remainingText == TravelCountdownFormatter.arrivingSoonText {
+            return "\(route.animalName)即将回家"
+        }
+
+        return "\(route.animalName)还有\(remainingText)回家"
+    }
+}
+
+enum TravelCountdownFormatter {
+    static let arrivingSoonText = "即将到达"
+
+    static func timeString(until expectedReturnAt: Date, now: Date) -> String {
+        timeString(remaining: expectedReturnAt.timeIntervalSince(now))
+    }
+
+    static func timeString(remaining: TimeInterval) -> String {
+        guard remaining > 0 else { return arrivingSoonText }
+
+        let totalMinutes = max(1, Int(ceil(remaining / 60)))
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+
+        if totalMinutes < 60 {
+            return "\(totalMinutes)分钟"
+        }
+
+        if totalMinutes < 1_440 {
+            return "\(hours)小时\(minutes)分钟"
+        }
+
+        let days = totalMinutes / 1_440
+        let remainingHours = (totalMinutes % 1_440) / 60
+        return "\(days)天\(remainingHours)小时"
+    }
+
+    static func arrivalTimeString(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.dateFormat = "M月d日 HH:mm"
+        return formatter.string(from: date)
     }
 }
 
@@ -594,7 +712,11 @@ struct GlobeOrientation: Equatable {
     private(set) var up: GlobeVector
     private(set) var forward: GlobeVector
 
-    static let defaultReadable = GlobeOrientation(centerLatitude: 18, centerLongitude: 56)
+    static let cottageCentered = GlobeOrientation(
+        centerLatitude: GlobeCoordinate.cottage.latitude,
+        centerLongitude: GlobeCoordinate.cottage.longitude
+    )
+    static let defaultReadable = cottageCentered
 
     init(centerLatitude: Double, centerLongitude: Double) {
         let forward = GlobeVector(coordinate: GlobeCoordinate(latitude: centerLatitude, longitude: centerLongitude))
@@ -687,7 +809,7 @@ struct GlobeCoordinate: Equatable {
     let latitude: Double
     let longitude: Double
 
-    static let cottage = GlobeCoordinate(latitude: 30.0, longitude: 112.0)
+    static let cottage = GlobeCoordinate(latitude: -20.0, longitude: -150.0)
 
     static func coordinate(
         for destinationId: String,

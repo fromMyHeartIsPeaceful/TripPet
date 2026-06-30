@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_postcards_tier_002",
+  "call_id": "ig_0dbe74738003aaa3016a3e1db536548197a3ee951b6f5a8d6d",
+  "line_number": 94,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_postcards_tier_002.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2312300,
+  "sha256": "e2250a77a29a95c5583f23b9e11eb63932c1c108d17c5bd6666759769304963a",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, app-facing raster asset\nPrimary request: Create one standalone watercolor travel journal achievement medal for the second postcards tier. It should be clearer and more visually prominent than the first postcards medal, with strong contrast against the pale paper base.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation.\nSubject: circular paper medal base with handmade scalloped edge, delicate pencil outline, gentle cream paper texture, watercolor washes. Center elements: two overlapping peach and cream postcards, a dusty blue postage stamp shape without symbols or text, circular postmark rings, flowing mail route waves, and small sage leaves. No animals and no people.\nStyle/medium: soft watercolor travel scrapbook, hand-painted, low-saturation TripPet palette, delicate pencil linework, cozy polished mobile game collectible.\nComposition/framing: centered single medal, full object visible, generous padding around medal, square composition, readable at small 62pt UI size. Postcards and stamp should have clear outlines and stronger color contrast than the pale base.\nColor palette: warm cream paper base, peach postcards, dusty blue stamp, muted sage leaves, ochre dots; avoid pure #00ff00 anywhere in the subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese text, no labels, no watermark, no cast shadow, no contact shadow, no reflection. Do not create multiple medals; exactly one medal only. Keep subject fully separated from the flat green background with crisp edges."
+}

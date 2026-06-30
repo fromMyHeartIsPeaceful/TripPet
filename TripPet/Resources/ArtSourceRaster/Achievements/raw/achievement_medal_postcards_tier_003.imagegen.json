@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_postcards_tier_003",
+  "call_id": "ig_0dbe74738003aaa3016a3e1e0efd6c8197aa87ee99356e24fc",
+  "line_number": 96,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_postcards_tier_003.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2383085,
+  "sha256": "011937aa7a8ab27ea31707fc0dd301138370356cddbf114be241f4fd3f56c7b4",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, app-facing raster asset\nPrimary request: Create one standalone watercolor travel journal achievement medal for the third postcards tier. It should be richer and more ceremonial than tier two, with clear contrast against the pale paper medal base and excellent small UI readability.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation.\nSubject: circular paper medal base with handmade scalloped edge, delicate pencil outline, gentle cream paper texture, watercolor washes. Center elements: a sealed peach envelope, layered postcards, two dusty blue postage stamps without symbols or text, bold circular postmark rings, flowing mail route waves, tiny stars and sage leaves. No animals and no people.\nStyle/medium: soft watercolor travel scrapbook, hand-painted, low-saturation TripPet palette, delicate pencil linework, cozy polished mobile game collectible.\nComposition/framing: centered single medal, full object visible, generous padding around medal, square composition, readable at small 62pt UI size. Envelope, stamps, and postmark rings should be crisp and darker than the pale medal base.\nColor palette: warm cream paper base, peach envelope, dusty blue stamps and postmark lines, muted sage leaves, ochre stars; avoid pure #00ff00 anywhere in the subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese text, no labels, no watermark, no cast shadow, no contact shadow, no reflection. Do not create multiple medals; exactly one medal only. Keep subject fully separated from the flat green background with crisp edges."
+}

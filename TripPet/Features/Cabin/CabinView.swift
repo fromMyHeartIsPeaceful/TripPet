@@ -35,12 +35,21 @@ struct BottomChromeMetrics: Equatable {
     }
 }
 
+struct CabinSceneAnimalDisplayPolicy {
+    static func displayedAnimals(current: [Animal], heldDuringDeparture: [Animal]?) -> [Animal] {
+        heldDuringDeparture ?? current
+    }
+}
+
 struct CabinView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
     @StateObject private var viewModel = CabinViewModel()
     @State private var queuedDepartureTransitionContext: DepartureTransitionContext?
-    var onDepartureTransitionReady: (DepartureTransitionContext) -> Void = { _ in }
+    @State private var heldCabinAnimalsDuringDeparture: [Animal]?
+    var onDepartureTransitionReady: (DepartureTransitionContext, @escaping () -> Void) -> Void = { _, releaseRefreshHold in
+        releaseRefreshHold()
+    }
 
     var body: some View {
         NavigationStack {
@@ -74,7 +83,11 @@ struct CabinView: View {
                     viewModel.finishGiftFlow()
                     if let context = queuedDepartureTransitionContext {
                         queuedDepartureTransitionContext = nil
-                        onDepartureTransitionReady(context)
+                        onDepartureTransitionReady(context) {
+                            heldCabinAnimalsDuringDeparture = nil
+                        }
+                    } else {
+                        heldCabinAnimalsDuringDeparture = nil
                     }
                 }
             ) { confirmation in
@@ -84,11 +97,19 @@ struct CabinView: View {
                     confirmedAnimalName: viewModel.confirmedGiftTrip.map { environment.repository.animalName(for: $0.animalId) },
                     confirmedAnimalAssetName: confirmedAnimalAssetName(for: viewModel.confirmedGiftTrip),
                     isWorking: viewModel.isWorking,
+                    onPreloadAnimalVideo: { animalId in
+                        DepartureTransitionPlaybackPreloader.shared.preloadVideo(for: animalId)
+                    },
                     onConfirm: { animalId in
+                        heldCabinAnimalsDuringDeparture = environment.repository.cabinAnimals
                         Task {
                             if let trip = await viewModel.confirmGiftTodaySteps(animalId: animalId) {
-                                queuedDepartureTransitionContext = departureContext(for: trip)
+                                let context = departureContext(for: trip)
+                                DepartureTransitionPlaybackPreloader.shared.preloadVideo(for: context.animalId)
+                                queuedDepartureTransitionContext = context
                                 viewModel.finishGiftFlow()
+                            } else {
+                                heldCabinAnimalsDuringDeparture = nil
                             }
                         }
                     },
@@ -96,6 +117,7 @@ struct CabinView: View {
                         viewModel.finishGiftFlow()
                     },
                     onCancel: {
+                        heldCabinAnimalsDuringDeparture = nil
                         viewModel.cancelGiftConfirmation()
                     }
                 )
@@ -107,9 +129,11 @@ struct CabinView: View {
 
     private func fullscreenDayCabinScene(animalGroupLiftRatio: CGFloat) -> some View {
         GeometryReader { proxy in
+            let sceneAnimals = displayedCabinAnimals
+
             CabinSceneView(
-                animals: environment.repository.cabinAnimals,
-                isEmpty: environment.repository.cabinAnimals.isEmpty,
+                animals: sceneAnimals,
+                isEmpty: sceneAnimals.isEmpty,
                 cabinAssetName: cabinHouseAssetName,
                 cabinContentMode: .fill,
                 layoutProfile: CabinAnimalLayout.fullscreenDayRoom,
@@ -132,9 +156,11 @@ struct CabinView: View {
             let sceneHeight = sceneWidth * cabinSceneImageHeightMultiplier
 
             VStack(spacing: 0) {
+                let sceneAnimals = displayedCabinAnimals
+
                 CabinSceneView(
-                    animals: environment.repository.cabinAnimals,
-                    isEmpty: environment.repository.isCabinEmpty || environment.repository.hasReachedDailyAnimalLimit,
+                    animals: sceneAnimals,
+                    isEmpty: sceneAnimals.isEmpty || environment.repository.hasReachedDailyAnimalLimit,
                     cabinAssetName: cabinHouseAssetName,
                     layoutProfile: CabinAnimalLayout.nightCutawayRoom,
                     preservesAspectRatio: false
@@ -186,6 +212,13 @@ struct CabinView: View {
         isSystemDark ? "cabin_room_day_night_window_clean_rug" : "cabin_room_day_fullscreen"
     }
 
+    private var displayedCabinAnimals: [Animal] {
+        CabinSceneAnimalDisplayPolicy.displayedAnimals(
+            current: environment.repository.cabinAnimals,
+            heldDuringDeparture: heldCabinAnimalsDuringDeparture
+        )
+    }
+
     private func confirmedAnimalAssetName(for trip: Trip?) -> String? {
         guard let trip else { return nil }
         return environment.repository.animal(for: trip.animalId)?.travelMarkerAssetName ?? "animal_visitor_unknown"
@@ -210,13 +243,26 @@ struct CabinView: View {
                 .foregroundStyle(AppTheme.ink)
                 .lineLimit(1)
 
-            StepCounterView(
-                value: viewModel.availableStepsForDisplay,
-                limit: environment.ticketRuleEngine.requiredStepsPerTicket,
-                fontSize: 24
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
-            .frame(maxWidth: .infinity)
+            switch viewModel.stepCounterPresentation {
+            case .counter(let value):
+                StepCounterView(
+                    value: value,
+                    limit: environment.ticketRuleEngine.requiredStepsPerTicket,
+                    fontSize: 24
+                )
+                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity)
+            case .message(let text):
+                Text(text)
+                    .font(.system(size: 17, weight: .heavy, design: .rounded))
+                    .foregroundStyle(AppTheme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.74)
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel(text)
+            case .hidden:
+                EmptyView()
+            }
 
             if let giftedStepsSummaryText = viewModel.giftedStepsSummaryText {
                 Text(giftedStepsSummaryText)
@@ -250,7 +296,7 @@ struct CabinView: View {
                 .font(.system(size: 13))
                 .foregroundStyle(AppTheme.secondaryInk)
 
-                if viewModel.requiresHealthConnection {
+                if viewModel.shouldShowHealthActionCard {
                     Text(viewModel.actionMessage)
                         .font(AppTheme.caption)
                         .foregroundStyle(AppTheme.secondaryInk)
@@ -305,12 +351,15 @@ struct CabinView: View {
         if viewModel.isAutoReadingSteps {
             return AppCopy.Cabin.readingStepsButton
         }
-        return viewModel.requiresHealthConnection ? AppCopy.Cabin.reconnectButton : AppCopy.Cabin.giftButton
+        if viewModel.shouldShowStepReadRetryCard || viewModel.healthAuthorizationStatus.canAttemptStepRead {
+            return AppCopy.Cabin.retryStepReadButton
+        }
+        return viewModel.shouldShowHealthActionCard ? AppCopy.Cabin.reconnectButton : AppCopy.Cabin.giftButton
     }
 
     private var isPrimaryButtonDisabled: Bool {
         if viewModel.isWorking || viewModel.isAutoReadingSteps { return true }
-        if viewModel.requiresHealthConnection { return false }
+        if viewModel.shouldShowHealthActionCard { return false }
         return environment.repository.cabinAnimals.isEmpty
     }
 }
@@ -461,6 +510,7 @@ private struct TicketGiftConfirmationView: View {
     let confirmedAnimalName: String?
     let confirmedAnimalAssetName: String?
     var isWorking: Bool
+    var onPreloadAnimalVideo: (String) -> Void = { _ in }
     var onConfirm: (String) -> Void
     var onDone: () -> Void
     var onCancel: () -> Void
@@ -479,7 +529,11 @@ private struct TicketGiftConfirmationView: View {
             }
         }
         .onAppear {
-            selectedAnimalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId
+            let initialAnimalId = selectedAnimalId ?? confirmation.animalOptions.first?.animalId
+            selectedAnimalId = initialAnimalId
+            if let initialAnimalId {
+                onPreloadAnimalVideo(initialAnimalId)
+            }
         }
         .animation(.easeOut(duration: 0.22), value: confirmedTrip?.id)
     }
@@ -567,6 +621,7 @@ private struct TicketGiftConfirmationView: View {
 
         return Button {
             selectedAnimalId = option.animalId
+            onPreloadAnimalVideo(option.animalId)
         } label: {
             VStack(spacing: 6) {
                 ArtImage(name: option.assetName)
@@ -577,14 +632,8 @@ private struct TicketGiftConfirmationView: View {
                     .foregroundStyle(AppTheme.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-
-                Text(option.destination)
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(AppTheme.secondaryInk)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
             }
-            .frame(width: 82, height: 100)
+            .frame(width: 82, height: 86)
             .background(isSelected ? AppTheme.sage.opacity(0.18) : AppTheme.paperWhite.opacity(0.36))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(
@@ -593,7 +642,7 @@ private struct TicketGiftConfirmationView: View {
             )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(option.animalName)，想去\(option.destination)")
+        .accessibilityLabel(option.animalName)
     }
 }
 

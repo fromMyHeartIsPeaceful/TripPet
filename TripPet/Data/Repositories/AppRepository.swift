@@ -19,6 +19,7 @@ final class AppRepository: ObservableObject {
     private let randomDestinationIndex: (Int) -> Int
     private let maxDailyAnimalDepartures = 3
     private let maxCabinAnimals = 9
+    private static let minimumDestinationSpacingDegrees = 12.0
     private static let defaultInitialCabinAnimalId = "moji_cat"
 
     init(
@@ -180,6 +181,7 @@ final class AppRepository: ObservableObject {
             date: date,
             sourceSteps: sourceSteps,
             ticketCount: ticketCount,
+            animalId: animal.id,
             giftedAt: date
         )
         tickets.append(ticket)
@@ -477,7 +479,9 @@ final class AppRepository: ObservableObject {
 
     private func departureWish(for animalId: String, on date: Date) -> TravelWish? {
         guard var wish = activeWish(for: animalId) else { return nil }
-        guard isDestinationOccupied(wish.destinationId, excludingAnimalId: animalId) else {
+        let needsReplacement = isDestinationOccupied(wish.destinationId, excludingAnimalId: animalId) ||
+            isDestinationTooCloseToActiveTrips(wish.destinationId, excludingAnimalId: animalId)
+        guard needsReplacement else {
             return wish
         }
         guard let replacement = randomAvailableDestination(excludingAnimalId: animalId) else {
@@ -502,8 +506,19 @@ final class AppRepository: ObservableObject {
             return nil
         }
 
-        let selectedIndex = randomDestinationIndex(availableDestinations.count)
-        return availableDestinations[availableDestinations.indices.contains(selectedIndex) ? selectedIndex : 0]
+        let activeCoordinates = activeTripDestinationCoordinates(excludingAnimalId: animalId)
+        let spacedDestinations = availableDestinations.filter {
+            isDestination($0, farEnoughFrom: activeCoordinates)
+        }
+        let candidateDestinations = spacedDestinations.isEmpty ?
+            farthestAvailableDestinations(from: availableDestinations, activeCoordinates: activeCoordinates) :
+            spacedDestinations
+        guard candidateDestinations.isEmpty == false else {
+            return nil
+        }
+
+        let selectedIndex = randomDestinationIndex(candidateDestinations.count)
+        return candidateDestinations[candidateDestinations.indices.contains(selectedIndex) ? selectedIndex : 0]
     }
 
     private func isDestinationOccupied(_ destinationId: String, excludingAnimalId animalId: String? = nil) -> Bool {
@@ -512,6 +527,77 @@ final class AppRepository: ObservableObject {
                 $0.destinationId == destinationId &&
                 $0.animalId != animalId
         }
+    }
+
+    private func isDestinationTooCloseToActiveTrips(_ destinationId: String, excludingAnimalId animalId: String? = nil) -> Bool {
+        guard let coordinate = destinationCoordinate(for: destinationId) else {
+            return false
+        }
+
+        return activeTripDestinationCoordinates(excludingAnimalId: animalId).contains {
+            coordinate.angularDistanceDegrees(to: $0) < Self.minimumDestinationSpacingDegrees
+        }
+    }
+
+    private func isDestination(
+        _ destination: ManifestDestination,
+        farEnoughFrom activeCoordinates: [DestinationCoordinate]
+    ) -> Bool {
+        guard activeCoordinates.isEmpty == false else {
+            return true
+        }
+        guard let coordinate = destinationCoordinate(for: destination.id) else {
+            return false
+        }
+
+        return activeCoordinates.allSatisfy {
+            coordinate.angularDistanceDegrees(to: $0) >= Self.minimumDestinationSpacingDegrees
+        }
+    }
+
+    private func farthestAvailableDestinations(
+        from availableDestinations: [ManifestDestination],
+        activeCoordinates: [DestinationCoordinate]
+    ) -> [ManifestDestination] {
+        guard activeCoordinates.isEmpty == false else {
+            return availableDestinations
+        }
+
+        let rankedDestinations = availableDestinations.compactMap { destination -> (destination: ManifestDestination, distance: Double)? in
+            guard let coordinate = destinationCoordinate(for: destination.id),
+                  let nearestDistance = activeCoordinates.map({ coordinate.angularDistanceDegrees(to: $0) }).min() else {
+                return nil
+            }
+
+            return (destination, nearestDistance)
+        }
+        guard let farthestDistance = rankedDestinations.map(\.distance).max() else {
+            return availableDestinations
+        }
+
+        return rankedDestinations
+            .filter { abs($0.distance - farthestDistance) < 0.000001 }
+            .map(\.destination)
+    }
+
+    private func activeTripDestinationCoordinates(excludingAnimalId animalId: String? = nil) -> [DestinationCoordinate] {
+        trips.compactMap { trip in
+            guard (trip.status == .preparing || trip.status == .traveling),
+                  trip.animalId != animalId else {
+                return nil
+            }
+
+            return destinationCoordinate(for: trip.destinationId)
+        }
+    }
+
+    private func destinationCoordinate(for destinationId: String) -> DestinationCoordinate? {
+        if let destination = destinations.first(where: { $0.id == destinationId }),
+           let coordinate = DestinationCoordinate(destination: destination) {
+            return coordinate
+        }
+
+        return DestinationCoordinate.legacyCoordinate(for: destinationId)
     }
 
     private func appendReturnedAnimalIfNeeded(_: String, on date: Date) {
@@ -603,5 +689,59 @@ final class AppRepository: ObservableObject {
             return normalizedAnimalId
         }
         return migratedCabinLodging
+    }
+}
+
+private struct DestinationCoordinate {
+    let latitude: Double
+    let longitude: Double
+
+    init(latitude: Double, longitude: Double) {
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+
+    init?(destination: ManifestDestination) {
+        guard let latitude = destination.latitude,
+              let longitude = destination.longitude else {
+            return nil
+        }
+
+        self.init(latitude: latitude, longitude: longitude)
+    }
+
+    static func legacyCoordinate(for destinationId: String) -> DestinationCoordinate? {
+        switch destinationId {
+        case "paris":
+            return DestinationCoordinate(latitude: 48.8566, longitude: 2.3522)
+        case "iceland":
+            return DestinationCoordinate(latitude: 64.1466, longitude: -21.9426)
+        case "lisbon":
+            return DestinationCoordinate(latitude: 38.7223, longitude: -9.1393)
+        default:
+            return nil
+        }
+    }
+
+    func angularDistanceDegrees(to other: DestinationCoordinate) -> Double {
+        let firstLatitude = latitude.radians
+        let secondLatitude = other.latitude.radians
+        let latitudeDelta = (other.latitude - latitude).radians
+        let longitudeDelta = (other.longitude - longitude).radians
+        let haversine = pow(sin(latitudeDelta / 2), 2) +
+            cos(firstLatitude) * cos(secondLatitude) * pow(sin(longitudeDelta / 2), 2)
+        let clampedHaversine = min(max(haversine, 0), 1)
+        let angle = 2 * atan2(sqrt(clampedHaversine), sqrt(1 - clampedHaversine))
+        return angle.degrees
+    }
+}
+
+private extension Double {
+    var radians: Double {
+        self * .pi / 180
+    }
+
+    var degrees: Double {
+        self * 180 / .pi
     }
 }

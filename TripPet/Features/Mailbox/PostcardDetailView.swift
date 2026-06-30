@@ -3,7 +3,6 @@ import SwiftUI
 struct PostcardDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var environment: AppEnvironment
-    @State private var isHandlingReturn = false
     let postcard: Postcard
 
     var body: some View {
@@ -30,13 +29,7 @@ struct PostcardDetailView: View {
     private var header: some View {
         HStack {
             Button {
-                guard isHandlingReturn == false else { return }
-                isHandlingReturn = true
                 dismiss()
-                Task {
-                    await Task.yield()
-                    await environment.requestNotificationAuthorizationOnPostcardReturn(postcard)
-                }
             } label: {
                 HStack(spacing: 6) {
                     ArtImage(name: "icon_back", isDecorative: false)
@@ -46,7 +39,6 @@ struct PostcardDetailView: View {
                 }
             }
             .buttonStyle(OutlineButtonStyle())
-            .disabled(isHandlingReturn)
             .accessibilityLabel("返回邮箱")
             Spacer()
         }
@@ -75,18 +67,19 @@ struct PostcardDetailView: View {
     }
 }
 
-private struct PostcardArtwork: View {
+struct PostcardArtwork: View {
     let postcard: Postcard
     let senderName: String
     let animalId: String?
     let destination: ManifestDestination?
+    var showsShadow: Bool = true
 
     var body: some View {
         GeometryReader { geometry in
             let size = geometry.size
 
             ZStack {
-                ArtImage(name: "postcard_base_portrait", contentMode: .fill, cornerRadius: 24, showsShadow: true)
+                ArtImage(name: "postcard_base_portrait", contentMode: .fill, cornerRadius: 24, showsShadow: showsShadow)
                     .frame(width: size.width, height: size.height)
                     .clipped()
 

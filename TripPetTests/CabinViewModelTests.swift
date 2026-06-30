@@ -1,5 +1,9 @@
 import XCTest
 @testable import TripPet
+import AVFoundation
+#if canImport(HealthKit)
+import HealthKit
+#endif
 
 @MainActor
 final class CabinViewModelTests: XCTestCase {
@@ -39,8 +43,8 @@ final class CabinViewModelTests: XCTestCase {
             "moji_cat": (CGPoint(x: 0.500, y: 0.452), 0.126),
             "dengdeng_rabbit": (CGPoint(x: 0.749, y: 0.458), 0.120),
             "tangyuan_puppy": (CGPoint(x: 0.125, y: 0.615), 0.120),
-            "xiaolu_guinea_pig": (CGPoint(x: 0.365, y: 0.635), 0.114),
-            "bear_visitor": (CGPoint(x: 0.635, y: 0.635), 0.120),
+            "xiaolu_guinea_pig": (CGPoint(x: 0.365, y: 0.620), 0.114),
+            "bear_visitor": (CGPoint(x: 0.635, y: 0.627), 0.120),
             "deer_visitor": (CGPoint(x: 0.875, y: 0.646), 0.124),
             "fox_visitor": (CGPoint(x: 0.260, y: 0.700), 0.138),
             "feifei_parrot": (CGPoint(x: 0.740, y: 0.700), 0.116)
@@ -160,9 +164,42 @@ final class CabinViewModelTests: XCTestCase {
         }
     }
 
-    func testDepartureCardTransitionMaskIsStrongEnoughToFocusHome() {
-        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.50)
-        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.56)
+    func testDepartureCardTransitionMaskIsGentlerButStillFocusesHome() {
+        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.40)
+        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.44)
+    }
+
+    func testDepartureCardTransitionDoesNotHoldPlaybackAfterCardSettles() {
+        XCTAssertLessThanOrEqual(DepartureCardTransitionTiming.playbackStartDelay, 200_000_000)
+        XCTAssertGreaterThanOrEqual(DepartureCardTransitionTiming.minimumPlaybackTimeBeforeReveal, 0.10)
+    }
+
+    func testDepartureTransitionCatalogVideosExistAndHavePositiveDuration() {
+        XCTAssertFalse(DepartureTransitionCatalog.expectedVideos.isEmpty)
+
+        for video in DepartureTransitionCatalog.expectedVideos {
+            let url = DepartureTransitionCatalog.videoURL(for: video)
+            XCTAssertNotNil(url, "Missing departure transition video \(video.filename)")
+            XCTAssertGreaterThan(video.duration, 0, "Catalog duration must be positive for \(video.filename)")
+
+            if let url {
+                let asset = AVURLAsset(url: url)
+                XCTAssertTrue(asset.isPlayable, "Departure transition video must be playable: \(video.filename)")
+                let videoTracks = asset.tracks(withMediaType: .video)
+                XCTAssertFalse(videoTracks.isEmpty, "Departure transition video must include a video track: \(video.filename)")
+
+                if let videoTrack = videoTracks.first {
+                    let transformedSize = videoTrack.naturalSize.applying(videoTrack.preferredTransform)
+                    let shortSide = min(abs(transformedSize.width), abs(transformedSize.height))
+                    let longSide = max(abs(transformedSize.width), abs(transformedSize.height))
+
+                    XCTAssertLessThanOrEqual(shortSide, 720.0, "Departure transition video short side should stay at or below 720px: \(video.filename)")
+                    XCTAssertLessThanOrEqual(longSide, 1280.0, "Departure transition video long side should stay at or below 1280px: \(video.filename)")
+                    XCTAssertGreaterThan(videoTrack.nominalFrameRate, 0, "Departure transition video should report a positive frame rate: \(video.filename)")
+                    XCTAssertLessThanOrEqual(videoTrack.nominalFrameRate, 24.1, "Departure transition video frame rate should stay at or below 24fps: \(video.filename)")
+                }
+            }
+        }
     }
 
     func testCabinAnimalLayoutKeepsRemainingCanonicalAnimalsInFixedSlots() {
@@ -200,6 +237,37 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertFalse(sceneAnimals.map(\.id).contains("moji_cat"))
         XCTAssertFalse(placements.map { $0.animal.id }.contains("moji_cat"))
         XCTAssertEqual(placements.count, 8)
+    }
+
+    func testCabinSceneAnimalDisplayPolicyHoldsPreDepartureAnimalsUntilReleased() {
+        let repository = AppRepository(seed: .preview, randomDestinationIndex: { _ in 0 })
+        let heldAnimals = repository.cabinAnimals
+
+        _ = repository.giftTicket(
+            sourceSteps: 0,
+            ticketCount: 1,
+            animalId: "moji_cat",
+            isFirstImmediateTicket: true
+        )
+
+        let refreshedAnimals = repository.cabinAnimals
+
+        XCTAssertEqual(heldAnimals.map(\.id), ["moji_cat"])
+        XCTAssertFalse(refreshedAnimals.map(\.id).contains("moji_cat"))
+        XCTAssertEqual(
+            CabinSceneAnimalDisplayPolicy.displayedAnimals(
+                current: refreshedAnimals,
+                heldDuringDeparture: heldAnimals
+            ).map(\.id),
+            heldAnimals.map(\.id)
+        )
+        XCTAssertEqual(
+            CabinSceneAnimalDisplayPolicy.displayedAnimals(
+                current: refreshedAnimals,
+                heldDuringDeparture: nil
+            ).map(\.id),
+            refreshedAnimals.map(\.id)
+        )
     }
 
     func testCabinAnimalAnimationsMapEveryCanonicalAnimalToGif() {
@@ -252,8 +320,99 @@ final class CabinViewModelTests: XCTestCase {
         await environment.refreshStepsIfPossible()
 
         XCTAssertEqual(viewModel.availableStepsForDisplay, 5_000)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(5_000))
         XCTAssertTrue(viewModel.canGiftAvailableSteps)
         XCTAssertNil(viewModel.giftedStepsSummaryText)
+    }
+
+    func testStepCounterPresentationShowsSyncPendingForNilReadableSteps() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 4_321)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+
+        XCTAssertNil(environment.stepSnapshot.steps)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .message(AppCopy.Cabin.healthSyncPending))
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthSyncPending)
+    }
+
+    func testStepCounterPresentationHidesWhenHealthCannotAttemptStepRead() async {
+        let environment = AppEnvironment.preview(
+            flags: AppUserFlags(onboardingCompleted: true, healthGuideDismissed: true, firstImmediateTicketGifted: true),
+            stepStatus: .notDetermined,
+            steps: 0
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+
+        XCTAssertEqual(viewModel.stepCounterPresentation, .hidden)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthReconnectPrompt)
+    }
+
+    func testHealthKitStepQueryResolutionTreatsAllNoDataAsZeroSteps() {
+        let steps = HealthKitStepCountProvider.resolvedStepCount(from: [
+            .noData,
+            .noData,
+            .noData
+        ])
+
+        XCTAssertEqual(steps, 0)
+    }
+
+    #if canImport(HealthKit)
+    func testHealthKitNoDataErrorMapsToNoDataResult() {
+        let noDataError = NSError(
+            domain: HKErrorDomain,
+            code: HKError.Code.errorNoData.rawValue
+        )
+        let unrelatedHealthError = NSError(
+            domain: HKErrorDomain,
+            code: HKError.Code.errorAuthorizationDenied.rawValue
+        )
+
+        XCTAssertEqual(HealthKitStepCountProvider.noDataQueryResultIfApplicable(for: noDataError), .noData)
+        XCTAssertNil(HealthKitStepCountProvider.noDataQueryResultIfApplicable(for: unrelatedHealthError))
+    }
+    #endif
+
+    func testHealthKitStepQueryResolutionUsesFirstAvailableFallbackSteps() {
+        let steps = HealthKitStepCountProvider.resolvedStepCount(from: [
+            .noData,
+            .steps(1_234),
+            .steps(4_321)
+        ])
+
+        XCTAssertEqual(steps, 1_234)
+    }
+
+    func testHealthKitStepCountNormalizationFloorsAndClamps() {
+        XCTAssertEqual(HealthKitStepCountProvider.normalizedStepCount(12.9), 12)
+        XCTAssertEqual(HealthKitStepCountProvider.normalizedStepCount(0), 0)
+        XCTAssertEqual(HealthKitStepCountProvider.normalizedStepCount(-4.2), 0)
     }
 
     func testFirstImmediateTicketIsGiftableWithoutReadingHealthSteps() async {
@@ -268,6 +427,7 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertFalse(viewModel.requiresHealthConnection)
         XCTAssertEqual(viewModel.availableStepsForDisplay, 3_000)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(3_000))
         XCTAssertTrue(viewModel.canGiftAvailableSteps)
 
         await viewModel.prepareGiftConfirmation()
@@ -320,6 +480,7 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertNotNil(trip)
         XCTAssertEqual(environment.stepSnapshot.steps, 4_200)
         XCTAssertEqual(viewModel.availableStepsForDisplay, 4_200)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(4_200))
         XCTAssertFalse(viewModel.requiresHealthConnection)
     }
 
@@ -638,7 +799,12 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(environment.stepSnapshot.status, .sharingAuthorized)
         XCTAssertNil(environment.stepSnapshot.steps)
         XCTAssertEqual(viewModel.stepStatusText, "Health 已连接")
-        XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertTrue(viewModel.shouldShowStepReadRetryCard)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertTrue(viewModel.shouldShowHealthActionCard)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.stepReadFailed)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .hidden)
         XCTAssertFalse(viewModel.actionMessage.contains("失败"))
     }
 
@@ -745,6 +911,7 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(stepProvider.stepReadCount, 1)
         XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
         XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(4_321))
     }
 
     func testEnsureTodayStepsLoadedRetriesOnceAfterInitialReadFailure() async {
@@ -785,9 +952,10 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(stepProvider.stepReadCount, 2)
         XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
         XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(3_210))
     }
 
-    func testEnsureTodayStepsLoadedShowsReconnectAfterTwoReadFailures() async {
+    func testEnsureTodayStepsLoadedShowsStepReadRetryAfterTwoReadFailures() async {
         let seed = SeedData.preview
         let stepProvider = CountingStepProvider(
             status: .readPermissionRequested,
@@ -823,9 +991,12 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertNil(environment.stepSnapshot.steps)
         XCTAssertEqual(stepProvider.stepReadCount, 2)
-        XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
-        XCTAssertTrue(viewModel.requiresHealthConnection)
-        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthReconnectPrompt)
+        XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertTrue(viewModel.shouldShowStepReadRetryCard)
+        XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertTrue(viewModel.shouldShowHealthActionCard)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.stepReadFailed)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .hidden)
     }
 
     func testEnsureTodayStepsLoadedShowsReconnectWhenUnauthorized() async {
@@ -859,7 +1030,11 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertNil(environment.stepSnapshot.steps)
         XCTAssertEqual(stepProvider.stepReadCount, 0)
         XCTAssertTrue(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.shouldShowStepReadRetryCard)
         XCTAssertTrue(viewModel.requiresHealthConnection)
+        XCTAssertTrue(viewModel.shouldShowHealthActionCard)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthReconnectPrompt)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .hidden)
     }
 
     func testEnsureTodayStepsLoadedTreatsZeroStepsAsSuccessfulRead() async {
@@ -893,8 +1068,48 @@ final class CabinViewModelTests: XCTestCase {
         XCTAssertEqual(environment.stepSnapshot.steps, 0)
         XCTAssertEqual(stepProvider.stepReadCount, 1)
         XCTAssertFalse(viewModel.shouldShowHealthReconnectCard)
+        XCTAssertFalse(viewModel.shouldShowStepReadRetryCard)
         XCTAssertFalse(viewModel.requiresHealthConnection)
+        XCTAssertFalse(viewModel.shouldShowHealthActionCard)
         XCTAssertEqual(viewModel.availableStepsForDisplay, 0)
+        XCTAssertEqual(viewModel.stepCounterPresentation, .message(AppCopy.Cabin.healthSyncPending))
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthSyncPending)
+        XCTAssertFalse(viewModel.actionMessage.contains("0 步"))
+    }
+
+    func testPrepareGiftConfirmationShowsSyncPendingInsteadOfZeroStepMessageWhenReadableStepsAreZero() async {
+        let seed = SeedData.preview
+        let stepProvider = CountingStepProvider(status: .readPermissionRequested, steps: 0)
+        let environment = AppEnvironment(
+            repository: AppRepository(
+                seed: seed,
+                store: InMemoryUserStateStore(
+                    savedState: AppUserState(
+                        seed: seed,
+                        flags: AppUserFlags(
+                            onboardingCompleted: true,
+                            healthGuideDismissed: true,
+                            firstImmediateTicketGifted: true
+                        )
+                    )
+                )
+            ),
+            stepCountProvider: stepProvider,
+            ticketRuleEngine: TicketRuleEngine(),
+            animalVisitService: AnimalVisitService(),
+            postcardScheduler: PostcardScheduler(),
+            destinations: seed.destinations
+        )
+        let viewModel = CabinViewModel()
+
+        viewModel.bind(environment: environment)
+        await viewModel.refresh()
+        await viewModel.prepareGiftConfirmation()
+
+        XCTAssertNil(viewModel.pendingGiftConfirmation)
+        XCTAssertEqual(environment.stepSnapshot.steps, 0)
+        XCTAssertEqual(viewModel.actionMessage, AppCopy.Cabin.healthSyncPending)
+        XCTAssertFalse(viewModel.actionMessage.contains("0 步"))
     }
 
     func testReadPermissionRequestedPreservesStepReadMessage() async {
@@ -911,6 +1126,7 @@ final class CabinViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.stepStatusText, "Health 已请求")
         XCTAssertTrue(viewModel.actionMessage.contains("2999 步"))
+        XCTAssertEqual(viewModel.stepCounterPresentation, .counter(2_999))
     }
 }
 

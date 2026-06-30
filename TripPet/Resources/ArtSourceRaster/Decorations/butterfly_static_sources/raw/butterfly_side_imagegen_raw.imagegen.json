@@ -1,0 +1,27 @@
+{
+  "asset_role": "butterfly_side_static_chroma_source",
+  "tool": "built-in image_gen",
+  "created_for": "image-to-video source still for later frame extraction",
+  "created_date": "2026-06-27",
+  "generated_source_path": "/Users/qianyu/.codex/generated_images/019f097f-3171-7f01-ac0b-2d27e1663501/ig_031a40b8c6220dac016a3fdf8bb4bc8191a465323a31285f17.png",
+  "raw_path": "/Users/qianyu/Documents/Trip/TripPet/Resources/ArtSourceRaster/Decorations/butterfly_static_sources/raw/butterfly_side_imagegen_raw.png",
+  "cleaned_path": "/Users/qianyu/Documents/Trip/TripPet/Resources/ArtSourceRaster/Decorations/butterfly_static_sources/cleaned/butterfly_side_static_chroma.png",
+  "raw_dimensions": {
+    "width": 941,
+    "height": 1672
+  },
+  "cleaned_dimensions": {
+    "width": 720,
+    "height": 1280
+  },
+  "key_color": "#d15394",
+  "background_processing": "edge-connected pink background pixels replaced with exact key color, then resized to 720x1280",
+  "background_pixel_coverage_before_resize": 0.758438,
+  "raw_byte_count": 1596377,
+  "raw_sha256": "70d5bc5e1414a89eff622ec458179a42d02e218504de0d635fe9fc84b9170e2b",
+  "cleaned_byte_count": 511699,
+  "cleaned_sha256": "16378e4e085b5e043136a31c82e6369bb17f9925336658851896202f8681e1c7",
+  "call_id": null,
+  "call_id_note": "The built-in image_gen tool did not expose a call id in this desktop session; generated_source_path and sha256 are recorded instead.",
+  "revised_prompt": "Use case: stylized-concept; Asset type: TripPet butterfly side-profile static source for image-to-video frame extraction; using the visible butterfly reference and newly generated front butterfly as style references; exact left-facing side profile, folded upright wings, pale celadon/seafoam and ivory markings, hand-painted watercolor and colored-pencil style, portrait 9:16, isolated on flat #d15394 chroma-key background, no text, no watermark."
+}

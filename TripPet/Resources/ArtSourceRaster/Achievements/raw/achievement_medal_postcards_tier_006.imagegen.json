@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_postcards_tier_006",
+  "call_id": "ig_05638d59f5f7bd3a016a3e4c140b2481909108f7071bb1e69c",
+  "line_number": 1271,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_postcards_tier_006.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2183324,
+  "sha256": "48552205a620901f3448fed54d4913ee5816c3e4f521ac92eb1ecb9fd5c3d425",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, transparent PNG source after chroma-key removal\nAsset name: achievement_medal_postcards_tier_006\nPrimary request: Create one standalone watercolor travel journal achievement medal for the sixth postcards tier, loyal correspondence theme.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal; uniform color only, no shadows, gradients, texture, floor plane, or lighting variation.\nSubject: circular cream paper medal base with handmade scalloped edge, delicate pencil outline and watercolor texture. Center elements: tied bundle of blank postcards, ribbon bow, tiny envelope, dusty blue blank stamp shapes, circular postmark rings, flowing mail route waves, sage leaves. No people, no animals.\nStyle/medium: cozy TripPet watercolor scrapbook collectible, low-saturation with clear contrast, hand-painted, fine pencil linework.\nComposition/framing: exactly one centered medal, full object visible, generous padding, square composition, readable at small UI size.\nColor palette: ivory base, peach postcards, dusty blue stamps, muted sage leaves, warm ochre ribbon, coral dots. Avoid pure #00ff00 in subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese, no labels, no address lines, no watermark, no cast shadow, no reflection, do not create multiple medals."
+}

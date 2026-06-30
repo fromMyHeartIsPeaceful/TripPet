@@ -1,0 +1,14 @@
+{
+  "asset_name": "achievement_medal_postcards_tier_008",
+  "call_id": "ig_05638d59f5f7bd3a016a3e4d744b888190921bd3e1b0d04908",
+  "line_number": 1276,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T14-22-51-019f0298-6a61-7580-8c63-722889f4b8fa.jsonl",
+  "raw_png": "achievement_medal_postcards_tier_008.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2209938,
+  "sha256": "0f4fac308583090dae106c6290533e9583e632ad87e2e37a700b6df4624b638f",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art, transparent PNG source after chroma-key removal\nAsset name: achievement_medal_postcards_tier_008\nPrimary request: Create one standalone watercolor travel journal achievement medal for the eighth postcards tier, galaxy-sized affection as abstract mail journey, no literal text.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal; uniform color only, no shadows, gradients, texture, floor plane, or lighting variation.\nSubject: circular cream paper medal base with handmade scalloped edge, pencil outline and watercolor texture. Center elements: blank postcards floating around a small starry mail route swirl, envelope, dusty blue blank stamp shapes, postmark rings, tiny stars and sage leaves. No people, no animals.\nStyle/medium: cozy TripPet watercolor scrapbook collectible, hand-painted, low-saturation with clear contrast, fine pencil linework.\nComposition/framing: exactly one centered medal, full object visible, generous padding, square composition, readable at small UI size.\nColor palette: ivory base, peach postcards, dusty blue stamps and route swirl, warm ochre envelope, muted sage leaves, pale gold stars, coral dots. Avoid pure #00ff00 in subject.\nText: none.\nConstraints: no letters, no numbers, no Chinese, no labels, no address lines, no watermark, no cast shadow, no reflection, do not create multiple medals."
+}

@@ -10,6 +10,7 @@ final class AppRepositoryTripTests: XCTestCase {
         repository.giftTicket(sourceSteps: 4_200, ticketCount: 1, date: giftedAt)
 
         XCTAssertEqual(repository.tickets.count, 1)
+        XCTAssertEqual(repository.tickets.first?.animalId, "cat")
         XCTAssertEqual(repository.trips.count, 1)
         XCTAssertEqual(repository.trips.first?.animalId, "cat")
         XCTAssertEqual(repository.trips.first?.destination, "巴黎")
@@ -298,6 +299,54 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.trips.count, 2)
         XCTAssertNotEqual(repository.trips[0].destinationId, repository.trips[1].destinationId)
         XCTAssertEqual(repository.trips[1].animalId, "primary_2")
+    }
+
+    func testNearbyWaitingWishIsReassignedBeforeDeparture() {
+        let seed = Self.makeMultiAnimalSeed(
+            primaryCount: 2,
+            backupCount: 0,
+            destinationCount: 3,
+            destinationCoordinates: [
+                (latitude: 0, longitude: 0),
+                (latitude: 1, longitude: 1),
+                (latitude: 30, longitude: 0)
+            ],
+            initialWishDestinationIds: ["destination_1", "destination_2"]
+        )
+        let repository = AppRepository(seed: seed, randomDestinationIndex: { _ in 0 })
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+
+        XCTAssertEqual(repository.trips.count, 2)
+        XCTAssertEqual(repository.trips[0].destinationId, "destination_1")
+        XCTAssertEqual(repository.trips[1].destinationId, "destination_3")
+    }
+
+    func testDestinationSpacingFallsBackToFarthestNearbyDestination() {
+        let seed = Self.makeMultiAnimalSeed(
+            primaryCount: 2,
+            backupCount: 0,
+            destinationCount: 3,
+            destinationCoordinates: [
+                (latitude: 0, longitude: 0),
+                (latitude: 1, longitude: 1),
+                (latitude: 5, longitude: 0)
+            ],
+            initialWishDestinationIds: ["destination_1", "destination_2"]
+        )
+        let repository = AppRepository(seed: seed, randomDestinationIndex: { _ in 0 })
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+
+        XCTAssertEqual(repository.trips.count, 2)
+        XCTAssertEqual(repository.trips[0].destinationId, "destination_1")
+        XCTAssertEqual(repository.trips[1].destinationId, "destination_3")
     }
 
     func testGiftReturnsNilWhenNoDestinationIsAvailable() {
@@ -901,7 +950,9 @@ final class AppRepositoryTripTests: XCTestCase {
         primaryCount: Int,
         backupCount: Int,
         destinationCount: Int? = nil,
-        duplicateInitialWishDestination: Bool = false
+        duplicateInitialWishDestination: Bool = false,
+        destinationCoordinates: [(latitude: Double, longitude: Double)]? = nil,
+        initialWishDestinationIds: [String]? = nil
     ) -> SeedData {
         let primaryAnimals = (0..<primaryCount).map { offset in
             let index = offset + 1
@@ -924,6 +975,13 @@ final class AppRepositoryTripTests: XCTestCase {
         let resolvedDestinationCount = destinationCount ?? max(3, primaryCount + backupCount)
         let destinations = (0..<resolvedDestinationCount).map { offset in
             let index = offset + 1
+            let coordinate: (latitude: Double, longitude: Double)?
+            if let destinationCoordinates, destinationCoordinates.indices.contains(offset) {
+                coordinate = destinationCoordinates[offset]
+            } else {
+                coordinate = nil
+            }
+
             return ManifestDestination(
                 id: "destination_\(index)",
                 displayName: "地点\(index)",
@@ -933,21 +991,47 @@ final class AppRepositoryTripTests: XCTestCase {
                 primaryColor: "#D8B36A",
                 postcardTitleTemplate: "{animal}寄来的地点\(index)早安",
                 postcardSubtitle: "旅途中寄来",
-                postcardBodyTemplate: "{animal}在{destination}的街角停了一会儿。"
+                postcardBodyTemplate: "{animal}在{destination}的街角停了一会儿。",
+                latitude: coordinate?.latitude,
+                longitude: coordinate?.longitude
             )
         }
-        let travelWishes = duplicateInitialWishDestination ? primaryAnimals.map { animal in
-            TravelWish(
-                id: "wish_destination_1_\(animal.id)",
-                animalId: animal.id,
-                destinationId: "destination_1",
-                destination: "地点1",
-                destinationAssetName: "destination_paris_line",
-                requiredTickets: 1,
-                status: .waiting,
-                createdAt: date()
-            )
-        } : []
+        let travelWishes: [TravelWish]
+        if let initialWishDestinationIds {
+            travelWishes = primaryAnimals.enumerated().compactMap { offset, animal in
+                guard initialWishDestinationIds.indices.contains(offset) else {
+                    return nil
+                }
+
+                let destinationId = initialWishDestinationIds[offset]
+                let destination = destinations.first { $0.id == destinationId }
+                return TravelWish(
+                    id: "wish_\(destinationId)_\(animal.id)",
+                    animalId: animal.id,
+                    destinationId: destinationId,
+                    destination: destination?.displayName ?? destinationId,
+                    destinationAssetName: destination?.landmarkAssetName ?? "destination_paris_line",
+                    requiredTickets: 1,
+                    status: .waiting,
+                    createdAt: date()
+                )
+            }
+        } else if duplicateInitialWishDestination {
+            travelWishes = primaryAnimals.map { animal in
+                TravelWish(
+                    id: "wish_destination_1_\(animal.id)",
+                    animalId: animal.id,
+                    destinationId: "destination_1",
+                    destination: "地点1",
+                    destinationAssetName: "destination_paris_line",
+                    requiredTickets: 1,
+                    status: .waiting,
+                    createdAt: date()
+                )
+            }
+        } else {
+            travelWishes = []
+        }
 
         return SeedData(
             animals: animals,

@@ -1,0 +1,14 @@
+{
+  "asset_name": "mailbox_forest_cabin_empty",
+  "call_id": "ig_03fa794e81b69b0d016a3e402f877881918fa0233a1a303500",
+  "line_number": 655,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/06/26/rollout-2026-06-26T15-19-39-019f02cc-6b30-7701-aeed-ebacbff5898f.jsonl",
+  "raw_png": "mailbox_forest_cabin_empty.raw.png",
+  "width": 887,
+  "height": 1774,
+  "has_alpha": false,
+  "byte_count": 3002723,
+  "sha256": "a44b70df046b547984b570e6089de28a1af5e3a230e5ae2bb3223fee5d0d159f",
+  "revised_prompt": "Use case: illustration-story\nAsset type: TripPet iOS mailbox page full-screen background, empty mailbox state\nPrimary request: vertical watercolor storybook illustration of a forest cabin front yard with a charming rural mailbox placed naturally near the small cottage entrance, no postcard visible and mailbox flag down/neutral.\nScene/backdrop: cozy wooden forest cabin set back in the midground, winding path, layered forest with clear foreground/midground/background depth, soft atmospheric perspective.\nSubject: cream-colored rounded mailbox in the lower-middle/right foreground, attached to a wooden post beside the front path and cottage fence; mailbox is the clearest focal point.\nStyle/medium: warm hand-painted watercolor, delicate ink linework, matching a gentle mobile game art style.\nComposition/framing: portrait 9:16 mobile background, leave the bottom 18% visually clean and low-detail for app navigation UI; keep important mailbox details above the bottom navigation zone; cabin behind mailbox but slightly softened; trees in far background softened with depth of field.\nLighting/mood: warm late-afternoon sunlight, cozy but not overly bright; cottage window light very subtle and weak.\nColor palette: richer than pale pastel, warm greens, honey wood, cream mailbox, soft golden highlights.\nMaterials/textures: watercolor paper grain, hand-painted foliage, wooden fence and mailbox post, flowers and grass around mailbox kept restrained and not crowded.\nConstraints: no text, no labels, no UI, no characters, no animals, no watermark, no red annotation boxes; bottom 18% clean; mailbox must not sit in the middle of the path, it belongs in front of the cottage near the fence/entrance.\nAvoid: overgrown vegetation around mailbox, washed-out colors, central road-blocking mailbox placement, strong glowing cabin windows, flat background without depth."
+}
