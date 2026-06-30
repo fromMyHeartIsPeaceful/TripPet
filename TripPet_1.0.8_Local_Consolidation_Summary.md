@@ -203,6 +203,48 @@
   - 启动截图：`/Users/qianyu/Documents/Trip/BuildArtifacts/TripPet-1.0.8-map-countdown-appicon-20260630-0743-launch.png`。
 - 当前没有提交 commit，没有 push，没有上传，也没有创建 PR。
 
+## 2026-06-30 旅行 6 枚勋章资源链路收束
+
+### 本次继续不处理
+
+- `TripPet/Resources/ArtSourceRaster/Achievements/candidates/` 仍作为候选素材目录保留，不纳入正式包、不提交。
+- 「补充 iCloud 存储逻辑」继续保持排除，不改持久化/同步架构。
+
+### 本次新增纳入
+
+- `achievement_medal_travel_tier_001` 到 `achievement_medal_travel_tier_006` 的正式资源链路已完整落地：
+  - `raw.png`
+  - `alpha.png`
+  - `imagegen.json`
+  - `source.png`
+  - `.imageset/@3x.png`
+- 6 枚 app-facing PNG 均为 `768x768`、RGBA、透明 alpha。
+- 6 枚 `source.png` 与 `.imageset/@3x.png` 的 SHA-256 均一致。
+- 6 份 provenance 均标记为 `integrated_as_app_asset`。
+- 运行端截图：
+  - `/Users/qianyu/Documents/Trip/VerificationScreenshots/travel_medals_achievements_2026-06-30.png`
+  - `/Users/qianyu/Documents/Trip/VerificationScreenshots/travel_medals_achievements_scroll_2026-06-30.png`
+  - `/Users/qianyu/Documents/Trip/VerificationScreenshots/travel_medals_runtime_2026-06-30.png`
+
+### 验证与打包
+
+- 资源文件校验：
+  - `python3 .codex/skills/art-asset-integration-guard/scripts/verify_asset_files.py --project-root /Users/qianyu/Documents/Trip --require-provenance --asset achievement_medal_travel_tier_001 --asset achievement_medal_travel_tier_002 --asset achievement_medal_travel_tier_003 --asset achievement_medal_travel_tier_004 --asset achievement_medal_travel_tier_005 --asset achievement_medal_travel_tier_006`
+  - 结果：`File-level check complete`。
+- 目标单测：
+  - `xcodebuild test -project TripPet.xcodeproj -scheme TripPet -destination 'platform=iOS Simulator,id=0F39C893-4E39-4C55-BEA7-9F0D221D664D' -derivedDataPath DerivedDataCodex -only-testing:TripPetTests/AchievementEngineTests/testFormalAchievementMedalAssetsExistInBundle`
+  - 结果：`TEST SUCCEEDED`。
+  - 测试结果：`/Users/qianyu/Documents/Trip/DerivedDataCodex/Logs/Test/Test-TripPet-2026.06.30_08-57-37-+0800.xcresult`
+- 真机 Debug build：
+  - `xcodebuild build -project TripPet.xcodeproj -scheme TripPet -configuration Debug -destination 'id=BC67627A-9384-5020-AD2D-51F02D4E8C2C' -derivedDataPath BuildArtifacts/DerivedData-1.0.8-travel-medals-device`
+  - 结果：`BUILD SUCCEEDED`。
+  - 设备：`qianyu`，iPhone 15 Pro Max，device id `BC67627A-9384-5020-AD2D-51F02D4E8C2C`。
+  - 已安装并成功启动 `com.qianyu.TripPet`。
+- 最终真机 Debug 包：
+  - `/Users/qianyu/Documents/Trip/BuildArtifacts/TripPet-1.0.8-travel-medals-20260630-0901-device-debug.app.zip`
+  - Size：`216M`
+  - SHA-256：`4f216f03bf4730d03c39824f68517ffe3dcb23abbe3ae7a653a492d02803bcbc`
+
 ## 2026-06-28 今日项目改动汇总
 
 ### 工作区状态
