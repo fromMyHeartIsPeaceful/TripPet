@@ -46,8 +46,11 @@ final class AppRepository: ObservableObject {
         cabinLodging = Self.migratedCabinLodging(userState.cabinLodging, availableAnimalIds: availableAnimalIds)
         consumedPostcardTextIds = userState.consumedPostcardTextIds
         normalizePendingPostcardPlans()
+        migrateLegacyPostcardBodies()
         if travelWishes != userState.travelWishes ||
             trips != userState.trips ||
+            postcards != userState.postcards ||
+            consumedPostcardTextIds != userState.consumedPostcardTextIds ||
             cabinLodging != userState.cabinLodging {
             saveState()
         }
@@ -277,7 +280,8 @@ final class AppRepository: ObservableObject {
     private static func isFirstAirportPostcard(_ postcard: Postcard) -> Bool {
         postcard.id.hasPrefix("postcard_first_airport_") ||
             postcard.destinationAssetName == "postcard_destination_airport" ||
-            postcard.destinationAssetName == "postcard_airport_first_departure"
+            postcard.destinationAssetName == "postcard_airport_first_departure" ||
+            (postcard.destination == "机场" && postcard.body.contains("我到机场啦"))
     }
 
     @discardableResult
@@ -385,6 +389,50 @@ final class AppRepository: ObservableObject {
             guard trips[index].postcardPlan.isEmpty == false else { continue }
             trips[index].postcardPlan = postcardScheduler.normalizedPostcardPlan(trips[index].postcardPlan)
         }
+    }
+
+    private func migrateLegacyPostcardBodies() {
+        guard postcards.isEmpty == false else { return }
+
+        for index in postcards.indices {
+            let postcard = postcards[index]
+            guard Self.isFirstAirportPostcard(postcard) == false,
+                  PostcardTextLibrary.containsCareBody(postcard.body) == false else {
+                continue
+            }
+
+            let animalKey = migrationAnimalKey(for: postcard)
+            guard let narrative = PostcardTextLibrary.randomEntry(
+                forAnimalKey: animalKey,
+                on: postcard.sentAt,
+                calendar: calendar,
+                excluding: consumedPostcardTextIds,
+                allowConsumedFallback: true
+            ) else {
+                continue
+            }
+
+            postcards[index].body = narrative.body
+            consumedPostcardTextIds.insert(narrative.id)
+        }
+    }
+
+    private func migrationAnimalKey(for postcard: Postcard) -> String {
+        if let trip = trips.first(where: { $0.id == postcard.tripId }),
+           let animal = animals.first(where: { $0.id == trip.animalId }) {
+            return PostcardTextLibrary.animalKey(for: animal)
+        }
+
+        if let animal = animals.first(where: {
+            $0.homeAssetName == postcard.animalAssetName ||
+                $0.selfieAssetName == postcard.animalAssetName ||
+                $0.visitorAssetName == postcard.animalAssetName
+        }) {
+            return PostcardTextLibrary.animalKey(for: animal)
+        }
+
+        return PostcardTextLibrary.animalKey(forAssetName: postcard.animalAssetName) ??
+            PostcardTextLibrary.fallbackAnimalKey
     }
 
     private func makePostcard(

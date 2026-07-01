@@ -212,10 +212,14 @@ final class AchievementEngineTests: XCTestCase {
         XCTAssertEqual(AchievementCategory.allCases.map(\.buttonTitle), ["旅行", "脚步", "明信片"])
     }
 
-    func testFinalStepTierTitleUsesCorrectEarthCopy() {
+    func testFinalStepTierTitleUsesWhiteboardCopy() {
         XCTAssertEqual(
             AchievementEngine.stepTiers.last?.title,
-            "地球说“我是谁呀，我是您脚底的一颗痣而已”"
+            "地球在我脚下"
+        )
+        XCTAssertEqual(
+            AchievementEngine.stepTiers.last?.subtitle,
+            "人在地球上，不就相当于脚下有个巨大的溜溜球？"
         )
     }
 
@@ -354,9 +358,24 @@ final class AchievementEngineTests: XCTestCase {
         let payload = try XCTUnwrap(AchievementMedalSharePolicy.payload(for: collected))
         XCTAssertEqual(payload.title, tier.title)
         XCTAssertEqual(payload.categoryTitle, "旅行勋章")
-        XCTAssertEqual(payload.completionDescription, "完成 1 次旅行即可获得。当前进度：1 / 1。")
+        XCTAssertEqual(payload.requirementDescription, "完成 1 次旅行即可获得")
+        XCTAssertEqual(payload.progressDescription, "当前进度：1/1")
         XCTAssertNil(AchievementMedalSharePolicy.payload(for: inProgress))
         XCTAssertNil(AchievementMedalSharePolicy.payload(for: locked))
+    }
+
+    func testStepMedalSharePayloadUsesGiftedStepsCopyAndCompactProgress() throws {
+        let tier = try XCTUnwrap(AchievementEngine.stepTiers.first)
+        let collected = AchievementMedalProgress(
+            tier: tier,
+            currentValue: tier.threshold,
+            state: .collected
+        )
+
+        let payload = try XCTUnwrap(AchievementMedalSharePolicy.payload(for: collected))
+        XCTAssertEqual(payload.categoryTitle, "脚步勋章")
+        XCTAssertEqual(payload.requirementDescription, "累计赠送3000步即可获得")
+        XCTAssertEqual(payload.progressDescription, "当前进度：3000/3000")
     }
 
     private static let animals = [

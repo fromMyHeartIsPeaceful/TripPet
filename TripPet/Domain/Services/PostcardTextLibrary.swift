@@ -103,17 +103,68 @@ struct PostcardNarrative: Equatable {
 }
 
 enum PostcardTextLibrary {
+    static let fallbackAnimalKey = "xiaoman_hamster"
+
     static func randomEntry(
         for animal: Animal,
         on date: Date,
         calendar: Calendar = .current,
         excluding consumedIds: Set<String>
     ) -> PostcardNarrative? {
-        let key = animalKey(for: animal)
+        randomEntry(
+            forResolvedAnimalKey: animalKey(for: animal),
+            on: date,
+            calendar: calendar,
+            excluding: consumedIds,
+            allowConsumedFallback: false
+        )
+    }
+
+    static func randomEntry(
+        forAnimalKey animalKey: String,
+        on date: Date,
+        calendar: Calendar = .current,
+        excluding consumedIds: Set<String>,
+        allowConsumedFallback: Bool = false
+    ) -> PostcardNarrative? {
+        let resolvedAnimalKey = hasEntries(forAnimalKey: animalKey) ? animalKey : fallbackAnimalKey
+        return randomEntry(
+            forResolvedAnimalKey: resolvedAnimalKey,
+            on: date,
+            calendar: calendar,
+            excluding: consumedIds,
+            allowConsumedFallback: allowConsumedFallback
+        )
+    }
+
+    static func containsCareBody(_ body: String) -> Bool {
+        careBodies.contains(body)
+    }
+
+    static func animalKey(forAssetName assetName: String) -> String? {
+        canonicalAnimalKey(in: assetName)
+    }
+
+    private static func randomEntry(
+        forResolvedAnimalKey animalKey: String,
+        on date: Date,
+        calendar: Calendar,
+        excluding consumedIds: Set<String>,
+        allowConsumedFallback: Bool
+    ) -> PostcardNarrative? {
         let selection = PostcardCareTimeRules.selection(for: date, calendar: calendar)
-        let available = narratives.filter { $0.animalKey == key && consumedIds.contains($0.id) == false }
-        return randomEntry(in: available, categories: selection.preferred) ??
+        let entries = narratives.filter { $0.animalKey == animalKey }
+        let available = entries.filter { consumedIds.contains($0.id) == false }
+        if let entry = randomEntry(in: available, categories: selection.preferred) ??
             randomEntry(in: available, categories: selection.fallback)
+        {
+            return entry
+        }
+
+        guard allowConsumedFallback else { return nil }
+        return randomEntry(in: entries, categories: selection.preferred) ??
+            randomEntry(in: entries, categories: selection.fallback) ??
+            entries.randomElement()
     }
 
     static func randomEntry(for animal: Animal, excluding consumedIds: Set<String>) -> PostcardNarrative? {
@@ -130,40 +181,45 @@ enum PostcardTextLibrary {
     }
 
     static func animalKey(for animal: Animal) -> String {
-        if animal.id == "xiaoman_hamster" || animal.homeAssetName.contains("xiaoman_hamster") {
+        canonicalAnimalKey(in: animal.id) ??
+            canonicalAnimalKey(in: animal.homeAssetName) ??
+            animal.id
+    }
+
+    private static func hasEntries(forAnimalKey animalKey: String) -> Bool {
+        narratives.contains { $0.animalKey == animalKey }
+    }
+
+    private static func canonicalAnimalKey(in value: String) -> String? {
+        let normalizedValue = value.lowercased()
+        if normalizedValue.contains("xiaoman_hamster") {
             return "xiaoman_hamster"
         }
-        if animal.id == "tangyuan_puppy" || animal.homeAssetName.contains("tangyuan_puppy") {
+        if normalizedValue.contains("tangyuan_puppy") {
             return "tangyuan_puppy"
         }
-        if animal.id == "moji_cat" || animal.homeAssetName.contains("moji_cat") {
+        if normalizedValue.contains("moji_cat") {
             return "moji_cat"
         }
-        if animal.id == "dengdeng_rabbit" || animal.homeAssetName.contains("dengdeng_rabbit") {
+        if normalizedValue.contains("dengdeng_rabbit") {
             return "dengdeng_rabbit"
         }
-        if animal.id == "feifei_parrot" || animal.homeAssetName.contains("feifei_parrot") {
+        if normalizedValue.contains("feifei_parrot") {
             return "feifei_parrot"
         }
-        if animal.id == "xiaolu_guinea_pig" || animal.homeAssetName.contains("xiaolu_guinea_pig") {
+        if normalizedValue.contains("xiaolu_guinea_pig") {
             return "xiaolu_guinea_pig"
         }
-        if animal.id == "deer_visitor" ||
-            animal.homeAssetName.contains("deer_visitor") ||
-            animal.homeAssetName.contains("jiujiu_deer") {
+        if normalizedValue.contains("deer_visitor") || normalizedValue.contains("jiujiu_deer") {
             return "deer_visitor"
         }
-        if animal.id == "fox_visitor" ||
-            animal.homeAssetName.contains("fox_visitor") ||
-            animal.homeAssetName.contains("aini_fox") {
+        if normalizedValue.contains("fox_visitor") || normalizedValue.contains("aini_fox") {
             return "fox_visitor"
         }
-        if animal.id == "bear_visitor" ||
-            animal.homeAssetName.contains("bear_visitor") ||
-            animal.homeAssetName.contains("dundun_bear") {
+        if normalizedValue.contains("bear_visitor") || normalizedValue.contains("dundun_bear") {
             return "bear_visitor"
         }
-        return animal.id
+        return nil
     }
 
     // Generated by Tools/generate_postcard_text_library.py from Content/AnimalDatabase/PostcardGreetingCare_1.0_Draft.md.
@@ -1429,4 +1485,6 @@ enum PostcardTextLibrary {
         PostcardNarrative(id: "bear_visitor_care10_14_009", animalKey: "bear_visitor", careCategory: .morningRestart, body: "出门前慢一点。钥匙、水、外套，都确认好。少一点慌张也是照顾。墩墩建议这样，很普通，但很可靠。"),
         PostcardNarrative(id: "bear_visitor_care10_14_010", animalKey: "bear_visitor", careCategory: .morningRestart, body: "早晨给自己一句小话。可以慢慢来。然后从第一件小事开始。这张明信片慢慢说：你可以歇一歇。")
     ]
+
+    private static let careBodies: Set<String> = Set(narratives.map(\.body))
 }

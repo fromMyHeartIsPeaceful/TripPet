@@ -135,8 +135,7 @@ struct DepartureCardTransitionOverlay: View {
                         isVideoReadyForDisplay = true
                     },
                     onPlaybackUnavailable: {
-                        shouldUseStaticFallback = true
-                        isVideoReadyForDisplay = false
+                        useStaticFallback()
                     },
                     onPlaybackComplete: completePlaybackIfNeeded
                 )
@@ -240,7 +239,10 @@ struct DepartureCardTransitionOverlay: View {
             }
 
             try? await Task.sleep(nanoseconds: DepartureCardTransitionTiming.maskEntranceDelay)
-            await waitForVideoReadinessIfNeeded(shouldWaitForVideo: shouldWaitForVideo)
+            let isReadyForEntrance = await waitForVideoReadinessIfNeeded(shouldWaitForVideo: shouldWaitForVideo)
+            if shouldWaitForVideo, isReadyForEntrance == false {
+                useStaticFallback()
+            }
 
             withAnimation(.snappy(duration: 0.52, extraBounce: 0.01)) {
                 phase = .enteringCard
@@ -257,16 +259,20 @@ struct DepartureCardTransitionOverlay: View {
         phase = .playing
     }
 
-    private func waitForVideoReadinessIfNeeded(shouldWaitForVideo: Bool) async {
-        guard shouldWaitForVideo else { return }
+    private func waitForVideoReadinessIfNeeded(shouldWaitForVideo: Bool) async -> Bool {
+        guard shouldWaitForVideo else { return true }
 
         let pollInterval: UInt64 = 20_000_000
         var waited: UInt64 = 0
 
-        while isVideoVisualReady == false, waited < DepartureCardTransitionTiming.videoReadyTimeout {
+        while isVideoVisualReady == false,
+              shouldUseStaticFallback == false,
+              waited < DepartureCardTransitionTiming.videoReadyTimeout {
             try? await Task.sleep(nanoseconds: pollInterval)
             waited += pollInterval
         }
+
+        return isVideoVisualReady
     }
 
     private var isVideoVisualReady: Bool {
@@ -280,6 +286,12 @@ struct DepartureCardTransitionOverlay: View {
         }
 
         self.preparedVideo = preparedVideo
+    }
+
+    private func useStaticFallback() {
+        guard shouldUseStaticFallback == false else { return }
+        shouldUseStaticFallback = true
+        isVideoReadyForDisplay = false
     }
 
     private func completePlaybackIfNeeded() {

@@ -1,0 +1,28 @@
+{
+  "set_name": "steps_postcards_first_absurd_v2",
+  "status": "candidate_only_not_integrated",
+  "scope": "steps tier 001 and postcards tier 001 only",
+  "contact_sheet": "steps_postcards_first_absurd_v2.contact_sheet.png",
+  "assets": [
+    {
+      "target_asset_name": "achievement_medal_steps_tier_001",
+      "title": "您也是辛苦了",
+      "final_png": "achievement_medal_steps_tier_001.absurd_v2.png",
+      "preview_98_png": "achievement_medal_steps_tier_001.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_steps_tier_001.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_steps_tier_001.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_steps_tier_001.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_steps_tier_001.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_postcards_tier_001",
+      "title": "初次相识",
+      "final_png": "achievement_medal_postcards_tier_001.absurd_v2.png",
+      "preview_98_png": "achievement_medal_postcards_tier_001.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_postcards_tier_001.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_postcards_tier_001.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_postcards_tier_001.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_postcards_tier_001.absurd_v2.imagegen.json"
+    }
+  ]
+}

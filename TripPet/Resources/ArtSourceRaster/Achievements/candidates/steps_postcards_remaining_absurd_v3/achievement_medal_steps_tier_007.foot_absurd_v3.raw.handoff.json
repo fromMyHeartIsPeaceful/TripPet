@@ -1,0 +1,19 @@
+{
+  "asset_name": "achievement_medal_steps_tier_007.foot_absurd_v3",
+  "target_asset_name": "achievement_medal_steps_tier_007",
+  "category": "steps",
+  "tier": 7,
+  "title": "一人之力托举起9个小动物的奉献之神",
+  "concept": "ONE heroic shiny golden bare foot lifting a tiny round platform that holds nine simple colored bead-like pet dots, not detailed animals.",
+  "status": "candidate_only_not_integrated",
+  "tool": "built-in image_gen",
+  "call_id": "ig_0bffd9ced42482eb016a4126ed00c4819196a9f3bfb1d014a8",
+  "line_number": "not_applicable_local_generated_file_handoff",
+  "source_generated_png": "/Users/qianyu/.codex/generated_images/019f0df0-67e1-7db0-8397-ce185c4fe75b/ig_0bffd9ced42482eb016a4126ed00c4819196a9f3bfb1d014a8.png",
+  "raw_png": "achievement_medal_steps_tier_007.foot_absurd_v3.raw.png",
+  "raw_byte_count": 2110970,
+  "raw_sha256": "670aac483baa6c66e33ca8687e728e406819f11956b0e1f3963b71a03e649f2a",
+  "created_at_epoch": 1782654789,
+  "chroma_key": "#ff00ff",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art candidate for achievement_medal_steps_tier_007, transparent PNG source after chroma-key removal\nPrimary request: Create one absurd but simple premium collectible steps achievement medal for the Chinese achievement title concept \"一人之力托举起9个小动物的奉献之神\". The image itself must contain no text.\nScene/backdrop: perfectly flat solid #ff00ff chroma-key background for background removal; one uniform color only, no shadows, gradients, texture, floor plane, checkerboard, or lighting variation.\nSubject: exactly one centered circular collectible medal, full object visible with generous padding. The medal has a chunky beveled gold rim and glossy saturated enamel center. Main visual gag: ONE heroic shiny golden bare foot lifting a tiny round platform that holds nine simple colored bead-like pet dots, not detailed animals. Keep the bare foot as the dominant readable shape; use at most one secondary object. No shoe.\nStyle/medium: polished mobile game collectible, semi-3D hand-painted enamel pin / toy medal hybrid, deliberately silly but premium, raised metal relief, crisp edges, shiny highlights, not photorealistic.\nComposition/framing: ultra-simple large silhouette, expression or key gag large enough to read at 58pt UI size. The colored dots are atmosphere on one platform, not separate characters.\nLighting/mood: bright studio rim light, candy-like specular highlights, tiny star glints as lighting only, comedic over-serious achievement energy.\nColor palette: saturated metallic gold foot, electric teal or rich enamel center, one vivid accent color for the secondary object, white glints. Do not use #ff00ff anywhere in the medal or subject.\nMaterials/textures: raised gold metal, glossy enamel, lacquered toy-like surfaces, beveled rim, smooth simple shapes. No paper grain.\nText: none.\nConstraints: no letters, no numbers, no Chinese, no labels, no watermark, no people, no realistic anatomy, no shoes, no socks, no towels, no dense footprints, no route map, no compass, no leaves, no ticket, no postcard, no mailbox, no money pile, no postage stamp edge, no paper texture, no vintage scrapbook look, no cast shadow, no contact shadow, no reflection, do not create multiple medals."
+}

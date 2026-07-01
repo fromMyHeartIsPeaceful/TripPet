@@ -1,0 +1,19 @@
+{
+  "asset_name": "achievement_medal_steps_tier_010.foot_absurd_v3",
+  "target_asset_name": "achievement_medal_steps_tier_010",
+  "category": "steps",
+  "tier": 10,
+  "title": "11路公交车司机",
+  "concept": "ONE shiny golden bare foot wearing a tiny bus-driver cap and gripping one simple toy steering wheel, pretending to be a bus driver.",
+  "status": "candidate_only_not_integrated",
+  "tool": "built-in image_gen",
+  "call_id": "ig_08ea5580560145f9016a41bc4dff308191ba7e1118094bc498",
+  "line_number": "not_applicable_local_generated_file_handoff",
+  "source_generated_png": "/Users/qianyu/.codex/generated_images/019f0df0-67e1-7db0-8397-ce185c4fe75b/ig_08ea5580560145f9016a41bc4dff308191ba7e1118094bc498.png",
+  "raw_png": "achievement_medal_steps_tier_010.foot_absurd_v3.raw.png",
+  "raw_byte_count": 2124841,
+  "raw_sha256": "b6932f6343c549ec74a7d75308d3fa45c98a7b17be428376d21ab68c72396ad4",
+  "created_at_epoch": 1782693030,
+  "chroma_key": "#ff00ff",
+  "revised_prompt": "Use case: stylized-concept\nAsset type: TripPet iOS achievement medal art candidate for achievement_medal_steps_tier_010, transparent PNG source after chroma-key removal\nPrimary request: Create one absurd but simple premium collectible steps achievement medal for the Chinese achievement title concept \"11路公交车司机\". The image itself must contain no text.\nScene/backdrop: perfectly flat solid #ff00ff chroma-key background for background removal; one uniform color only, no shadows, gradients, texture, floor plane, checkerboard, or lighting variation.\nSubject: exactly one centered circular collectible medal, full object visible with generous padding. The medal has a chunky beveled gold rim and glossy saturated enamel center. Main visual gag: ONE shiny golden bare foot wearing a tiny bus-driver cap and gripping one simple toy steering wheel, pretending to be a bus driver. Keep the bare foot as the dominant readable shape; use at most one secondary object. No shoe.\nStyle/medium: polished mobile game collectible, semi-3D hand-painted enamel pin / toy medal hybrid, deliberately silly but premium, raised metal relief, crisp edges, shiny highlights, not photorealistic.\nComposition/framing: ultra-simple large silhouette, expression or key gag large enough to read at 58pt UI size. Do not write route numbers or any digits; cap is part of the foot silhouette.\nLighting/mood: bright studio rim light, candy-like specular highlights, tiny star glints as lighting only, comedic over-serious achievement energy.\nColor palette: saturated metallic gold foot, electric teal or rich enamel center, one vivid accent color for the secondary object, white glints. Do not use #ff00ff anywhere in the medal or subject.\nMaterials/textures: raised gold metal, glossy enamel, lacquered toy-like surfaces, beveled rim, smooth simple shapes. No paper grain.\nText: none.\nConstraints: no letters, no numbers, no Chinese, no labels, no watermark, no people, no realistic anatomy, no shoes, no socks, no towels, no dense footprints, no route map, no compass, no leaves, no ticket, no postcard, no mailbox, no money pile, no postage stamp edge, no paper texture, no vintage scrapbook look, no cast shadow, no contact shadow, no reflection, do not create multiple medals."
+}

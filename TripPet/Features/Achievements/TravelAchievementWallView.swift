@@ -314,7 +314,8 @@ private struct AchievementMedalSelection: Identifiable {
 struct AchievementMedalSharePayload: Equatable {
     let title: String
     let categoryTitle: String
-    let completionDescription: String
+    let requirementDescription: String
+    let progressDescription: String
     let note: String?
 }
 
@@ -324,7 +325,8 @@ enum AchievementMedalSharePolicy {
         return AchievementMedalSharePayload(
             title: medal.tier.title,
             categoryTitle: "\(medal.tier.category.medalLabel)勋章",
-            completionDescription: completionDescription(for: medal),
+            requirementDescription: requirementDescription(for: medal),
+            progressDescription: progressDescription(for: medal),
             note: medal.tier.subtitle
         )
     }
@@ -333,19 +335,27 @@ enum AchievementMedalSharePolicy {
         "bulu-medal-\(medal.tier.category.rawValue)-\(medal.tier.threshold).png"
     }
 
-    static func completionDescription(for medal: AchievementMedalProgress) -> String {
+    static func requirementDescription(for medal: AchievementMedalProgress) -> String {
         switch medal.tier.category {
         case .travel:
-            return "完成 \(formattedThreshold(for: medal)) 次旅行即可获得。当前进度：\(medal.valueText)。"
+            return "完成 \(formattedThreshold(for: medal)) 次旅行即可获得"
         case .steps:
-            return "累计行走 \(formattedThreshold(for: medal)) 步即可获得。当前进度：\(medal.valueText)。"
+            return "累计赠送\(formattedThreshold(for: medal))步即可获得"
         case .postcards:
-            return "收到 \(formattedThreshold(for: medal)) 张明信片即可获得。当前进度：\(medal.valueText)。"
+            return "收到 \(formattedThreshold(for: medal)) 张明信片即可获得"
         }
     }
 
+    static func progressDescription(for medal: AchievementMedalProgress) -> String {
+        "当前进度：\(formattedCurrentValue(for: medal))/\(formattedThreshold(for: medal))"
+    }
+
     private static func formattedThreshold(for medal: AchievementMedalProgress) -> String {
-        medal.tier.threshold.formatted(.number.grouping(.automatic))
+        "\(medal.tier.threshold)"
+    }
+
+    private static func formattedCurrentValue(for medal: AchievementMedalProgress) -> String {
+        "\(max(0, min(medal.currentValue, medal.tier.threshold)))"
     }
 }
 
@@ -399,42 +409,64 @@ private struct AchievementMedalDetailView: View {
             onButton: onDone
         ) {
             VStack(spacing: 14) {
-                if let sharePayload {
-                    HStack {
-                        Spacer()
-
-                        RenderedShareLink(
-                            title: sharePayload.title,
-                            filename: AchievementMedalSharePolicy.filename(for: medal),
-                            accessibilityLabel: AppCopy.Share.medalAccessibilityLabel
-                        ) {
-                            AchievementMedalShareImage(
-                                medal: medal,
-                                tierOrdinal: selection.tierOrdinal,
-                                payload: sharePayload
-                            )
-                        }
-                    }
+                HStack {
+                    Spacer()
+                    shareControl
                 }
 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 10) {
                         AchievementMedalArtwork(
                             medal: medal,
                             tierOrdinal: selection.tierOrdinal,
                             size: 190
                         )
                         .frame(width: 190, height: 190)
-                        .padding(.top, 6)
 
                         detailCard
                     }
                     .frame(maxWidth: .infinity)
-                        .padding(.top, 4)
                 }
             }
         }
         .accessibilityIdentifier("achievement-medal-detail")
+    }
+
+    @ViewBuilder
+    private var shareControl: some View {
+        if let sharePayload {
+            RenderedShareLink(
+                title: sharePayload.title,
+                filename: AchievementMedalSharePolicy.filename(for: medal),
+                accessibilityLabel: AppCopy.Share.medalAccessibilityLabel
+            ) {
+                AchievementMedalShareImage(
+                    medal: medal,
+                    tierOrdinal: selection.tierOrdinal,
+                    payload: sharePayload
+                )
+            }
+        } else {
+            Button {} label: {
+                shareIconLabel
+            }
+            .disabled(true)
+            .opacity(0.38)
+            .accessibilityLabel("收集后可分享勋章")
+        }
+    }
+
+    private var shareIconLabel: some View {
+        Image(systemName: "square.and.arrow.up")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(AppTheme.ink)
+            .frame(width: 36, height: 36)
+            .background(AppTheme.ivory)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(AppTheme.paperGray, lineWidth: AppTheme.hairline)
+            )
     }
 
     private var detailCard: some View {
@@ -447,13 +479,6 @@ private struct AchievementMedalDetailView: View {
                 .minimumScaleFactor(0.72)
                 .frame(maxWidth: .infinity)
 
-            Text(completionDescription)
-                .font(AppTheme.body)
-                .foregroundStyle(AppTheme.secondaryInk)
-                .multilineTextAlignment(.center)
-                .lineSpacing(3)
-                .fixedSize(horizontal: false, vertical: true)
-
             if let note = medal.tier.subtitle, note.isEmpty == false {
                 Text(note)
                     .font(AppTheme.caption)
@@ -463,14 +488,29 @@ private struct AchievementMedalDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 2)
             }
+
+            VStack(spacing: 4) {
+                Text(requirementDescription)
+                Text(progressDescription)
+            }
+            .font(AppTheme.body)
+            .foregroundStyle(AppTheme.secondaryInk)
+            .multilineTextAlignment(.center)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(maxWidth: .infinity)
         }
         .padding(16)
         .frame(maxWidth: .infinity)
         .paperCard(cornerRadius: 18, stroke: AppTheme.sage.opacity(0.36))
     }
 
-    private var completionDescription: String {
-        AchievementMedalSharePolicy.completionDescription(for: medal)
+    private var requirementDescription: String {
+        AchievementMedalSharePolicy.requirementDescription(for: medal)
+    }
+
+    private var progressDescription: String {
+        AchievementMedalSharePolicy.progressDescription(for: medal)
     }
 }
 
@@ -512,13 +552,6 @@ private struct AchievementMedalShareImage: View {
                     .lineLimit(3)
                     .minimumScaleFactor(0.68)
 
-                Text(payload.completionDescription)
-                    .font(.system(size: 15))
-                    .foregroundStyle(AppTheme.secondaryInk)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(3)
-                    .fixedSize(horizontal: false, vertical: true)
-
                 if let note = payload.note, note.isEmpty == false {
                     Text(note)
                         .font(.system(size: 14, weight: .medium))
@@ -527,6 +560,17 @@ private struct AchievementMedalShareImage: View {
                         .lineSpacing(3)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+
+                VStack(spacing: 4) {
+                    Text(payload.requirementDescription)
+                    Text(payload.progressDescription)
+                }
+                .font(.system(size: 15))
+                .foregroundStyle(AppTheme.secondaryInk)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+                .frame(maxWidth: .infinity)
             }
             .padding(18)
             .frame(maxWidth: .infinity)
@@ -588,26 +632,6 @@ private struct AchievementMedalArtwork: View {
         let state = visualState
 
         return ZStack {
-            Circle()
-                .fill(AppTheme.paperWhite.opacity(state.baseFillOpacity))
-                .frame(width: 100 * scale, height: 100 * scale)
-                .overlay(
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(state.baseHighlightOpacity),
-                                    AppTheme.oliveInk.opacity(state.baseStrokeOpacity)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1.2 * scale
-                        )
-                )
-                .shadow(color: Color.white.opacity(state.baseLightShadowOpacity), radius: 2 * scale, x: -1.5 * scale, y: -1.5 * scale)
-                .shadow(color: AppTheme.oliveInk.opacity(state.baseDropShadowOpacity), radius: 7 * scale, x: 3.5 * scale, y: 5 * scale)
-
             ArtImage(name: assetName)
                 .frame(width: 104 * scale, height: 104 * scale)
                 .saturation(state.saturation)
@@ -617,11 +641,14 @@ private struct AchievementMedalArtwork: View {
                 .shadow(color: Color.white.opacity(state.assetLightShadowOpacity), radius: 1.5 * scale, x: -1 * scale, y: -1 * scale)
                 .shadow(color: AppTheme.oliveInk.opacity(state.assetDropShadowOpacity), radius: 4 * scale, x: 1.5 * scale, y: 2.5 * scale)
 
-            if state.veilOpacity > 0 {
-                Circle()
-                    .fill(AppTheme.oliveInk.opacity(state.veilOpacity))
-                    .frame(width: 99 * scale, height: 99 * scale)
-                    .blendMode(.multiply)
+            if state.maskOpacity > 0 {
+                AppTheme.paperWhite
+                    .opacity(state.maskOpacity)
+                    .frame(width: 104 * scale, height: 104 * scale)
+                    .mask(
+                        ArtImage(name: assetName)
+                            .frame(width: 104 * scale, height: 104 * scale)
+                    )
                     .allowsHitTesting(false)
             }
         }
@@ -633,12 +660,7 @@ private struct AchievementMedalArtworkVisualState {
     let saturation: Double
     let contrast: Double
     let brightness: Double
-    let veilOpacity: Double
-    let baseFillOpacity: Double
-    let baseHighlightOpacity: Double
-    let baseStrokeOpacity: Double
-    let baseLightShadowOpacity: Double
-    let baseDropShadowOpacity: Double
+    let maskOpacity: Double
     let assetLightShadowOpacity: Double
     let assetDropShadowOpacity: Double
 
@@ -650,44 +672,29 @@ private struct AchievementMedalArtworkVisualState {
                 saturation: 1,
                 contrast: 1,
                 brightness: 0,
-                veilOpacity: 0,
-                baseFillOpacity: 0.58,
-                baseHighlightOpacity: 0.82,
-                baseStrokeOpacity: 0.13,
-                baseLightShadowOpacity: 0.58,
-                baseDropShadowOpacity: 0.16,
+                maskOpacity: 0,
                 assetLightShadowOpacity: 0.42,
                 assetDropShadowOpacity: 0.12
             )
         case .inProgress:
             return AchievementMedalArtworkVisualState(
-                assetOpacity: 0.74,
-                saturation: 0,
-                contrast: 0.68,
-                brightness: -0.08,
-                veilOpacity: 0.06,
-                baseFillOpacity: 0.32,
-                baseHighlightOpacity: 0.48,
-                baseStrokeOpacity: 0.08,
-                baseLightShadowOpacity: 0.28,
-                baseDropShadowOpacity: 0.05,
-                assetLightShadowOpacity: 0.14,
-                assetDropShadowOpacity: 0.03
+                assetOpacity: 0.86,
+                saturation: 0.82,
+                contrast: 0.9,
+                brightness: 0.02,
+                maskOpacity: 0.16,
+                assetLightShadowOpacity: 0.08,
+                assetDropShadowOpacity: 0.02
             )
         case .locked:
             return AchievementMedalArtworkVisualState(
-                assetOpacity: 0.56,
-                saturation: 0,
-                contrast: 0.52,
-                brightness: -0.2,
-                veilOpacity: 0.12,
-                baseFillOpacity: 0.22,
-                baseHighlightOpacity: 0.34,
-                baseStrokeOpacity: 0.07,
-                baseLightShadowOpacity: 0.2,
-                baseDropShadowOpacity: 0.04,
-                assetLightShadowOpacity: 0.09,
-                assetDropShadowOpacity: 0.02
+                assetOpacity: 0.72,
+                saturation: 0.66,
+                contrast: 0.82,
+                brightness: 0.04,
+                maskOpacity: 0.28,
+                assetLightShadowOpacity: 0.05,
+                assetDropShadowOpacity: 0.01
             )
         }
     }

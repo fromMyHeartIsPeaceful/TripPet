@@ -34,7 +34,7 @@ struct AchievementEngine {
             category: .travel,
             threshold: 50,
             title: "探险大师",
-            subtitle: "我在旅行生涯中一分钱没出过你敢信",
+            subtitle: "我的旅行生涯机票全是朋友买单",
             medalAssetName: "achievement_medal_travel_tier_005"
         ),
         AchievementTier(
@@ -51,98 +51,98 @@ struct AchievementEngine {
             category: .steps,
             threshold: 3_000,
             title: "您也是辛苦了",
-            subtitle: nil,
+            subtitle: "都是您的脚托举我出去旅行",
             medalAssetName: "achievement_medal_steps_tier_001"
         ),
         AchievementTier(
             category: .steps,
             threshold: 9_000,
             title: "没病走两步",
-            subtitle: nil,
+            subtitle: "为了您的健康，记得多运动，哈拉少！",
             medalAssetName: "achievement_medal_steps_tier_002"
         ),
         AchievementTier(
             category: .steps,
             threshold: 20_000,
             title: "佛山无影脚在世传人",
-            subtitle: nil,
+            subtitle: "这一脚，十年的功力，你顶得住吗？",
             medalAssetName: "achievement_medal_steps_tier_003"
         ),
         AchievementTier(
             category: .steps,
             threshold: 30_000,
             title: "要啥自行车",
-            subtitle: nil,
+            subtitle: "我妹说要自行车啊！",
             medalAssetName: "achievement_medal_steps_tier_004"
         ),
         AchievementTier(
             category: .steps,
             threshold: 50_000,
-            title: "有了闪现技能还想去送外卖的热爱走路人士",
-            subtitle: nil,
+            title: "劳动人民最光荣",
+            subtitle: "有了闪现技能还想去送外卖的热爱走路人士",
             medalAssetName: "achievement_medal_steps_tier_005"
         ),
         AchievementTier(
             category: .steps,
             threshold: 100_000,
-            title: "您真是白脚起家呀！",
-            subtitle: nil,
+            title: "您真是白脚起家呀",
+            subtitle: "无敌之人拥有无敌膝盖和脚踝",
             medalAssetName: "achievement_medal_steps_tier_006"
         ),
         AchievementTier(
             category: .steps,
             threshold: 200_000,
-            title: "一人之力托举起9个小动物的奉献之神",
-            subtitle: nil,
+            title: "奉献之神",
+            subtitle: "知名脚步慈善家",
             medalAssetName: "achievement_medal_steps_tier_007"
         ),
         AchievementTier(
             category: .steps,
             threshold: 300_000,
-            title: "这地球，这世界，全是您走出来的！",
-            subtitle: nil,
+            title: "我们的世界是您走出来的",
+            subtitle: "照顾9个小动物去旅行的一家之主",
             medalAssetName: "achievement_medal_steps_tier_008"
         ),
         AchievementTier(
             category: .steps,
             threshold: 400_000,
-            title: "不知道您是否听说过一个叫骆驼祥子的人？",
-            subtitle: nil,
+            title: "骆驼祥子",
+            subtitle: "不知道您是否听说过一个叫骆驼祥子的人？",
             medalAssetName: "achievement_medal_steps_tier_009"
         ),
         AchievementTier(
             category: .steps,
             threshold: 500_000,
-            title: "11路公交车司机",
-            subtitle: nil,
+            title: "11路公交车",
+            subtitle: "听上去就是二十年前的玩笑话，一点都不时髦",
             medalAssetName: "achievement_medal_steps_tier_010"
         ),
         AchievementTier(
             category: .steps,
             threshold: 600_000,
             title: "你的腿不是腿，是塞纳河畔的春水",
-            subtitle: nil,
+            subtitle: "据说巴黎人民在这个夏天因为空调在吵架呢",
             medalAssetName: "achievement_medal_steps_tier_011"
         ),
         AchievementTier(
             category: .steps,
             threshold: 700_000,
-            title: "踏破铁鞋无觅处，蓦然回首，那人却在灯火阑珊处",
-            subtitle: nil,
+            title: "踏破铁鞋无觅处",
+            subtitle: "我是铁臂阿童木！",
             medalAssetName: "achievement_medal_steps_tier_012"
         ),
         AchievementTier(
             category: .steps,
             threshold: 800_000,
-            title: "铁板烧！不，是铁脚板！",
-            subtitle: nil,
+            title: "铁板烧！不，是铁脚板",
+            subtitle: "别人有炽热的心，我有炽热的脚",
             medalAssetName: "achievement_medal_steps_tier_013"
         ),
         AchievementTier(
             category: .steps,
             threshold: 1_000_000,
-            title: "地球说“我是谁呀，我是您脚底的一颗痣而已”",
-            subtitle: nil,
+            title: "地球在我脚下",
+            subtitle: "人在地球上，不就相当于脚下有个巨大的溜溜球？",
             medalAssetName: "achievement_medal_steps_tier_014"
         )
     ]
@@ -152,63 +152,63 @@ struct AchievementEngine {
             category: .postcards,
             threshold: 1,
             title: "初次相识",
-            subtitle: nil,
+            subtitle: "对陌生人有一些好感",
             medalAssetName: "achievement_medal_postcards_tier_001"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 10,
             title: "些许相知",
-            subtitle: nil,
+            subtitle: "被免费机票砸晕头脑，产生情愫",
             medalAssetName: "achievement_medal_postcards_tier_002"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 50,
             title: "你也有点可爱",
-            subtitle: nil,
+            subtitle: "物质还是有点用的",
             medalAssetName: "achievement_medal_postcards_tier_003"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 100,
-            title: "有钱人也不会是无情无义之人",
-            subtitle: nil,
+            title: "有钱人也不全是无情无义之人",
+            subtitle: "辩证法如此教育我们",
             medalAssetName: "achievement_medal_postcards_tier_004"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 200,
             title: "谁说的有钱人无情无义！",
-            subtitle: nil,
+            subtitle: "尽信书不如无书",
             medalAssetName: "achievement_medal_postcards_tier_005"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 300,
             title: "你说什么都对，My Lord",
-            subtitle: nil,
+            subtitle: "您忠心耿耿的亲密伙伴",
             medalAssetName: "achievement_medal_postcards_tier_006"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 500,
             title: "很难想象世界上还有你这样完美的人",
-            subtitle: nil,
+            subtitle: "要让别人认为你是完美的，首先要敢于肯定自己",
             medalAssetName: "achievement_medal_postcards_tier_007"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 800,
             title: "我要打包银河系的爱给你",
-            subtitle: nil,
+            subtitle: "这年头呀，连爱都可以外卖了",
             medalAssetName: "achievement_medal_postcards_tier_008"
         ),
         AchievementTier(
             category: .postcards,
             threshold: 1_000,
             title: "还是打包整个宇宙吧，全是我的真心",
-            subtitle: nil,
+            subtitle: "希望您可以获得这个勋章，这意味着您仍然健康",
             medalAssetName: "achievement_medal_postcards_tier_009"
         )
     ]

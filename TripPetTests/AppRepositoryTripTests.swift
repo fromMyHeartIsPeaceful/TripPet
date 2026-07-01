@@ -660,6 +660,20 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.consumedPostcardTextIds.count, 2)
     }
 
+    func testRevealedPostcardUsesCareCategoryForSentTime() throws {
+        let scheduler = Self.fixedScheduler()
+        let seed = Self.makeNarrativeSeed()
+        let repository = AppRepository(seed: seed, postcardScheduler: scheduler)
+
+        repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
+        let postcard = try XCTUnwrap(repository.postcards.first)
+        let narrative = try XCTUnwrap(PostcardTextLibrary.narratives.first { $0.body == postcard.body })
+
+        XCTAssertTrue([.movementBreak, .workRhythm, .informationOverload, .lowBattery].contains(narrative.careCategory))
+    }
+
     func testPostcardTextLibraryImportsCareMarkdownCorpus() {
         let counts = Dictionary(
             grouping: PostcardTextLibrary.narratives,
@@ -757,6 +771,137 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
         XCTAssertEqual(repository.postcards.first?.body, "小猫在巴黎的街角停了一会儿。")
         XCTAssertEqual(repository.consumedPostcardTextIds, consumedIds)
+    }
+
+    func testRepositoryMigratesLegacyPostcardBodiesToCareLibrary() throws {
+        let seed = Self.makeNarrativeSeed()
+        let trip = Self.makeTrip(id: "trip-legacy")
+        let legacyPostcard = Self.makePostcard(
+            id: "legacy",
+            isRead: true,
+            tripId: trip.id,
+            body: Self.legacyTravelPostcardBody,
+            sentAt: Self.date(day: 1, hour: 15)
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [legacyPostcard],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: ["cat"])
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+        let migratedPostcard = try XCTUnwrap(repository.postcards.first)
+        let narrative = try XCTUnwrap(PostcardTextLibrary.narratives.first { $0.body == migratedPostcard.body })
+
+        XCTAssertNotEqual(migratedPostcard.body, legacyPostcard.body)
+        XCTAssertTrue(PostcardTextLibrary.containsCareBody(migratedPostcard.body))
+        XCTAssertTrue([.movementBreak, .workRhythm, .informationOverload, .lowBattery].contains(narrative.careCategory))
+        XCTAssertEqual(migratedPostcard.id, legacyPostcard.id)
+        XCTAssertEqual(migratedPostcard.tripId, legacyPostcard.tripId)
+        XCTAssertEqual(migratedPostcard.sentAt, legacyPostcard.sentAt)
+        XCTAssertEqual(migratedPostcard.imageAssetName, legacyPostcard.imageAssetName)
+        XCTAssertEqual(migratedPostcard.stampAssetName, legacyPostcard.stampAssetName)
+        XCTAssertTrue(migratedPostcard.isRead)
+        XCTAssertEqual(repository.consumedPostcardTextIds, [narrative.id])
+    }
+
+    func testRepositoryDoesNotMigrateFirstAirportPostcardBody() throws {
+        let seed = Self.makeNarrativeSeed()
+        let trip = Self.makeTrip(id: "trip-first-airport")
+        let airportPostcard = Postcard(
+            id: "postcard_first_airport_\(trip.id)",
+            tripId: trip.id,
+            destination: "机场",
+            title: "小猫寄来的第一张明信片",
+            body: "我到机场啦！谢谢你送我的机票。登机前先把第一张明信片寄回小屋，等我到了远方，再继续给你写信。",
+            imageAssetName: "postcard_destination_airport",
+            templateAssetName: "postcard_base_portrait",
+            destinationAssetName: "postcard_destination_airport",
+            stampAssetName: "postcard_stamp_airport",
+            animalAssetName: "animal_home_xiaoman_hamster",
+            envelopeAssetName: "envelope_unread",
+            sentAt: Self.date(day: 1, hour: 9),
+            subtitle: "刚到机场",
+            isRead: false
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [airportPostcard],
+            tickets: [],
+            flags: AppUserFlags(firstAirportPostcardDelivered: true),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: ["cat"])
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+
+        XCTAssertEqual(repository.postcards.first?.body, airportPostcard.body)
+        XCTAssertTrue(repository.consumedPostcardTextIds.isEmpty)
+    }
+
+    func testRepositoryDoesNotRewriteExistingCarePostcard() throws {
+        let seed = Self.makeNarrativeSeed()
+        let trip = Self.makeTrip(id: "trip-care")
+        let careNarrative = try XCTUnwrap(
+            PostcardTextLibrary.narratives.first {
+                $0.animalKey == "xiaoman_hamster" && $0.careCategory == .movementBreak
+            }
+        )
+        let carePostcard = Self.makePostcard(
+            id: "care",
+            isRead: false,
+            tripId: trip.id,
+            body: careNarrative.body,
+            sentAt: Self.date(day: 1, hour: 15)
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [carePostcard],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Date(), animalIds: ["cat"])
+        )
+        let store = CountingUserStateStore(state: savedState)
+
+        let repository = AppRepository(seed: seed, store: store)
+
+        XCTAssertEqual(repository.postcards.first?.body, careNarrative.body)
+        XCTAssertTrue(repository.consumedPostcardTextIds.isEmpty)
+        XCTAssertEqual(store.saveCount, 0)
+    }
+
+    func testMigratedPostcardBodyPersistsAcrossRepositoryInstances() throws {
+        let seed = Self.makeNarrativeSeed()
+        let trip = Self.makeTrip(id: "trip-persisted-legacy")
+        let legacyPostcard = Self.makePostcard(
+            id: "persisted-legacy",
+            isRead: false,
+            tripId: trip.id,
+            body: Self.legacyTravelPostcardBody,
+            sentAt: Self.date(day: 1, hour: 15)
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [legacyPostcard],
+            tickets: [],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: ["cat"])
+        )
+        let store = InMemoryUserStateStore(savedState: savedState)
+
+        let firstRepository = AppRepository(seed: seed, store: store)
+        let migratedBody = try XCTUnwrap(firstRepository.postcards.first?.body)
+        let consumedIds = firstRepository.consumedPostcardTextIds
+        let secondRepository = AppRepository(seed: seed, store: store)
+
+        XCTAssertNotEqual(migratedBody, legacyPostcard.body)
+        XCTAssertEqual(secondRepository.postcards.first?.body, migratedBody)
+        XCTAssertEqual(secondRepository.consumedPostcardTextIds, consumedIds)
     }
 
     func testLateRefreshRevealsBothPostcardsAndCompletesTrip() throws {
@@ -1174,23 +1319,52 @@ final class AppRepositoryTripTests: XCTestCase {
         )
     }
 
-    private static func makePostcard(id: String, isRead: Bool) -> Postcard {
+    private static func makeTrip(id: String = "trip-legacy", animalId: String = "cat") -> Trip {
+        Trip(
+            id: id,
+            animalId: animalId,
+            destinationId: "paris",
+            destination: "巴黎",
+            departedAt: date(day: 1, hour: 9),
+            expectedReturnAt: date(day: 2, hour: 3),
+            status: .completed,
+            completedAt: date(day: 2, hour: 3)
+        )
+    }
+
+    private static func makePostcard(
+        id: String,
+        isRead: Bool,
+        tripId: String? = nil,
+        body: String? = nil,
+        animalAssetName: String = "animal_cat_selfie",
+        destinationAssetName: String = "postcard_destination_paris",
+        sentAt: Date? = nil
+    ) -> Postcard {
         Postcard(
             id: id,
-            tripId: "trip-\(id)",
+            tripId: tripId ?? "trip-\(id)",
             destination: "巴黎",
             title: "小猫寄来的巴黎早安",
-            body: "小猫在巴黎的街角停了一会儿。",
+            body: body ?? defaultCarePostcardBody,
             imageAssetName: "postcard_destination_paris",
             templateAssetName: "postcard_template_classic",
-            destinationAssetName: "postcard_destination_paris",
+            destinationAssetName: destinationAssetName,
             stampAssetName: "postcard_stamp_paris",
-            animalAssetName: "animal_cat_selfie",
+            animalAssetName: animalAssetName,
             envelopeAssetName: "envelope_unread",
-            sentAt: date(day: 1, hour: 12),
+            sentAt: sentAt ?? date(day: 1, hour: 12),
             subtitle: "旅途中寄来",
             isRead: isRead
         )
+    }
+
+    private static let legacyTravelPostcardBody = "小猫在巴黎的街角停了一会儿。"
+
+    private static var defaultCarePostcardBody: String {
+        PostcardTextLibrary.narratives.first {
+            $0.animalKey == "xiaoman_hamster" && $0.careCategory == .gentleEncouragement
+        }?.body ?? PostcardTextLibrary.narratives[0].body
     }
 
     private static func fixedScheduler() -> PostcardScheduler {

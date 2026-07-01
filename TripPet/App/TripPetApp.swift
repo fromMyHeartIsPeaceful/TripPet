@@ -70,11 +70,17 @@ final class TripPetAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificat
         didReceive response: UNNotificationResponse
     ) async {
         PostcardNotificationDiagnostics.record("didReceive response action=\(response.actionIdentifier)")
-        await MainActor.run {
-            _ = NotificationRouteStore.shared.enqueueNotificationResponse(
-                userInfo: response.notification.request.content.userInfo,
-                actionIdentifier: response.actionIdentifier
-            )
+        guard let route = PostcardNotificationPayload.route(
+            from: response.notification.request.content.userInfo,
+            actionIdentifier: response.actionIdentifier
+        ) else {
+            return
+        }
+
+        Task { @MainActor in
+            // Let UIKit finish notification response bookkeeping before SwiftUI state changes.
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            NotificationRouteStore.shared.enqueue(route)
         }
     }
 }

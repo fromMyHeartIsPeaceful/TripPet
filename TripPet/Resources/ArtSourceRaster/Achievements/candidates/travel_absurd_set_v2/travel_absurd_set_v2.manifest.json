@@ -1,0 +1,64 @@
+{
+  "set_name": "travel_absurd_set_v2",
+  "status": "candidate_only_not_integrated",
+  "scope": "travel achievement medals only; no steps or postcards medals",
+  "asset_count": 6,
+  "contact_sheet": "travel_absurd_set_v2.contact_sheet.png",
+  "small_previews": "travel_absurd_set_v2.small_previews.png",
+  "assets": [
+    {
+      "target_asset_name": "achievement_medal_travel_tier_001",
+      "final_png": "achievement_medal_travel_tier_001.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_001.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_001.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_001.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_001.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_001.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_travel_tier_002",
+      "final_png": "achievement_medal_travel_tier_002.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_002.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_002.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_002.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_002.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_002.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_travel_tier_003",
+      "final_png": "achievement_medal_travel_tier_003.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_003.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_003.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_003.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_003.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_003.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_travel_tier_004",
+      "final_png": "achievement_medal_travel_tier_004.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_004.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_004.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_004.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_004.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_004.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_travel_tier_005",
+      "final_png": "achievement_medal_travel_tier_005.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_005.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_005.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_005.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_005.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_005.absurd_v2.imagegen.json"
+    },
+    {
+      "target_asset_name": "achievement_medal_travel_tier_006",
+      "final_png": "achievement_medal_travel_tier_006.absurd_v2.png",
+      "preview_98_png": "achievement_medal_travel_tier_006.absurd_v2.preview_98.png",
+      "preview_58_png": "achievement_medal_travel_tier_006.absurd_v2.preview_58.png",
+      "raw_png": "achievement_medal_travel_tier_006.absurd_v2.raw.png",
+      "alpha_png": "achievement_medal_travel_tier_006.absurd_v2.alpha.png",
+      "provenance_json": "achievement_medal_travel_tier_006.absurd_v2.imagegen.json"
+    }
+  ]
+}
