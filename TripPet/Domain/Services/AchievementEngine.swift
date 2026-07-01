@@ -278,6 +278,33 @@ struct AchievementEngine {
         summary(category: .travel, animals: animals, trips: trips, tickets: [], postcards: [])
     }
 
+    func collectedMedalAwards(
+        animals: [Animal],
+        trips: [Trip],
+        tickets: [Ticket],
+        postcards: [Postcard]
+    ) -> [AchievementMedalAward] {
+        AchievementCategory.allCases.flatMap { category in
+            progress(
+                category: category,
+                animals: animals,
+                trips: trips,
+                tickets: tickets,
+                postcards: postcards
+            ).flatMap { animalProgress in
+                animalProgress.medals.enumerated().compactMap { index, medal in
+                    guard medal.isUnlocked else { return nil }
+                    return AchievementMedalAward(
+                        animalId: animalProgress.animal.id,
+                        animalName: animalProgress.animal.name,
+                        medal: medal,
+                        tierOrdinal: index + 1
+                    )
+                }
+            }
+        }
+    }
+
     private func medals(
         for value: Int,
         tiers: [AchievementTier],

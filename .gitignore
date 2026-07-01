@@ -1,6 +1,7 @@
 .derivedData/
 DerivedData/
 DerivedDataCodex/
+DerivedDataCodex-*/
 BuildArtifacts/
 .worktrees/
 exports/

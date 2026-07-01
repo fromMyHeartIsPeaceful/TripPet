@@ -145,3 +145,18 @@ struct AchievementSummary: Equatable {
         }
     }
 }
+
+struct AchievementMedalAward: Identifiable, Equatable {
+    let animalId: String
+    let animalName: String
+    let medal: AchievementMedalProgress
+    let tierOrdinal: Int
+
+    var id: String {
+        Self.notificationId(animalId: animalId, tier: medal.tier)
+    }
+
+    static func notificationId(animalId: String, tier: AchievementTier) -> String {
+        "\(animalId)-\(tier.category.rawValue)-\(tier.threshold)"
+    }
+}

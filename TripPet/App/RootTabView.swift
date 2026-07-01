@@ -7,6 +7,7 @@ struct RootTabView: View {
     @State private var retainedTabs: Set<AppTab> = Self.initialRetainedTabs
     @State private var departureTransitionContext: DepartureTransitionContext?
     @State private var releaseDepartureRefreshHold: (() -> Void)?
+    @State private var pendingAchievementAward: AchievementMedalAward?
 
     static let bottomTabOrder: [AppTab] = [.cabin, .achievements, .mailbox, .map]
     static let initialRetainedTabs: Set<AppTab> = [.cabin]
@@ -35,6 +36,7 @@ struct RootTabView: View {
                     onComplete: {
                         releaseDepartureRefreshHoldIfNeeded()
                         self.departureTransitionContext = nil
+                        showPendingAchievementAwardAfterDeparture()
                     }
                 )
                 .zIndex(10)
@@ -57,6 +59,12 @@ struct RootTabView: View {
         }
         .onChange(of: environment.notificationRequestedTab) { _, _ in
             applyPendingNotificationTabRequest()
+        }
+        .sheet(item: $pendingAchievementAward) { award in
+            AchievementMedalDetailView(award: award) {
+                pendingAchievementAward = nil
+            }
+            .appActionSheetPresentation()
         }
     }
 
@@ -141,6 +149,13 @@ struct RootTabView: View {
     private func releaseDepartureRefreshHoldIfNeeded() {
         releaseDepartureRefreshHold?()
         releaseDepartureRefreshHold = nil
+    }
+
+    private func showPendingAchievementAwardAfterDeparture() {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            pendingAchievementAward = environment.repository.claimFirstUnnotifiedAchievementMedalAward()
+        }
     }
 }
 

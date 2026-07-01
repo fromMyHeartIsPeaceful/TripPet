@@ -302,7 +302,7 @@ struct AchievementWallView: View {
     }
 }
 
-private struct AchievementMedalSelection: Identifiable {
+struct AchievementMedalSelection: Identifiable {
     let medal: AchievementMedalProgress
     let tierOrdinal: Int
 
@@ -372,7 +372,8 @@ private struct AchievementMedalView: View {
             AchievementMedalArtwork(
                 medal: medal,
                 tierOrdinal: tierOrdinal,
-                size: 106
+                size: 106,
+                showsAcquiredShine: true
             )
                 .frame(width: 106, height: 106)
 
@@ -391,9 +392,51 @@ private struct AchievementMedalView: View {
     }
 }
 
-private struct AchievementMedalDetailView: View {
+private enum AchievementMedalDetailMode {
+    case wallDetail
+    case awardNotice
+
+    var buttonAccessibilityIdentifier: String {
+        switch self {
+        case .wallDetail:
+            return "achievement-medal-detail-done"
+        case .awardNotice:
+            return "achievement-medal-award-done"
+        }
+    }
+
+    var accessibilityIdentifier: String {
+        switch self {
+        case .wallDetail:
+            return "achievement-medal-detail"
+        case .awardNotice:
+            return "achievement-medal-award"
+        }
+    }
+}
+
+struct AchievementMedalDetailView: View {
     let selection: AchievementMedalSelection
+    private let mode: AchievementMedalDetailMode
+    private let awardAnimalName: String?
     var onDone: () -> Void
+
+    init(selection: AchievementMedalSelection, onDone: @escaping () -> Void) {
+        self.selection = selection
+        mode = .wallDetail
+        awardAnimalName = nil
+        self.onDone = onDone
+    }
+
+    init(award: AchievementMedalAward, onDone: @escaping () -> Void) {
+        selection = AchievementMedalSelection(
+            medal: award.medal,
+            tierOrdinal: award.tierOrdinal
+        )
+        mode = .awardNotice
+        awardAnimalName = award.animalName
+        self.onDone = onDone
+    }
 
     private var medal: AchievementMedalProgress {
         selection.medal
@@ -405,14 +448,11 @@ private struct AchievementMedalDetailView: View {
 
     var body: some View {
         AppActionBottomSheet(
-            buttonAccessibilityIdentifier: "achievement-medal-detail-done",
+            buttonAccessibilityIdentifier: mode.buttonAccessibilityIdentifier,
             onButton: onDone
         ) {
             VStack(spacing: 14) {
-                HStack {
-                    Spacer()
-                    shareControl
-                }
+                topControl
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 10) {
@@ -429,7 +469,36 @@ private struct AchievementMedalDetailView: View {
                 }
             }
         }
-        .accessibilityIdentifier("achievement-medal-detail")
+        .accessibilityIdentifier(mode.accessibilityIdentifier)
+    }
+
+    @ViewBuilder
+    private var topControl: some View {
+        switch mode {
+        case .wallDetail:
+            HStack {
+                Spacer()
+                shareControl
+            }
+        case .awardNotice:
+            VStack(spacing: 4) {
+                Text("获得新勋章")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(AppTheme.deepSage)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+
+                if let awardAnimalName {
+                    Text("\(awardAnimalName)的\(medal.tier.category.medalLabel)勋章")
+                        .font(AppTheme.caption)
+                        .foregroundStyle(AppTheme.secondaryInk)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 2)
+        }
     }
 
     @ViewBuilder
@@ -588,9 +657,12 @@ private struct AchievementMedalShareImage: View {
 }
 
 private struct AchievementMedalArtwork: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let medal: AchievementMedalProgress
     let tierOrdinal: Int
     let size: CGFloat
+    var showsAcquiredShine = false
 
     private var scale: CGFloat {
         size / 106
@@ -651,6 +723,94 @@ private struct AchievementMedalArtwork: View {
                     )
                     .allowsHitTesting(false)
             }
+
+            if showsAcquiredShine, medal.isUnlocked, reduceMotion == false {
+                AchievementMedalAcquiredShine(assetName: assetName, size: 104 * scale)
+                    .allowsHitTesting(false)
+            }
+        }
+    }
+}
+
+private struct AchievementMedalAcquiredShine: View {
+    let assetName: String
+    let size: CGFloat
+
+    private let activeDuration: TimeInterval = 1.5
+    private let pauseDuration: TimeInterval = 2.0
+    private var period: TimeInterval { activeDuration + pauseDuration }
+
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            if let phase = normalizedPhase(for: timeline.date) {
+                AchievementMedalShineBand(phase: phase, size: size)
+                    .frame(width: size, height: size)
+                    .mask(
+                        ArtImage(name: assetName)
+                            .frame(width: size, height: size)
+                    )
+                    .blendMode(.screen)
+                    .compositingGroup()
+            } else {
+                Color.clear
+                    .frame(width: size, height: size)
+            }
+        }
+    }
+
+    private func normalizedPhase(for date: Date) -> Double? {
+        let elapsed = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: period)
+        guard elapsed < activeDuration else { return nil }
+        return elapsed / activeDuration
+    }
+}
+
+private struct AchievementMedalShineBand: View {
+    let phase: Double
+    let size: CGFloat
+
+    private var easedFlashOpacity: Double {
+        pow(sin(phase * .pi), 0.72)
+    }
+
+    var body: some View {
+        let travelDistance = size * 2.15
+        let x = CGFloat(phase) * travelDistance - size * 1.08
+        let y = CGFloat(phase - 0.5) * size * 0.34
+
+        ZStack {
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .clear, location: 0.28),
+                    .init(color: Color.white.opacity(0.16), location: 0.40),
+                    .init(color: Color(red: 1, green: 0.96, blue: 0.74).opacity(0.58), location: 0.50),
+                    .init(color: Color.white.opacity(0.34), location: 0.58),
+                    .init(color: .clear, location: 0.73),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: size * 0.46, height: size * 1.72)
+            .rotationEffect(.degrees(-28))
+            .offset(x: x, y: y)
+            .blur(radius: 1.2)
+            .opacity(0.92 * easedFlashOpacity)
+
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(0.34),
+                    Color(red: 1, green: 0.93, blue: 0.62).opacity(0.12),
+                    .clear
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: size * 0.36
+            )
+            .frame(width: size * 0.72, height: size * 0.72)
+            .offset(x: x + size * 0.03, y: y - size * 0.06)
+            .opacity(0.5 * easedFlashOpacity)
         }
     }
 }

@@ -364,6 +364,48 @@ final class AchievementEngineTests: XCTestCase {
         XCTAssertNil(AchievementMedalSharePolicy.payload(for: locked))
     }
 
+    func testCollectedMedalAwardsUseStableUniqueNotificationIds() {
+        let trips = Self.makeTrips(animalId: "xiaoman", count: 1)
+        let tickets = [Self.makeTicket(sourceSteps: 9_000, animalId: "xiaoman")]
+
+        let awards = engine.collectedMedalAwards(
+            animals: Self.animals,
+            trips: trips,
+            tickets: tickets,
+            postcards: []
+        )
+
+        XCTAssertEqual(awards.map(\.id), [
+            "xiaoman-travel-1",
+            "xiaoman-steps-3000",
+            "xiaoman-steps-9000"
+        ])
+        XCTAssertEqual(Set(awards.map(\.id)).count, awards.count)
+    }
+
+    func testCollectedMedalAwardsKeepAchievementWallOrder() {
+        let trips = Self.makeTrips(animalId: "xiaoman", count: 1) +
+            Self.makeTrips(animalId: "tangyuan", count: 1)
+        let tickets = [
+            Self.makeTicket(sourceSteps: 3_000, animalId: "xiaoman"),
+            Self.makeTicket(sourceSteps: 3_000, animalId: "tangyuan")
+        ]
+
+        let awards = engine.collectedMedalAwards(
+            animals: Self.animals,
+            trips: trips,
+            tickets: tickets,
+            postcards: []
+        )
+
+        XCTAssertEqual(awards.map(\.id), [
+            "xiaoman-travel-1",
+            "tangyuan-travel-1",
+            "xiaoman-steps-3000",
+            "tangyuan-steps-3000"
+        ])
+    }
+
     func testStepMedalSharePayloadUsesGiftedStepsCopyAndCompactProgress() throws {
         let tier = try XCTUnwrap(AchievementEngine.stepTiers.first)
         let collected = AchievementMedalProgress(

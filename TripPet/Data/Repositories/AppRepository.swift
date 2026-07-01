@@ -17,6 +17,7 @@ final class AppRepository: ObservableObject {
     private let destinations: [ManifestDestination]
     private let postcardScheduler: PostcardScheduler
     private let randomDestinationIndex: (Int) -> Int
+    private let achievementEngine = AchievementEngine()
     private let maxDailyAnimalDepartures = 3
     private let maxCabinAnimals = 9
     private static let minimumDestinationSpacingDegrees = 12.0
@@ -57,6 +58,7 @@ final class AppRepository: ObservableObject {
         ensureOpenWishes(on: Date())
         ensureFirstAirportPostcardIfNeeded()
         refreshCabinLodging()
+        ensureAchievementNotificationBaselineIfNeeded()
     }
 
     var residentAnimal: Animal? {
@@ -207,7 +209,10 @@ final class AppRepository: ObservableObject {
             departedAt: date,
             expectedReturnAt: date.addingTimeInterval(PostcardScheduler.tripDuration),
             status: .traveling,
-            postcardPlan: postcardScheduler.makePostcardPlan(departedAt: date),
+            postcardPlan: postcardScheduler.makePostcardPlan(
+                departedAt: date,
+                occupiedDueAts: pendingPostcardDueAts()
+            ),
             completedAt: nil
         )
         trips.append(trip)
@@ -252,6 +257,47 @@ final class AppRepository: ObservableObject {
         postcards[index].isRead = true
         store.markPostcardRead(postcardId: postcard.id)
         return true
+    }
+
+    @discardableResult
+    func claimFirstUnnotifiedAchievementMedalAward() -> AchievementMedalAward? {
+        ensureAchievementNotificationBaselineIfNeeded()
+
+        let awards = collectedAchievementMedalAwards()
+        let unnotifiedAwards = awards.filter { award in
+            userFlags.notifiedAchievementMedalIds.contains(award.id) == false
+        }
+        guard let firstAward = unnotifiedAwards.first else {
+            return nil
+        }
+
+        var updatedFlags = userFlags
+        updatedFlags.notifiedAchievementMedalIds.formUnion(unnotifiedAwards.map(\.id))
+        userFlags = updatedFlags
+        saveState()
+
+        return firstAward
+    }
+
+    private func ensureAchievementNotificationBaselineIfNeeded() {
+        guard userFlags.achievementMedalNotificationBaselineEstablished == false else {
+            return
+        }
+
+        var updatedFlags = userFlags
+        updatedFlags.notifiedAchievementMedalIds.formUnion(collectedAchievementMedalAwards().map(\.id))
+        updatedFlags.achievementMedalNotificationBaselineEstablished = true
+        userFlags = updatedFlags
+        saveState()
+    }
+
+    private func collectedAchievementMedalAwards() -> [AchievementMedalAward] {
+        achievementEngine.collectedMedalAwards(
+            animals: animals,
+            trips: trips,
+            tickets: tickets,
+            postcards: postcards
+        )
     }
 
     private func ensureFirstAirportPostcardIfNeeded() {
@@ -389,6 +435,16 @@ final class AppRepository: ObservableObject {
             guard trips[index].postcardPlan.isEmpty == false else { continue }
             trips[index].postcardPlan = postcardScheduler.normalizedPostcardPlan(trips[index].postcardPlan)
         }
+    }
+
+    private func pendingPostcardDueAts() -> [Date] {
+        trips
+            .filter { $0.status == .traveling || $0.status == .preparing }
+            .flatMap { trip in
+                trip.postcardPlan.compactMap { planItem in
+                    planItem.revealedAt == nil ? planItem.dueAt : nil
+                }
+            }
     }
 
     private func migrateLegacyPostcardBodies() {

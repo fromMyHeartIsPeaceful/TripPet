@@ -798,67 +798,13 @@
       ]
     },
     {
-      "cityId": "cn_hongkong",
-      "cityNameZh": "香港",
-      "cityNameLocal": "Hong Kong",
-      "countryOrRegion": "中国香港",
-      "isCoastal": true,
-      "hasMajorRiverOrLake": true,
-      "supportsPierOrFerry": true,
-      "supportsSeaside": true,
-      "supportsHillOrSteepStairs": true,
-      "supportsTram": true,
-      "supportsMetro": true,
-      "confidence": "coarse_geography_rule",
-      "notes": [
-        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
-        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
-      ]
-    },
-    {
-      "cityId": "cn_macau",
-      "cityNameZh": "澳门",
-      "cityNameLocal": "Macau",
-      "countryOrRegion": "中国澳门",
-      "isCoastal": true,
-      "hasMajorRiverOrLake": true,
-      "supportsPierOrFerry": true,
-      "supportsSeaside": true,
-      "supportsHillOrSteepStairs": true,
-      "supportsTram": false,
-      "supportsMetro": false,
-      "confidence": "coarse_geography_rule",
-      "notes": [
-        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
-        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
-      ]
-    },
-    {
-      "cityId": "tw_taipei",
-      "cityNameZh": "台北",
-      "cityNameLocal": "Taipei",
-      "countryOrRegion": "中国台湾",
+      "cityId": "kz_astana",
+      "cityNameZh": "阿斯塔纳",
+      "cityNameLocal": "Astana",
+      "countryOrRegion": "哈萨克斯坦",
       "isCoastal": false,
       "hasMajorRiverOrLake": true,
       "supportsPierOrFerry": false,
-      "supportsSeaside": false,
-      "supportsHillOrSteepStairs": true,
-      "supportsTram": false,
-      "supportsMetro": true,
-      "confidence": "coarse_geography_rule",
-      "notes": [
-        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
-        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
-      ]
-    },
-    {
-      "cityId": "tw_tainan",
-      "cityNameZh": "台南",
-      "cityNameLocal": "Tainan",
-      "countryOrRegion": "中国台湾",
-      "isCoastal": true,
-      "hasMajorRiverOrLake": true,
-      "supportsPierOrFerry": true,
       "supportsSeaside": false,
       "supportsHillOrSteepStairs": false,
       "supportsTram": false,
@@ -870,14 +816,68 @@
       ]
     },
     {
-      "cityId": "tw_kaohsiung",
-      "cityNameZh": "高雄",
-      "cityNameLocal": "Kaohsiung",
-      "countryOrRegion": "中国台湾",
+      "cityId": "jp_nara",
+      "cityNameZh": "奈良",
+      "cityNameLocal": "Nara",
+      "countryOrRegion": "日本",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "kr_daegu",
+      "cityNameZh": "大邱",
+      "cityNameLocal": "Daegu",
+      "countryOrRegion": "韩国",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": true,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": true,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "th_phuket",
+      "cityNameZh": "普吉",
+      "cityNameLocal": "Phuket",
+      "countryOrRegion": "泰国",
       "isCoastal": true,
       "hasMajorRiverOrLake": true,
       "supportsPierOrFerry": true,
       "supportsSeaside": true,
+      "supportsHillOrSteepStairs": false,
+      "supportsTram": false,
+      "supportsMetro": false,
+      "confidence": "coarse_geography_rule",
+      "notes": [
+        "本表用于筛掉地理常识级错误，不代表具体地点已人工终审。",
+        "不确定能力默认 false；宁可降级成普通生活空间，也不保留明显错误的海边、港边、轮渡、电车或山坡描述。"
+      ]
+    },
+    {
+      "cityId": "in_jaipur",
+      "cityNameZh": "斋浦尔",
+      "cityNameLocal": "Jaipur",
+      "countryOrRegion": "印度",
+      "isCoastal": false,
+      "hasMajorRiverOrLake": false,
+      "supportsPierOrFerry": false,
+      "supportsSeaside": false,
       "supportsHillOrSteepStairs": false,
       "supportsTram": false,
       "supportsMetro": true,

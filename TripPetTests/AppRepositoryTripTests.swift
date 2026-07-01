@@ -18,27 +18,73 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.trips.first?.expectedReturnAt, giftedAt.addingTimeInterval(60 * 60 * 18))
         XCTAssertEqual(repository.trips.first?.postcardPlan.count, 2)
         XCTAssertEqual(repository.trips.first?.postcardPlan.first?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 2))
-        XCTAssertEqual(repository.trips.first?.postcardPlan.last?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 6))
+        XCTAssertEqual(repository.trips.first?.postcardPlan.last?.dueAt, giftedAt.addingTimeInterval(60 * 60 * 4))
         XCTAssertEqual(repository.travelWishes.first?.status, .traveling)
     }
 
-    func testPostcardPlanRandomWindowsStayInRange() throws {
+    func testPostcardPlanUsesBigBoardQueueSpacing() throws {
         let departedAt = Self.date(hour: 9)
-        let lowPlan = PostcardScheduler(randomOffset: { $0.lowerBound }).makePostcardPlan(departedAt: departedAt)
-        let highPlan = PostcardScheduler(randomOffset: { $0.upperBound }).makePostcardPlan(departedAt: departedAt)
+        let scheduler = PostcardScheduler()
+        let firstPlan = scheduler.makePostcardPlan(departedAt: departedAt)
+        let secondPlan = scheduler.makePostcardPlan(
+            departedAt: departedAt,
+            occupiedDueAts: firstPlan.map(\.dueAt)
+        )
 
-        XCTAssertEqual(lowPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 2))
-        XCTAssertEqual(highPlan[0].dueAt, departedAt.addingTimeInterval(60 * 60 * 3))
-        XCTAssertEqual(lowPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 6))
-        XCTAssertEqual(highPlan[1].dueAt, departedAt.addingTimeInterval(60 * 60 * 8))
+        XCTAssertEqual(firstPlan.map(\.dueAt), [
+            Self.date(hour: 11),
+            Self.date(hour: 13)
+        ])
+        XCTAssertEqual(secondPlan.map(\.dueAt), [
+            Self.date(hour: 15),
+            Self.date(hour: 17)
+        ])
     }
 
-    func testPostcardPlanDefersQuietHoursAndKeepsSpacing() throws {
+    func testPostcardPlanSkipsQuietHoursAndKeepsSpacing() throws {
         let departedAt = Self.date(hour: 23, minute: 30)
         let plan = PostcardScheduler(randomOffset: { $0.lowerBound }).makePostcardPlan(departedAt: departedAt)
 
-        XCTAssertEqual(plan[0].dueAt, Self.date(day: 2, hour: 6, minute: 30))
-        XCTAssertEqual(plan[1].dueAt, Self.date(day: 2, hour: 8))
+        XCTAssertEqual(plan[0].dueAt, Self.date(day: 2, hour: 7))
+        XCTAssertEqual(plan[1].dueAt, Self.date(day: 2, hour: 9))
+    }
+
+    func testPostcardPlanCompressesQueueSpacingBeforeDroppingFirstCard() throws {
+        let departedAt = Self.date(hour: 9)
+        let occupiedDueAts = [
+            Self.date(hour: 11),
+            Self.date(hour: 13),
+            Self.date(hour: 15),
+            Self.date(hour: 17),
+            Self.date(hour: 19),
+            Self.date(hour: 21)
+        ]
+
+        let plan = PostcardScheduler().makePostcardPlan(
+            departedAt: departedAt,
+            occupiedDueAts: occupiedDueAts
+        )
+
+        XCTAssertEqual(plan.map(\.dueAt), [Self.date(hour: 22, minute: 30)])
+    }
+
+    func testPostcardPlanUsesMinimumQueueSpacingWhenNeeded() throws {
+        let departedAt = Self.date(hour: 9)
+        let occupiedDueAts = [
+            Self.date(hour: 11),
+            Self.date(hour: 13),
+            Self.date(hour: 15),
+            Self.date(hour: 17),
+            Self.date(hour: 19),
+            Self.date(hour: 21, minute: 30)
+        ]
+
+        let plan = PostcardScheduler().makePostcardPlan(
+            departedAt: departedAt,
+            occupiedDueAts: occupiedDueAts
+        )
+
+        XCTAssertEqual(plan.map(\.dueAt), [Self.date(hour: 22, minute: 30)])
     }
 
     func testActiveTripCanBeReadAfterGift() {
@@ -274,6 +320,28 @@ final class AppRepositoryTripTests: XCTestCase {
         let activeDestinationIds = repository.activeTravelTrips.map(\.destinationId)
         XCTAssertEqual(activeDestinationIds.count, 3)
         XCTAssertEqual(Set(activeDestinationIds).count, 3)
+    }
+
+    func testMultipleDeparturesUseSharedPostcardQueue() {
+        let repository = AppRepository(seed: Self.makeMultiAnimalSeed(primaryCount: 3, backupCount: 0))
+        let first = Self.date(hour: 8)
+        let second = Self.date(hour: 10)
+        let third = Self.date(hour: 12)
+
+        repository.giftTicket(sourceSteps: 5_500, ticketCount: 1, date: first)
+        repository.giftTicket(sourceSteps: 6_500, ticketCount: 1, date: second)
+        repository.giftTicket(sourceSteps: 7_500, ticketCount: 1, date: third)
+
+        let dueAts = repository.trips.flatMap { $0.postcardPlan.map(\.dueAt) }.sorted()
+
+        XCTAssertEqual(dueAts, [
+            Self.date(hour: 10),
+            Self.date(hour: 12),
+            Self.date(hour: 14),
+            Self.date(hour: 16),
+            Self.date(hour: 18),
+            Self.date(hour: 20)
+        ])
     }
 
     func testCompletedDestinationCanBeSelectedAgain() throws {
@@ -538,17 +606,18 @@ final class AppRepositoryTripTests: XCTestCase {
         let store = CountingUserStateStore(state: AppUserState(seed: seed))
         let repository = AppRepository(seed: seed, store: store)
         let postcard = try XCTUnwrap(repository.postcards.first)
+        let saveCountAfterInit = store.saveCount
 
         XCTAssertTrue(repository.markPostcardRead(postcard))
         XCTAssertTrue(repository.postcards.first?.isRead ?? false)
         XCTAssertEqual(store.markPostcardReadCount, 1)
-        XCTAssertEqual(store.saveCount, 0)
+        XCTAssertEqual(store.saveCount, saveCountAfterInit)
 
         let readPostcard = try XCTUnwrap(repository.postcards.first)
         XCTAssertFalse(repository.markPostcardRead(readPostcard))
         XCTAssertFalse(repository.markPostcardRead(Self.makePostcard(id: "missing", isRead: false)))
         XCTAssertEqual(store.markPostcardReadCount, 1)
-        XCTAssertEqual(store.saveCount, 0)
+        XCTAssertEqual(store.saveCount, saveCountAfterInit)
     }
 
     func testSwiftDataStoreTargetedPostcardReadUpdateKeepsOtherState() throws {
@@ -629,7 +698,7 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(repository.postcards.count, 1)
         XCTAssertEqual(repository.trips.first?.status, .traveling)
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 13)))
         XCTAssertEqual(repository.postcards.count, 2)
         XCTAssertEqual(repository.trips.first?.status, .traveling)
 
@@ -651,8 +720,8 @@ final class AppRepositoryTripTests: XCTestCase {
 
         repository.giftTicket(sourceSteps: 5_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
 
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 15)))
-        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 2, hour: 6)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 11)))
+        XCTAssertTrue(repository.revealEligiblePostcards(scheduler: scheduler, destinations: seed.destinations, on: Self.date(day: 1, hour: 13)))
 
         XCTAssertEqual(repository.postcards.count, 2)
         XCTAssertEqual(Set(repository.postcards.map(\.body)).count, 2)
@@ -868,10 +937,11 @@ final class AppRepositoryTripTests: XCTestCase {
         let store = CountingUserStateStore(state: savedState)
 
         let repository = AppRepository(seed: seed, store: store)
+        let saveCountAfterInit = store.saveCount
 
         XCTAssertEqual(repository.postcards.first?.body, careNarrative.body)
         XCTAssertTrue(repository.consumedPostcardTextIds.isEmpty)
-        XCTAssertEqual(store.saveCount, 0)
+        XCTAssertEqual(store.saveCount, saveCountAfterInit)
     }
 
     func testMigratedPostcardBodyPersistsAcrossRepositoryInstances() throws {
@@ -944,8 +1014,8 @@ final class AppRepositoryTripTests: XCTestCase {
 
         let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
 
-        XCTAssertEqual(repository.trips.first?.postcardPlan[0].dueAt, Self.date(day: 2, hour: 6, minute: 30))
-        XCTAssertEqual(repository.trips.first?.postcardPlan[1].dueAt, Self.date(day: 2, hour: 8))
+        XCTAssertEqual(repository.trips.first?.postcardPlan[0].dueAt, Self.date(day: 2, hour: 7))
+        XCTAssertEqual(repository.trips.first?.postcardPlan[1].dueAt, Self.date(day: 2, hour: 8, minute: 30))
     }
 
     func testPersistedDestinationIdRehydratesLatestManifestCatalog() throws {
@@ -964,6 +1034,85 @@ final class AppRepositoryTripTests: XCTestCase {
         XCTAssertEqual(restoredRepository.activeTrip?.destination, "巴黎新名字")
         XCTAssertEqual(restoredRepository.travelWishes.first?.destination, "巴黎新名字")
         XCTAssertEqual(restoredRepository.travelWishes.first?.destinationAssetName, "destination_iceland_line")
+    }
+
+    func testExistingCollectedAchievementMedalsAreBaselinedWithoutAward() {
+        let seed = Self.makeSeed()
+        let trip = Self.makeTrip(animalId: "cat")
+        let ticket = Ticket(
+            id: UUID(),
+            date: Self.date(day: 1, hour: 9),
+            sourceSteps: 3_000,
+            ticketCount: 1,
+            animalId: "cat",
+            giftedAt: Self.date(day: 1, hour: 9)
+        )
+        let savedState = AppUserState(
+            travelWishes: seed.travelWishes,
+            trips: [trip],
+            postcards: [],
+            tickets: [ticket],
+            flags: AppUserFlags(),
+            cabinLodging: CabinLodgingState.initial(on: Self.date(), animalIds: ["cat"])
+        )
+
+        let repository = AppRepository(seed: seed, store: InMemoryUserStateStore(savedState: savedState))
+
+        XCTAssertNil(repository.claimFirstUnnotifiedAchievementMedalAward())
+        XCTAssertTrue(repository.userFlags.achievementMedalNotificationBaselineEstablished)
+        XCTAssertEqual(repository.userFlags.notifiedAchievementMedalIds, [
+            "cat-travel-1",
+            "cat-steps-3000"
+        ])
+    }
+
+    func testNewGiftClaimsOneAchievementMedalAwardOnce() throws {
+        let repository = AppRepository(seed: Self.makeSeed(), postcardScheduler: Self.fixedScheduler())
+
+        repository.giftTicket(sourceSteps: 4_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+
+        let award = try XCTUnwrap(repository.claimFirstUnnotifiedAchievementMedalAward())
+        XCTAssertEqual(award.id, "cat-travel-1")
+        XCTAssertEqual(award.animalName, "小猫")
+        XCTAssertEqual(award.medal.tier.title, "穷人乍富")
+        XCTAssertNil(repository.claimFirstUnnotifiedAchievementMedalAward())
+    }
+
+    func testClaimingOneAwardMarksSameBatchAwardsAsNotified() throws {
+        let repository = AppRepository(seed: Self.makeSeed(), postcardScheduler: Self.fixedScheduler())
+
+        repository.giftTicket(sourceSteps: 9_000, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+
+        let award = try XCTUnwrap(repository.claimFirstUnnotifiedAchievementMedalAward())
+        XCTAssertEqual(award.id, "cat-travel-1")
+        XCTAssertEqual(repository.userFlags.notifiedAchievementMedalIds, [
+            "cat-travel-1",
+            "cat-steps-3000",
+            "cat-steps-9000"
+        ])
+        XCTAssertNil(repository.claimFirstUnnotifiedAchievementMedalAward())
+    }
+
+    func testClaimedAchievementMedalAwardPersistsAcrossSwiftDataRepositoryReload() throws {
+        let store = try SwiftDataUserStateStore(inMemory: true)
+        let repository = AppRepository(
+            seed: Self.makeSeed(),
+            store: store,
+            postcardScheduler: Self.fixedScheduler()
+        )
+
+        repository.giftTicket(sourceSteps: 4_200, ticketCount: 1, date: Self.date(day: 1, hour: 9))
+        XCTAssertEqual(repository.claimFirstUnnotifiedAchievementMedalAward()?.id, "cat-travel-1")
+
+        let restoredRepository = AppRepository(
+            seed: Self.makeSeed(),
+            store: store,
+            postcardScheduler: Self.fixedScheduler()
+        )
+
+        XCTAssertNil(restoredRepository.claimFirstUnnotifiedAchievementMedalAward())
+        XCTAssertTrue(restoredRepository.userFlags.notifiedAchievementMedalIds.contains("cat-travel-1"))
+        XCTAssertTrue(restoredRepository.userFlags.notifiedAchievementMedalIds.contains("cat-steps-3000"))
     }
 
     func testContentManifestUsesCanonicalAnimalIdentities() throws {

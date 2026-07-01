@@ -31,7 +31,7 @@ struct DepartureCardTransitionLayout: Equatable {
 }
 
 struct DepartureCardTransitionVisuals: Equatable {
-    static let maskOpacity: Double = 0.42
+    static let maskOpacity: Double = 0.64
     static let cornerRadius: CGFloat = 24
     static let strokeOpacity: Double = 0.56
     static let strokeWidth: CGFloat = 1

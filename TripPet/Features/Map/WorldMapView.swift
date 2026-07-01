@@ -551,8 +551,7 @@ private struct TravelCountdownSheet: View {
                     )
 
                     TravelCountdownClockBadge(
-                        text: countdownText(clockText: clockText),
-                        tint: route.tint
+                        text: countdownText(clockText: clockText)
                     )
 
                     Text("正在【\(route.destination)】旅行")
@@ -602,7 +601,8 @@ private struct TravelCountdownAnimalHeader: View {
 
 private struct TravelCountdownClockBadge: View {
     let text: String
-    let tint: Color
+
+    private let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
 
     var body: some View {
         HStack(spacing: 9) {
@@ -619,81 +619,14 @@ private struct TravelCountdownClockBadge: View {
         .padding(.horizontal, 18)
         .frame(maxWidth: 304)
         .frame(height: 54)
-        .background(
-            TravelCountdownBadgeBackground(tint: tint)
-        )
+        .background(Color(red: 0.43, green: 0.73, blue: 0.77))
+        .clipShape(shape)
         .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(AppTheme.paperWhite.opacity(0.86), lineWidth: 1.2)
+            shape.stroke(AppTheme.paperWhite.opacity(0.86), lineWidth: 1.2)
         )
-        .shadow(color: AppTheme.mapRouteBlue.opacity(0.16), radius: 7, x: 0, y: 4)
+        .shadow(color: AppTheme.oliveInk.opacity(0.12), radius: 7, x: 0, y: 4)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("回家倒计时，\(text)")
-    }
-}
-
-private struct TravelCountdownBadgeBackground: View {
-    let tint: Color
-
-    private let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
-
-    var body: some View {
-        shape
-            .fill(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.57, green: 0.82, blue: 0.86),
-                        Color(red: 0.35, green: 0.70, blue: 0.80),
-                        Color(red: 0.43, green: 0.76, blue: 0.78)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay {
-                ZStack {
-                    RadialGradient(
-                        colors: [
-                            AppTheme.paperWhite.opacity(0.44),
-                            AppTheme.paperWhite.opacity(0.02)
-                        ],
-                        center: .topLeading,
-                        startRadius: 8,
-                        endRadius: 118
-                    )
-
-                    RadialGradient(
-                        colors: [
-                            Color(red: 0.70, green: 0.92, blue: 0.88).opacity(0.50),
-                            Color(red: 0.70, green: 0.92, blue: 0.88).opacity(0)
-                        ],
-                        center: .bottomLeading,
-                        startRadius: 4,
-                        endRadius: 142
-                    )
-
-                    RadialGradient(
-                        colors: [
-                            tint.opacity(0.22),
-                            tint.opacity(0)
-                        ],
-                        center: .trailing,
-                        startRadius: 18,
-                        endRadius: 134
-                    )
-
-                    ArtImage(name: "texture_paper_grain", contentMode: .fill)
-                        .opacity(0.07)
-                        .blendMode(.softLight)
-                }
-                .clipShape(shape)
-                .blur(radius: 0.35)
-            }
-            .overlay(alignment: .top) {
-                shape
-                    .stroke(AppTheme.paperWhite.opacity(0.18), lineWidth: 5)
-                    .blur(radius: 4)
-            }
     }
 }
 

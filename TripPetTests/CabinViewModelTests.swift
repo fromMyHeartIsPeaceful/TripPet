@@ -164,9 +164,9 @@ final class CabinViewModelTests: XCTestCase {
         }
     }
 
-    func testDepartureCardTransitionMaskIsGentlerButStillFocusesHome() {
-        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.40)
-        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.44)
+    func testDepartureCardTransitionMaskFocusesHomeWithoutOverDarkening() {
+        XCTAssertGreaterThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.60)
+        XCTAssertLessThanOrEqual(DepartureCardTransitionVisuals.maskOpacity, 0.68)
     }
 
     func testDepartureCardTransitionDoesNotHoldPlaybackAfterCardSettles() {
@@ -656,7 +656,7 @@ final class CabinViewModelTests: XCTestCase {
             steps: 0,
             postcardNotificationService: notificationService
         )
-        let departedAt = Date().addingTimeInterval(-60 * 60 * 4)
+        let departedAt = Date().addingTimeInterval(-60 * 60 * 3)
         let viewModel = CabinViewModel()
 
         viewModel.bind(environment: environment)

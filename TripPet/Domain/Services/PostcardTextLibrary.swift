@@ -24,11 +24,13 @@ struct PostcardCareCategorySelection: Equatable {
 
 enum PostcardCareTimeRules {
     static let minimumSpacing: TimeInterval = 60 * 90
+    static let quietStartMinute = 23 * 60
+    static let quietEndMinute = 7 * 60
 
     static func selection(for date: Date, calendar: Calendar = .current) -> PostcardCareCategorySelection {
         let minute = minuteOfDay(for: date, calendar: calendar)
         switch minute {
-        case 360..<630:
+        case quietEndMinute..<630:
             return PostcardCareCategorySelection(
                 preferred: [.morningRestart, .gentleEncouragement, .weatherSeason],
                 fallback: [.missingHome, .smallTips]
@@ -53,12 +55,12 @@ enum PostcardCareTimeRules {
                 preferred: [.nightCare, .hurtMisunderstood, .informationOverload, .selfBlameFailure],
                 fallback: [.hydrationFood, .missingHome]
             )
-        case 1290..<1410:
+        case 1290..<quietStartMinute:
             return PostcardCareCategorySelection(
                 preferred: [.nightCare, .sleepShutdown, .lowBattery, .selfBlameFailure],
                 fallback: [.missingHome]
             )
-        case 1410..<1440, 0..<360:
+        case quietStartMinute..<1440, 0..<quietEndMinute:
             return PostcardCareCategorySelection(
                 preferred: [.nightCare, .sleepShutdown],
                 fallback: [.lowBattery]
@@ -73,17 +75,17 @@ enum PostcardCareTimeRules {
 
     static func normalizedDeliveryDate(for date: Date, calendar: Calendar = .current) -> Date {
         let minute = minuteOfDay(for: date, calendar: calendar)
-        guard minute >= 1410 || minute < 360 else {
+        guard minute >= quietStartMinute || minute < quietEndMinute else {
             return date
         }
 
         var components = calendar.dateComponents([.year, .month, .day], from: date)
-        components.hour = 6
-        components.minute = 30
+        components.hour = 7
+        components.minute = 0
         components.second = 0
         components.nanosecond = 0
         let baseDay = calendar.date(from: components) ?? date
-        if minute >= 1410 {
+        if minute >= quietStartMinute {
             return calendar.date(byAdding: .day, value: 1, to: baseDay) ?? date.addingTimeInterval(60 * 60 * 7)
         }
         return baseDay

@@ -6,6 +6,8 @@ struct AppUserFlags: Equatable {
     var healthGuideDismissed: Bool = false
     var firstImmediateTicketGifted: Bool = false
     var firstAirportPostcardDelivered: Bool = false
+    var achievementMedalNotificationBaselineEstablished: Bool = false
+    var notifiedAchievementMedalIds: Set<String> = []
 }
 
 struct AppUserState: Equatable {
@@ -440,12 +442,19 @@ final class SwiftDataUserStateStore: AppUserStateStore {
         replace(PersistedTrip.self, with: state.trips.map(PersistedTrip.init(trip:)))
         replace(PersistedPostcard.self, with: state.postcards.map(PersistedPostcard.init(postcard:)))
         replace(PersistedTravelWishState.self, with: state.travelWishes.map(PersistedTravelWishState.init(wish:)))
+        let achievementMedalNotificationFlags = state.flags.notifiedAchievementMedalIds
+            .sorted()
+            .map { PersistedAppFlag(key: AppFlagKey.notifiedAchievementMedalPrefix + $0, boolValue: true) }
         replace(PersistedAppFlag.self, with: [
             PersistedAppFlag(key: AppFlagKey.onboardingCompleted, boolValue: state.flags.onboardingCompleted),
             PersistedAppFlag(key: AppFlagKey.healthGuideDismissed, boolValue: state.flags.healthGuideDismissed),
             PersistedAppFlag(key: AppFlagKey.firstImmediateTicketGifted, boolValue: state.flags.firstImmediateTicketGifted),
-            PersistedAppFlag(key: AppFlagKey.firstAirportPostcardDelivered, boolValue: state.flags.firstAirportPostcardDelivered)
-        ])
+            PersistedAppFlag(key: AppFlagKey.firstAirportPostcardDelivered, boolValue: state.flags.firstAirportPostcardDelivered),
+            PersistedAppFlag(
+                key: AppFlagKey.achievementMedalNotificationBaselineEstablished,
+                boolValue: state.flags.achievementMedalNotificationBaselineEstablished
+            )
+        ] + achievementMedalNotificationFlags)
         replace(PersistedCabinLodgingState.self, with: [
             PersistedCabinLodgingState(state: state.cabinLodging)
         ])
@@ -466,11 +475,24 @@ final class SwiftDataUserStateStore: AppUserStateStore {
 
     private func loadFlags() -> AppUserFlags {
         let flags = (try? context.fetch(FetchDescriptor<PersistedAppFlag>())) ?? []
+        let notifiedAchievementMedalIds = Set(
+            flags.compactMap { flag -> String? in
+                guard flag.boolValue,
+                      flag.key.hasPrefix(AppFlagKey.notifiedAchievementMedalPrefix) else {
+                    return nil
+                }
+                return String(flag.key.dropFirst(AppFlagKey.notifiedAchievementMedalPrefix.count))
+            }
+        )
         return AppUserFlags(
             onboardingCompleted: flags.first { $0.key == AppFlagKey.onboardingCompleted }?.boolValue ?? false,
             healthGuideDismissed: flags.first { $0.key == AppFlagKey.healthGuideDismissed }?.boolValue ?? false,
             firstImmediateTicketGifted: flags.first { $0.key == AppFlagKey.firstImmediateTicketGifted }?.boolValue ?? false,
-            firstAirportPostcardDelivered: flags.first { $0.key == AppFlagKey.firstAirportPostcardDelivered }?.boolValue ?? false
+            firstAirportPostcardDelivered: flags.first { $0.key == AppFlagKey.firstAirportPostcardDelivered }?.boolValue ?? false,
+            achievementMedalNotificationBaselineEstablished: flags.first {
+                $0.key == AppFlagKey.achievementMedalNotificationBaselineEstablished
+            }?.boolValue ?? false,
+            notifiedAchievementMedalIds: notifiedAchievementMedalIds
         )
     }
 
@@ -524,4 +546,6 @@ private enum AppFlagKey {
     static let healthGuideDismissed = "healthGuideDismissed"
     static let firstImmediateTicketGifted = "firstImmediateTicketGifted"
     static let firstAirportPostcardDelivered = "firstAirportPostcardDelivered"
+    static let achievementMedalNotificationBaselineEstablished = "achievementMedalNotificationBaselineEstablished"
+    static let notifiedAchievementMedalPrefix = "notifiedAchievementMedal:"
 }
