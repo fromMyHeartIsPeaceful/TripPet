@@ -337,6 +337,30 @@ final class AchievementEngineTests: XCTestCase {
         XCTAssertEqual(cgImage.height, 1920)
     }
 
+    @MainActor
+    func testAchievementMedalShareImageExportsExpectedPixelSize() throws {
+        let tier = try XCTUnwrap(AchievementEngine.travelTiers.first)
+        let medal = AchievementMedalProgress(
+            tier: tier,
+            currentValue: tier.threshold,
+            state: .collected
+        )
+        let payload = try XCTUnwrap(AchievementMedalSharePolicy.payload(for: medal))
+
+        let item = try XCTUnwrap(ShareImageRenderer.makePNG(filename: "medal-share-render-test.png") {
+            AchievementMedalShareImage(
+                medal: medal,
+                tierOrdinal: 1,
+                payload: payload
+            )
+        })
+        let image = try XCTUnwrap(UIImage(data: item.data))
+        let cgImage = try XCTUnwrap(image.cgImage)
+
+        XCTAssertEqual(cgImage.width, 1080)
+        XCTAssertEqual(cgImage.height, 1920)
+    }
+
     func testAchievementMedalSharePayloadOnlyExistsForCollectedMedals() throws {
         let tier = try XCTUnwrap(AchievementEngine.travelTiers.first)
         let collected = AchievementMedalProgress(

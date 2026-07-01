@@ -451,54 +451,83 @@ struct AchievementMedalDetailView: View {
             buttonAccessibilityIdentifier: mode.buttonAccessibilityIdentifier,
             onButton: onDone
         ) {
-            VStack(spacing: 14) {
-                topControl
-
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 10) {
-                        AchievementMedalArtwork(
-                            medal: medal,
-                            tierOrdinal: selection.tierOrdinal,
-                            size: 190
-                        )
-                        .frame(width: 190, height: 190)
-
-                        detailCard
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            }
+            sheetContent
         }
         .accessibilityIdentifier(mode.accessibilityIdentifier)
     }
 
     @ViewBuilder
-    private var topControl: some View {
+    private var sheetContent: some View {
         switch mode {
         case .wallDetail:
-            HStack {
-                Spacer()
+            ZStack(alignment: .topTrailing) {
+                medalScrollContent(
+                    topPadding: 28,
+                    artworkToCardSpacing: 6,
+                    isCompact: false
+                )
+
                 shareControl
+                    .padding(.top, 4)
             }
         case .awardNotice:
-            VStack(spacing: 4) {
-                Text("获得新勋章")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(AppTheme.deepSage)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-
-                if let awardAnimalName {
-                    Text("\(awardAnimalName)的\(medal.tier.category.medalLabel)勋章")
-                        .font(AppTheme.caption)
-                        .foregroundStyle(AppTheme.secondaryInk)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.82)
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 8) {
+                    awardNoticeHeader
+                    medalScrollContent(
+                        topPadding: 0,
+                        artworkToCardSpacing: 4,
+                        isCompact: true
+                    )
                 }
+
+                shareControl
+                    .padding(.top, 4)
+            }
+        }
+    }
+
+    private func medalScrollContent(
+        topPadding: CGFloat,
+        artworkToCardSpacing: CGFloat,
+        isCompact: Bool
+    ) -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: artworkToCardSpacing) {
+                AchievementMedalArtwork(
+                    medal: medal,
+                    tierOrdinal: selection.tierOrdinal,
+                    size: 190
+                )
+                .frame(width: 190, height: 190)
+
+                detailCard(isCompact: isCompact)
             }
             .frame(maxWidth: .infinity)
-            .padding(.top, 2)
+            .padding(.top, topPadding)
+            .padding(.bottom, isCompact ? 10 : 16)
         }
+    }
+
+    private var awardNoticeHeader: some View {
+        VStack(spacing: 2) {
+            Text("获得新勋章")
+                .font(.system(size: 21, weight: .semibold))
+                .foregroundStyle(AppTheme.deepSage)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+
+            if let awardAnimalName {
+                Text("\(awardAnimalName)的\(medal.tier.category.medalLabel)勋章")
+                    .font(AppTheme.caption)
+                    .foregroundStyle(AppTheme.secondaryInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 2)
+        .padding(.horizontal, 44)
     }
 
     @ViewBuilder
@@ -515,33 +544,13 @@ struct AchievementMedalDetailView: View {
                     payload: sharePayload
                 )
             }
-        } else {
-            Button {} label: {
-                shareIconLabel
-            }
-            .disabled(true)
-            .opacity(0.38)
-            .accessibilityLabel("收集后可分享勋章")
         }
     }
 
-    private var shareIconLabel: some View {
-        Image(systemName: "square.and.arrow.up")
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundStyle(AppTheme.ink)
-            .frame(width: 36, height: 36)
-            .background(AppTheme.ivory)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(AppTheme.paperGray, lineWidth: AppTheme.hairline)
-            )
-    }
-
-    private var detailCard: some View {
-        VStack(spacing: 12) {
+    private func detailCard(isCompact: Bool) -> some View {
+        VStack(spacing: isCompact ? 8 : 12) {
             Text(medal.tier.title)
-                .font(.system(size: 24, weight: .semibold))
+                .font(.system(size: isCompact ? 22 : 24, weight: .semibold))
                 .foregroundStyle(AppTheme.ink)
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
@@ -569,7 +578,7 @@ struct AchievementMedalDetailView: View {
             .minimumScaleFactor(0.72)
             .frame(maxWidth: .infinity)
         }
-        .padding(16)
+        .padding(isCompact ? 12 : 16)
         .frame(maxWidth: .infinity)
         .paperCard(cornerRadius: 18, stroke: AppTheme.sage.opacity(0.36))
     }
@@ -583,7 +592,7 @@ struct AchievementMedalDetailView: View {
     }
 }
 
-private struct AchievementMedalShareImage: View {
+struct AchievementMedalShareImage: View {
     let medal: AchievementMedalProgress
     let tierOrdinal: Int
     let payload: AchievementMedalSharePayload
