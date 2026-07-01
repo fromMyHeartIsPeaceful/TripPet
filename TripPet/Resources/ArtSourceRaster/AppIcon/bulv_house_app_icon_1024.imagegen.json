@@ -1,14 +1,15 @@
 {
-  "asset_name": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28",
-  "call_id": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28",
-  "line_number": 144,
+  "asset_name": "bulv_house_app_icon_1024",
+  "call_id": "ig_0ba6ddedbbe4331c016a44e36a4e888191b63e03e89eec9fbc",
+  "line_number": 176,
   "payload_type": "image_generation_end",
-  "source_rollout": "/Users/edy/.codex/sessions/2026/06/29/rollout-2026-06-29T15-34-01-019f124c-a799-7c93-950c-074afbc379a2.jsonl",
-  "raw_png": "ig_0e40b5552836fbb5016a4222bf96a08191bfcac7b2a7deed28.raw.png",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "bulv_house_app_icon_1024.png",
   "width": 1254,
   "height": 1254,
   "has_alpha": false,
-  "byte_count": 2918862,
-  "sha256": "fe4f26dc0d1d11d0b04a55cea3e32c2ceb2870026e24fce93eaef4079d4e268d",
-  "revised_prompt": "Use case: logo-brand\nAsset type: final pure raster PNG for iOS app icon and App Store icon, square 1024x1024\nPrimary request: Create a clean final app icon for the Chinese iOS app \"步履小屋\". The icon must be a full square image with no inner rounded rectangle.\nSubject: One very large cozy tiny cabin filling most of the square image, with a warm lit door/window. Add exactly one pair of footprint marks near the lower foreground and one clean folded paper plane, enlarged, near the upper-right roof area. No other objects.\nStyle/medium: premium simplified watercolor travel-journal icon, iconic and readable, soft pencil outline, warm paper texture, crisp silhouette.\nComposition/framing: use the full square canvas efficiently. Full-bleed warm cream/paper background across the entire square, not a rounded card. Cabin should occupy about 80-88% of the image area while staying safe for iOS rounded-corner crop. Paper plane and footprints should be clearly visible at phone icon size. No tiny details.\nLighting/mood: warm, cozy, calm, inviting.\nColor palette: warm cream full-canvas background, honey yellow cabin light, warm brown roof/walls, muted sage/olive only on the roof if needed. Absolutely no blue, no purple, no dark navy.\nMaterials/textures: subtle watercolor and paper grain; clean crisp edges; not blurry.\nText: no text, no letters, no numbers.\nConstraints: pure square image; full-bleed background; no visible inner rounded rectangle, no white corner cutouts, no border, no exterior drop shadow. Exactly one pair of footprints; keep one paper plane. No leaves, flowers, grass, trees, plants, scenery, clouds, Apple logo, Health icon, watermark."
+  "byte_count": 2681687,
+  "sha256": "9707adaef0269ff765721bd16fd70110d3ba0241c61fd18ea02fddb71413dcca",
+  "revised_prompt": "Edit the provided iOS app icon candidate image. Preserve the exact overall composition, square canvas, style, color palette, cabin size, off-white paper background, paper plane, roof, footprints, side window, lighting, and watercolor texture.\n\nMake only these architectural changes to the cabin:\n1. Remove the glowing window from the wooden front door. Replace it with continuous warm honey-brown wooden planks and matching watercolor/pencil texture. Keep the arched door shape and small round doorknob.\n2. Remove the small round window above the door under the roof peak. Fill that wall area naturally with the same cream plaster texture and subtle stone/watercolor speckles.\n3. Keep the right-side arched window exactly as a window, with its warm glow and frame.\n\nImportant constraints: after editing, the cabin should have exactly one door with no glass/window on the door, exactly one visible window on the right side, and no upper circular window. Do not add any new windows. Do not change the paper plane, footprints, roof, cabin scale, background, or margins. No text, no letters, no numbers, no border, no watermark, no red frame.",
+  "derived_from": "candidates/app_icon_final_c_no_door_window.raw.png"
 }

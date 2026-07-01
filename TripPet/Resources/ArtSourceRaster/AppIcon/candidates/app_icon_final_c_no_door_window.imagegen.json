@@ -1,0 +1,14 @@
+{
+  "asset_name": "app_icon_final_c_no_door_window",
+  "call_id": "ig_0ba6ddedbbe4331c016a44e36a4e888191b63e03e89eec9fbc",
+  "line_number": 176,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "app_icon_final_c_no_door_window.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2681687,
+  "sha256": "9707adaef0269ff765721bd16fd70110d3ba0241c61fd18ea02fddb71413dcca",
+  "revised_prompt": "Edit the provided iOS app icon candidate image. Preserve the exact overall composition, square canvas, style, color palette, cabin size, off-white paper background, paper plane, roof, footprints, side window, lighting, and watercolor texture.\n\nMake only these architectural changes to the cabin:\n1. Remove the glowing window from the wooden front door. Replace it with continuous warm honey-brown wooden planks and matching watercolor/pencil texture. Keep the arched door shape and small round doorknob.\n2. Remove the small round window above the door under the roof peak. Fill that wall area naturally with the same cream plaster texture and subtle stone/watercolor speckles.\n3. Keep the right-side arched window exactly as a window, with its warm glow and frame.\n\nImportant constraints: after editing, the cabin should have exactly one door with no glass/window on the door, exactly one visible window on the right side, and no upper circular window. Do not add any new windows. Do not change the paper plane, footprints, roof, cabin scale, background, or margins. No text, no letters, no numbers, no border, no watermark, no red frame."
+}

@@ -1,0 +1,14 @@
+{
+  "asset_name": "app_icon_candidate_c",
+  "call_id": "ig_0ba6ddedbbe4331c016a44dfc022308191a85f023f9c52421e",
+  "line_number": 43,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "app_icon_candidate_c.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2216615,
+  "sha256": "81f7a572d0d4cdb32d8ff95decdb9d17cf9554a68165ba3dd0cdac494f0276ef",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon candidate, square 1024x1024 raster image\nPrimary request: Generate candidate C for the Chinese iOS app \"步履小屋\". Explore a softer minimal icon that is clearly not too full on the phone home screen.\nSubject: a rounded, simplified tiny cabin viewed front-on, with warm glowing window, one folded paper plane orbiting above, and exactly one pair of small footprint marks in the foreground. No other objects.\nStyle/medium: refined watercolor gouache app icon, travel-journal warmth, slightly more minimal and emblem-like than a detailed illustration, soft pencil outline, paper grain, crisp silhouette.\nComposition/framing: square canvas, no baked-in rounded corners. Main cabin centered and compact, occupying about 56-62% of canvas height and width; keep every visible part of the plane, cabin, and footprints at least 130 px from the 1024x1024 canvas edges. Use quiet negative space around the group so it survives iOS icon masking. Full-bleed warm cream paper background, no inner card.\nLighting/mood: cozy, gentle, trustworthy, inviting.\nColor palette: warm cream, honey gold light, soft cinnamon browns, muted olive roof accents. No blue, no purple, no dark navy.\nMaterials/textures: clean watercolor/gouache surfaces, subtle texture, simplified details, no clutter.\nText: no text, no letters, no numbers.\nConstraints: must feel airy with iOS safe margin; no border, no drop shadow, no inner rounded rectangle, no white corner cutouts, no extra scenery, no plants, no clouds, no Apple logo, no Health icon, no watermark."
+}

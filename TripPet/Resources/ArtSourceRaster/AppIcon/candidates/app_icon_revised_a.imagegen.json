@@ -1,0 +1,14 @@
+{
+  "asset_name": "app_icon_revised_a",
+  "call_id": "ig_0ba6ddedbbe4331c016a44e0b43c1c819180e01ff1488463b3",
+  "line_number": 109,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "app_icon_revised_a.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2884930,
+  "sha256": "7dbc555aeae407bc7c532dc9446abbbddb8102b06ba8b68ff556d8a58a68e25b",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon candidate, square 1024x1024 raster image\nReference: Use the user's annotated red-frame image as composition guidance. The icon artwork should fill approximately the area inside the red frame, with only modest margin around the group.\nPrimary request: Revised app icon candidate A for the Chinese iOS app \"步履小屋\". Make the cabin larger than the previous tiny candidate, reaching close to the red-frame bounds while preserving a little iOS safe margin. Make the cabin colors more prominent and separated from the background.\nSubject: one cozy tiny cabin, one folded paper plane, and exactly one pair of footprint marks. No other objects.\nStyle/medium: premium simplified watercolor travel-journal iOS app icon, soft pencil outline, warm but crisp, readable at phone home-screen size.\nComposition/framing: square canvas, no rounded corners baked into the image. Main artwork group should occupy about 76-82% of the canvas width and height, similar to filling the user's red frame. Leave only a clean 8-10% visual margin from the canvas edges, with all important parts safely away from iOS rounded corners. Cabin centered slightly low, paper plane in upper-right inside the safe area, footprints below cabin with room before bottom edge.\nLighting/mood: warm, cozy, calm, inviting.\nColor palette: background is pale warm off-white paper, noticeably lighter and whiter than the cabin; cabin uses richer honey brown wood, deeper caramel outlines, warm golden window glow, muted olive green roof with stronger contrast. No blue, no purple, no dark navy.\nMaterials/textures: subtle watercolor and paper grain; clean crisp silhouette; no tiny clutter.\nText: no text, no letters, no numbers.\nConstraints: no red frame in final image, no border, no drop shadow, no inner rounded rectangle, no white corner cutouts, no scenery, no plants, no clouds, no Apple logo, no Health icon, no watermark."
+}

@@ -1,0 +1,14 @@
+{
+  "asset_name": "app_icon_revised_b",
+  "call_id": "ig_0ba6ddedbbe4331c016a44e112ed688191b6bbda66a2688712",
+  "line_number": 111,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "app_icon_revised_b.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2724206,
+  "sha256": "d55c2ff470a1bde45006c3a3912dabf9ace77e7f9ab10f2fb35f99a92be55d55",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon candidate, square 1024x1024 raster image\nReference: Use the user's annotated red-frame image as composition guidance. The final artwork should reach roughly the red frame, not be tiny in the center.\nPrimary request: Revised app icon candidate B for the Chinese iOS app \"步履小屋\". Larger and more readable than the last candidate, but still with a small clean margin around the edges. Increase color contrast between the cabin and the background.\nSubject: one cozy front-facing tiny cabin, one folded paper plane, and exactly one pair of footprint marks. No other objects.\nStyle/medium: refined watercolor gouache app icon, simple iconic shapes, soft pencil outline, warm travel-journal feeling, readable at small iOS icon size.\nComposition/framing: square canvas, no rounded corners baked in. The cabin and supporting elements together occupy about 74-80% of the square, filling the red-frame-like safe area. Keep all important details at least about 80-100 px from the canvas edges. Cabin centered and prominent, plane in upper-right but not near the corner, footprints visible below but not close to the bottom edge.\nLighting/mood: cozy, gentle, trustworthy, inviting.\nColor palette: pale warm ivory/off-white paper background, much lighter than the cabin; saturated honey-brown cabin wood, darker caramel outlines, bright golden windows, muted olive roof with good contrast. No blue, no purple, no dark navy.\nMaterials/textures: clean watercolor/gouache surfaces, subtle paper texture, crisp silhouette, simplified details.\nText: no text, no letters, no numbers.\nConstraints: no red frame in final image, no border, no drop shadow, no inner rounded rectangle, no white corner cutouts, no extra scenery, no plants, no clouds, no Apple logo, no Health icon, no watermark."
+}

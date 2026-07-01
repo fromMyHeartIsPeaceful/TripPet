@@ -1,0 +1,14 @@
+{
+  "asset_name": "app_icon_revised_c",
+  "call_id": "ig_0ba6ddedbbe4331c016a44e16d56808191805aa9e474e0a35c",
+  "line_number": 113,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/01/rollout-2026-07-01T17-33-57-019f1d07-2c3a-7cb0-ba52-da9984fc96db.jsonl",
+  "raw_png": "app_icon_revised_c.raw.png",
+  "width": 1254,
+  "height": 1254,
+  "has_alpha": false,
+  "byte_count": 2523344,
+  "sha256": "f7c2ed03d17d05be244a0d1d9731857ed1f22b75d0e5dd27e9ad5b5eb11c92fa",
+  "revised_prompt": "Use case: logo-brand\nAsset type: iOS app icon candidate, square 1024x1024 raster image\nReference: Use the user's annotated red-frame image as the size target. The icon should be larger than the previous small version and visually fill the red box area, with only slight breathing room.\nPrimary request: Revised app icon candidate C for the Chinese iOS app \"步履小屋\". Make the cabin bolder and more color-separated from a whiter background, while still keeping the full composition inside iOS-safe edges.\nSubject: one cozy tiny cabin with a warm glowing door and window, one folded paper plane near the upper right, and exactly one pair of footprint marks in the foreground. No other objects.\nStyle/medium: polished watercolor app icon, slightly simplified and emblem-like, soft pencil outline, crisp silhouette, travel diary warmth.\nComposition/framing: square canvas, no rounded corners baked in. Main artwork group fills about 78% of the square, approximately matching the red frame area from the reference. Keep a small but visible margin around the cabin, plane, and footprints; no important detail should touch or approach the canvas edge. Cabin centered, large, and clearly dominant; plane stays inside upper-right safe area; footprints stay visible below the cabin.\nLighting/mood: cozy, bright, friendly, inviting.\nColor palette: near-white warm cream paper background with very subtle texture; stronger amber and honey browns for the cabin; darker warm outlines; brighter golden window glow; muted olive roof clearly darker than the background. No blue, no purple, no dark navy.\nMaterials/textures: subtle watercolor, soft paper grain, clean readable details, no clutter.\nText: no text, no letters, no numbers.\nConstraints: no red frame in final image, no border, no drop shadow, no inner rounded rectangle, no white corner cutouts, no scenery, no plants, no clouds, no Apple logo, no Health icon, no watermark."
+}
