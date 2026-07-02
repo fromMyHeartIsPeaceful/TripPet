@@ -157,4 +157,20 @@ enum AppCopy {
             "已经收好 \(count) 张读过的明信片。"
         }
     }
+
+    enum Legal {
+        static let signTitle = "设置与说明"
+        static let title = "设置与说明"
+        static let intro = "这里会放置步履小屋的协议、备案与联系信息。首版先预留入口，正式内容上线前会替换占位文案。"
+        static let privacyTitle = "隐私协议"
+        static let termsTitle = "用户协议"
+        static let icpTitle = "中国区备案号"
+        static let contactEmailTitle = "联系邮箱"
+        static let privacyPlaceholder = "待补充正式隐私协议链接或正文。"
+        static let termsPlaceholder = "待补充正式用户协议链接或正文。"
+        static let icpPlaceholder = "待补充备案号。"
+        static let contactEmailPlaceholder = "待补充联系邮箱。"
+        static let doneButton = "知道了"
+        static let signAccessibilityLabel = "打开设置与说明"
+    }
 }

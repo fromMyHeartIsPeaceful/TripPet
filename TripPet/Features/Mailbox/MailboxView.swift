@@ -8,6 +8,7 @@ struct MailboxView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var viewModel = MailboxViewModel()
     @State private var deferredHistoryPostcard: Postcard?
+    @State private var isSettingsInfoPresented = false
 
     var body: some View {
         NavigationStack {
@@ -33,6 +34,9 @@ struct MailboxView: View {
                         },
                         onOpenHistory: {
                             viewModel.isHistoryPresented = true
+                        },
+                        onOpenSettingsInfo: {
+                            isSettingsInfoPresented = true
                         },
                         onEmptyMailboxTap: {
                             viewModel.registerEmptyMailboxTap()
@@ -95,6 +99,10 @@ struct MailboxView: View {
                     }
                 )
                 .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $isSettingsInfoPresented) {
+                MailboxSettingsInfoSheet()
+                    .appActionSheetPresentation()
             }
             .fullScreenCover(
                 item: $viewModel.selectedPostcard,
@@ -162,6 +170,7 @@ private struct MailboxSceneContent: View {
     let speechText: String
     let onOpenMailbox: () -> Void
     let onOpenHistory: () -> Void
+    let onOpenSettingsInfo: () -> Void
     let onEmptyMailboxTap: () -> Void
 
     var body: some View {
@@ -204,6 +213,15 @@ private struct MailboxSceneContent: View {
                 .position(x: butterflyCenter.x, y: butterflyCenter.y)
                 .accessibilityLabel("蝴蝶说：\(speechText)")
             }
+
+            Button(action: onOpenSettingsInfo) {
+                MailboxSettingsWoodSign(width: settingsSignWidth)
+            }
+            .buttonStyle(.plain)
+            .frame(width: settingsSignWidth, height: settingsSignHeight)
+            .contentShape(Rectangle())
+            .position(settingsSignCenter)
+            .accessibilityLabel(AppCopy.Legal.signAccessibilityLabel)
         }
         .frame(width: size.width, height: size.height)
     }
@@ -282,6 +300,26 @@ private struct MailboxSceneContent: View {
         128
     }
 
+    private var settingsSignWidth: CGFloat {
+        min(max(size.width * 0.3525, 124), 168)
+    }
+
+    private var settingsSignHeight: CGFloat {
+        settingsSignWidth / Self.settingsSignAspectRatio
+    }
+
+    private var settingsSignCenter: CGPoint {
+        CGPoint(
+            x: max(12 + settingsSignWidth * 0.5, size.width * 0.27),
+            y: min(
+                max(size.height * 0.625, safeAreaInsets.top + settingsSignHeight * 0.5 + 150),
+                size.height -
+                    BottomChromeMetrics.actionCardDistanceFromRootBottom -
+                    settingsSignHeight * 0.55
+            )
+        )
+    }
+
     private var speechBubbleCenter: CGPoint {
         CGPoint(
             x: min(max(butterflyCenter.x - speechBubbleWidth * 0.34, speechBubbleWidth * 0.5 + 14), size.width - speechBubbleWidth * 0.5 - 14),
@@ -341,6 +379,99 @@ private struct MailboxSceneContent: View {
     private static let unreadMailboxTopPerchPoint = CGPoint(x: 0.704, y: 0.426)
     private static let emptyMailboxTopPerchPoint = CGPoint(x: 0.674, y: 0.445)
     private static let butterflyContactAnchor = CGPoint(x: 0.50, y: 0.83)
+    private static let settingsSignAspectRatio: CGFloat = 1619.0 / 971.0
+}
+
+private struct MailboxSettingsWoodSign: View {
+    let width: CGFloat
+
+    private var height: CGFloat {
+        width / (1619.0 / 971.0)
+    }
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            ArtImage(name: "mailbox_settings_wood_sign", contentMode: .fit)
+                .frame(width: width, height: height)
+                .allowsHitTesting(false)
+
+            Text(AppCopy.Legal.signTitle)
+                .font(AppTheme.postcardTitle(size: 13.5))
+                .foregroundStyle(Color(red: 0.216, green: 0.137, blue: 0.074))
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+                .frame(width: width * 0.68)
+                .position(x: width * 0.50, y: height * 0.38)
+                .allowsHitTesting(false)
+        }
+        .frame(width: width, height: height)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct MailboxSettingsInfoSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        AppActionBottomSheet(buttonTitle: AppCopy.Legal.doneButton) {
+            dismiss()
+        } content: {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(AppCopy.Legal.title)
+                            .font(AppTheme.cardTitle)
+                            .foregroundStyle(AppTheme.ink)
+
+                        Text(AppCopy.Legal.intro)
+                            .font(AppTheme.body)
+                            .foregroundStyle(AppTheme.secondaryInk)
+                            .lineSpacing(5)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    VStack(spacing: 10) {
+                        legalInfoRow(
+                            title: AppCopy.Legal.privacyTitle,
+                            body: AppCopy.Legal.privacyPlaceholder
+                        )
+                        legalInfoRow(
+                            title: AppCopy.Legal.termsTitle,
+                            body: AppCopy.Legal.termsPlaceholder
+                        )
+                        legalInfoRow(
+                            title: AppCopy.Legal.icpTitle,
+                            body: AppCopy.Legal.icpPlaceholder
+                        )
+                        legalInfoRow(
+                            title: AppCopy.Legal.contactEmailTitle,
+                            body: AppCopy.Legal.contactEmailPlaceholder
+                        )
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
+    }
+
+    private func legalInfoRow(title: String, body: String) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(AppTheme.ink)
+
+            Text(body)
+                .font(AppTheme.caption)
+                .foregroundStyle(AppTheme.secondaryInk)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .paperCard(cornerRadius: 16, stroke: AppTheme.paperGray.opacity(0.8))
+        .accessibilityElement(children: .combine)
+    }
 }
 
 private struct MailboxButterflySpeechBubble: View {

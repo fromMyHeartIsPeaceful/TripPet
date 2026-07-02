@@ -1,0 +1,14 @@
+{
+  "asset_name": "mailbox_settings_wood_sign",
+  "call_id": "ig_0c7f90af4c8077ee016a4601c1f458819a8430c854e4f7facb",
+  "line_number": 207,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/02/rollout-2026-07-02T14-02-00-019f216b-7cd1-7c40-95ad-f9ed71062141.jsonl",
+  "raw_png": "mailbox_settings_wood_sign.raw.png",
+  "width": 1619,
+  "height": 971,
+  "has_alpha": false,
+  "byte_count": 1917022,
+  "sha256": "183674adcdb0d7eeb279b70b4b04ac9cfc58c7eca7151c780eb621c716781523",
+  "revised_prompt": "Use case: illustration-story\nAsset type: TripPet iOS mailbox page decorative cutout, a clickable horizontal wooden notice board for a settings/about entrance in the lower-left of a cozy mailbox scene\nPrimary request: Create one standalone wide horizontal wooden announcement sign prop with exactly one single wooden support leg/post in the center, planted into a small patch of soil. The sign will hold SwiftUI-rendered text later, so the wooden face must be blank and very wide.\nScene/backdrop: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, transparency checkerboard, or lighting variation.\nSubject: one rustic wide horizontal wooden notice board, at least 2.5 times wider than it is tall, with a broad blank sign face made from two or three horizontal planks. Under the sign there must be exactly one central wooden support leg/post, visibly pushed into a low rounded mound of dark soil with tiny pebbles and a few small grass tufts. Keep the planted-in-soil effect clear but compact. The sign face should have lots of empty horizontal room for app text, no decorations crowding the center.\nStyle/medium: warm hand-painted watercolor plus colored-pencil texture matching a cozy travel-pet storybook iOS game, crisp inked edges, polished mobile asset readability.\nComposition/framing: centered full object, generous padding, landscape prop silhouette, full sign and soil visible, no cropping. The board should face front with only a tiny friendly perspective, suitable for placement in the bottom-left of a screen.\nLighting/mood: warm soft afternoon light, gentle, inviting, handcrafted.\nColor palette: warm honey brown wood, deeper brown grain lines, muted olive grass, dark cocoa soil, cream highlights. Avoid #ff00ff anywhere in the subject.\nMaterials/textures: visible wood grain, small nail heads near corners, soft watercolor paper texture within the object only, clean silhouette for alpha extraction.\nText: none.\nConstraints: exactly one support leg/post only, no second leg, no pair of legs, no letters, no numbers, no Chinese, no icons, no symbols, no watermark, no cast shadow, no contact shadow, no reflection, no animals, no mailbox, no tall vertical road sign. The board must be clearly horizontal and wide enough for text overlay."
+}

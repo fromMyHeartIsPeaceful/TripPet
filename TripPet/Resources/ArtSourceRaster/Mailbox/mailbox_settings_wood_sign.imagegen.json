@@ -1,0 +1,28 @@
+{
+  "asset_name": "mailbox_settings_wood_sign",
+  "call_id": "ig_0c7f90af4c8077ee016a4601c1f458819a8430c854e4f7facb",
+  "line_number": 207,
+  "payload_type": "image_generation_end",
+  "source_rollout": "/Users/edy/.codex/sessions/2026/07/02/rollout-2026-07-02T14-02-00-019f216b-7cd1-7c40-95ad-f9ed71062141.jsonl",
+  "raw_png": "raw/mailbox_settings_wood_sign.raw.png",
+  "source_png": "mailbox_settings_wood_sign.png",
+  "xcasset_png": "../../Assets.xcassets/Decorations/mailbox_settings_wood_sign.imageset/mailbox_settings_wood_sign@3x.png",
+  "width": 1619,
+  "height": 971,
+  "has_alpha": true,
+  "raw_byte_count": 1917022,
+  "source_byte_count": 1500152,
+  "xcasset_byte_count": 1500152,
+  "raw_sha256": "183674adcdb0d7eeb279b70b4b04ac9cfc58c7eca7151c780eb621c716781523",
+  "sha256": "2d156b5d167bbff6ba34563888ef6228664cc7bc0ce4b31342ff063b2c714d8e",
+  "xcasset_sha256": "2d156b5d167bbff6ba34563888ef6228664cc7bc0ce4b31342ff063b2c714d8e",
+  "background_removal": {
+    "method": "chroma_key",
+    "tool": "/Users/edy/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+    "key_color": "#f503f8",
+    "transparent_pixels": 918060,
+    "partial_alpha_pixels": 6393,
+    "total_pixels": 1572049
+  },
+  "revised_prompt": "Wide horizontal wooden announcement sign for TripPet mailbox settings/about entrance. Exactly one central support leg planted into compact soil. Blank wide wooden face for SwiftUI text overlay. Hand-painted watercolor and colored-pencil storybook style. No text, no icons, no second support leg, generated on flat #ff00ff chroma-key background."
+}
